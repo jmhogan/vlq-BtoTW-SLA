@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-# python3 -u plotTemplates.py BpMass all True 
+# python3 -u plotHists.py BpMass A True 
 
-import os,sys,time,math,pickle,itertools
+import os,sys,time,math
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
 from ROOT import *
-from samples import lumiStr, systListShort, systListFull
+from samples import lumiStr, systListShort, systListFull,  systListABCDnn
 from utils import *
 
 gROOT.SetBatch(1)
@@ -23,7 +23,8 @@ isCategorized=False
 if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Oct2023statsonly_ABCDnn'
+pfix+='_Oct2023SysAll'
+#pfix = 'templatesTestA' # TEMP
 if len(sys.argv)>4: pfix=str(sys.argv[4])
 templateDir=os.getcwd()+'/'+pfix+'/'
 
@@ -39,7 +40,7 @@ if len(sys.argv)>7:
 saveKey = '' # tag for plot names
 
 datalabel = 'data_obs'
-shiftlist = ['__Up','__Down']
+shiftlist = ['__Up','__Dn']
 sig1='BpM1000' #  choose the 1st signal to plot
 sig1leg='B (1.0 TeV)'
 sig2='BpM1800' #  choose the 2nd signal to plot
@@ -53,6 +54,13 @@ print('Scale factor = ',sigScaleFact)
 tempsig='templates_'+iPlot+'_'+lumiInTemplates+''+isRebinned+'.root'#+'_Data18.root'
 if year != 'all': tempsig='templates_'+iPlot+'_'+year+''+isRebinned+'.root'#+'_Data18.root'
 
+plotABCDnn = False
+if 'ABCDnn' in iPlot:
+        plotABCDnn = True
+        systematicList = systListABCDnn
+else:
+        systematicList = systListFull
+
 bkgProcList = ['qcd',
                'ewk',
                'wjets',
@@ -60,11 +68,17 @@ bkgProcList = ['qcd',
                'singletop',
                'ttbar'
 ]
-bkgHistColors = {'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'ewk':kMagenta-6,'singletop':kGreen-6,'ttx':kAzure+2}
+ABCDnnProcList = ['qcd','wjets','singletop','ttbar']
+minorProcList = ['ewk', 'ttx']
 
-systematicList = systListShort
-if len(isRebinned)>0 or isCategorized: systematicList = systListFull
-doAllSys = False # UPDATE
+if plotABCDnn:
+        bkgHistColors = {'ABCDnn': kRed-7,'ewk':kMagenta-6,'ttx':kAzure+2}
+else:
+        bkgHistColors = {'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'ewk':kMagenta-6,'singletop':kGreen-6,'ttx':kAzure+2}
+
+# systematicList = systListShort
+# if len(isRebinned)>0 or isCategorized: systematicList = systListFull
+doAllSys = True
 print('doAllSys: ',doAllSys,'systematicList: ',systematicList)
 
 doNormByBinWidth=False
@@ -74,6 +88,8 @@ doOneBand = True
 if not doAllSys: doOneBand = True # Don't change this!
 doRealPull = False
 if doRealPull: doOneBand=False
+
+plotNorm = False
 
 blind = False
 if len(sys.argv)>5: blind=bool(eval(sys.argv[5]))
@@ -90,12 +106,15 @@ isEMlist =['L']#'E','M']
 taglist = ['all']
 if isCategorized == True:
         #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
-        taglist=['allTlep', 'allWlep']
-        if region.find('D')==0 or region=='all':
+        taglist=['allWlep','allTlep']
+        if 'D' in region or region=='all':
                 partialBlind = True
 print(taglist)
 
 lumiSys = 0.018 # lumi uncertainty
+
+#### Consider: Did not set removeThreshold
+####           No doPDF
 
 def getNormUnc(hist,ibin,modelingUnc):
         contentsquared = hist.GetBinContent(ibin)**2
@@ -138,21 +157,24 @@ def formatUpperHist(histogram,th1hist):
                 histogram.GetYaxis().SetTitleOffset(.82)
 
         histogram.GetYaxis().CenterTitle()
-        histogram.SetMinimum(0.00101)
-        if not yLog: 
-                if region == 'SR' and isCategorized:
-                        histogram.SetMinimum(0.000101);
-                else: 
-                        histogram.SetMinimum(0.25)		
-        if yLog:
-                uPad.SetLogy()
-                if not doNormByBinWidth:
-                        histogram.SetMaximum(500*histogram.GetMaximum())
-                else: 
-                        histogram.SetMaximum(200*histogram.GetMaximum())
-                if iPlot=='YLD': 
-                        histogram.SetMaximum(200*histogram.GetMaximum())
-                        histogram.SetMinimum(0.1)
+        if plotNorm:
+                if yLog: uPad.SetLogy()
+                histogram.SetMaximum(1.0)
+        else:
+                if not yLog: 
+                        if region == 'SR' and isCategorized:
+                                histogram.SetMinimum(0.000101);
+                        else: 
+                                histogram.SetMinimum(0.25)		
+                if yLog:
+                        uPad.SetLogy()
+                        if not doNormByBinWidth:
+                                histogram.SetMaximum(500*histogram.GetMaximum())
+                        else: 
+                                histogram.SetMaximum(200*histogram.GetMaximum())
+                        if iPlot=='YLD': 
+                                histogram.SetMaximum(200*histogram.GetMaximum())
+                                histogram.SetMinimum(0.1)
 
 
 def formatLowerHist(histogram):
@@ -201,23 +223,44 @@ for tag in taglist:
                 catStr='is'+isEM+'_'+tagStr
                 histPrefix+=catStr
                 totBkg = 0.
+                totMajor = 0.
+                totMinor = 0.
                 for proc in bkgProcList: 
-                        try:    
+                        try: 				
                                 bkghists[proc+catStr] = RFile1.Get(histPrefix+'__'+proc).Clone()
-                                if tag=='allTlep':
-                                        bkghists[proc+catStr].Scale(0.2)
-                                if tag=='allWlep':
-                                        bkghists[proc+catStr].Scale(0.2)
-                                print(proc, bkghists[proc+catStr].Integral())
-                                totBkg += bkghists[proc+catStr].Integral()
+                                if plotABCDnn and not partialBlind:
+                                        if proc in minorProcList:
+                                                totMinor += bkghists[proc+catStr].Integral()                                       
+                                        else:
+                                                totMajor += bkghists[proc+catStr].Integral()
                         except:
                                 print("There is no "+proc+"!!!!!!!!")
                                 print("tried to open "+histPrefix+'__'+proc)
                                 pass
+
+                if plotNorm:
+                        for proc in bkgProcList:
+                                bkghists[proc+catStr].Scale(1/totBkg)
+                        totBkg = 1.0
+
                 hData = RFile1.Get(histPrefix+'__'+datalabel).Clone()
-                #print("data: ", hData.Integral())
+                if plotNorm:
+                        hData.Scale(1/hData.Integral())
+
+                if plotABCDnn and not partialBlind:
+                        factor = (hData.Integral()-totMinor)/totMajor
+                        for proc in ABCDnnProcList:
+                                bkghists[proc+catStr].Scale(factor)
+
+                bkghists["ABCDnn"+catStr] = bkghists[ABCDnnProcList[0]+catStr].Clone()
+                for iproc in range(len(ABCDnnProcList)):
+                        bkghists["ABCDnn"+catStr].Add(bkghists[ABCDnnProcList[iproc]+catStr])
+
+                for proc in bkgProcList:
+                        totBkg += bkghists[proc+catStr].Integral()
+
                 histrange = [hData.GetBinLowEdge(1),hData.GetBinLowEdge(hData.GetNbinsX()+1)]
-                if (partialBlind and (tag=="tagTjet" or tag=="tagWjet")): # Todo: generalize it for other branches
+                if (partialBlind and (tag!="untagTlep" or tag!="untagWlep")): # Todo: generalize it for other branches
                         if ("BpMass" in iPlot):
                                 start_bin = hData.GetXaxis().FindFixBin(1500)+1 # specifically for BpMass
                                 end_bin = hData.GetNbinsX()+1
@@ -229,6 +272,9 @@ for tag in taglist:
                 gaeData = TGraphAsymmErrors(hData.Clone(hData.GetName().replace(datalabel,'gaeDATA')))
                 hsig1 = RFile1.Get(histPrefix+'__'+sig1).Clone(histPrefix+'__sig1')
                 hsig2 = RFile1.Get(histPrefix+'__'+sig2).Clone(histPrefix+'__sig2')
+                if plotNorm:
+                        hsig1.Scale(1/hsig1.Integral())
+                        hsig2.Scale(1/hsig2.Integral())
                 #hsig1.Scale(xsec[sig1]) ## FIXME later if we want non-1pb
                 #hsig2.Scale(xsec[sig2])
                 #if len(isRebinned) > 0: ## FIXME later
@@ -247,13 +293,21 @@ for tag in taglist:
                 # Yes, there are easier ways using the TH1's but
                 # it would be rough to swap objects lower down
 
-                bkgHT = bkghists[bkgProcList[0]+catStr].Clone()
-                for proc in bkgProcList:
-                        if proc==bkgProcList[0]: continue
-                        try: 
-                                bkgHT.Add(bkghists[proc+catStr])
-                        except: pass
-                gaeBkgHT = TGraphAsymmErrors(bkgHT.Clone("gaeBkgHT"))
+                if plotABCDnn:
+                        bkgHT = bkghists["ABCDnn"+catStr].Clone()
+                        for proc in minorProcList:
+                                try:
+                                        bkgHT.Add(bkghists[proc+catStr])
+                                except: pass
+                        gaeBkgHT = TGraphAsymmErrors(bkgHT.Clone("gaeBkgHT"))
+                else:
+                        bkgHT = bkghists[bkgProcList[0]+catStr].Clone()
+                        for proc in bkgProcList:
+                                if proc==bkgProcList[0]: continue
+                                try: 
+                                        bkgHT.Add(bkghists[proc+catStr])
+                                except: pass
+                        gaeBkgHT = TGraphAsymmErrors(bkgHT.Clone("gaeBkgHT"))
 
                 #if doNormByBinWidth: poissonNormByBinWidth(gaeBkgHT,bkgHT)
                 #else: poissonErrors(gaeBkgHT)
@@ -264,15 +318,15 @@ for tag in taglist:
 
                 if doAllSys:
                         for syst in systematicList:
-                                #print(syst)
-                                for ud in shiftlist:
-                                        for proc in bkgProcList:
-                                                try: 
-                                                        systHists[proc+catStr+syst+ud] = RFile1.Get(histPrefix+'__'+proc+'__'+syst+ud).Clone()
-                                                        if doNormByBinWidth: normByBinWidth(systHists[proc+catStr+syst+ud],perNGeV)
-                                                except: 
-                                                        print('FAILED to open '+proc+'__'+syst+ud)
-                                                        pass
+                                        for ud in shiftlist:
+                                                for proc in bkgProcList:
+                                                        try:
+                                                                systHists[proc+catStr+syst+ud] = RFile1.Get(f'{histPrefix}__{proc}__{syst}{ud}').Clone()
+                                                                if doNormByBinWidth: 
+                                                                        normByBinWidth(systHists[proc+catStr+syst+ud],perNGeV)
+                                                        except: 
+                                                                print(f'FAILED to open {histPrefix}__{proc}__{syst}__{ud}')
+                                                                pass
 
                 totBkgTemp1[catStr] = TGraphAsymmErrors(bkgHT.Clone(bkgHT.GetName()+'shapeOnly'))
                 totBkgTemp2[catStr] = TGraphAsymmErrors(bkgHT.Clone(bkgHT.GetName()+'shapePlusNorm'))
@@ -334,25 +388,40 @@ for tag in taglist:
                         drawQCD = bkghists['qcd'+catStr].Integral()/bkgHT.Integral()>.005 #don't plot QCD if it is less than 0.5%
                 except: pass
                 
-                drawQCD=True # TEMP
+                drawQCD = True # TEMP
                 stackbkgHT = THStack("stackbkgHT","")
                 bkgProcListNew = bkgProcList[:]
                 if region=='WJCR':
                         bkgProcListNew[bkgProcList.index("top")],bkgProcListNew[bkgProcList.index("ewk")]=bkgProcList[bkgProcList.index("ewk")],bkgProcList[bkgProcList.index("top")]
+                if plotABCDnn:
+                        bkgProcListNew = ["ABCDnn"] + minorProcList
+                        print(bkgProcListNew)
                 for proc in bkgProcListNew:
                         try: 
+                                #bkghists[proc+catStr].Print()
                                 if drawQCD or proc!='qcd': stackbkgHT.Add(bkghists[proc+catStr])
                         except: pass
 
                 sig1Color= kBlack
                 sig2Color= kBlack
 
-                for proc in bkgProcList:
-                        try: 
-                                bkghists[proc+catStr].SetLineColor(bkgHistColors[proc])
-                                bkghists[proc+catStr].SetFillColor(bkgHistColors[proc])
-                                bkghists[proc+catStr].SetLineWidth(2)
-                        except: pass
+                if plotABCDnn:
+                        bkghists["ABCDnn"+catStr].SetLineColor(bkgHistColors["ABCDnn"])
+                        bkghists["ABCDnn"+catStr].SetFillColor(bkgHistColors["ABCDnn"])
+                        bkghists["ABCDnn"+catStr].SetLineWidth(2)
+                        for proc in minorProcList:
+                                try:
+                                        bkghists[proc+catStr].SetLineColor(bkgHistColors[proc])
+                                        bkghists[proc+catStr].SetFillColor(bkgHistColors[proc])
+                                        bkghists[proc+catStr].SetLineWidth(2)
+                                except: pass
+                else:
+                        for proc in bkgProcList:
+                                try: 
+                                        bkghists[proc+catStr].SetLineColor(bkgHistColors[proc])
+                                        bkghists[proc+catStr].SetFillColor(bkgHistColors[proc])
+                                        bkghists[proc+catStr].SetLineWidth(2)
+                                except: pass                        
                 hsig1.SetLineColor(sig1Color)
                 hsig1.SetFillStyle(0)
                 hsig1.SetLineWidth(3)
@@ -475,7 +544,6 @@ for tag in taglist:
                         scaleFact2Str = ''
                 if drawQCD:
                         if not blind: 
-                                #leg.AddEntry(0, "", "")
                                 leg.AddEntry(gaeData,"Data","pel")  #left
                                 try: 
                                         leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f") #right
@@ -521,26 +589,32 @@ for tag in taglist:
 
                 if not drawQCD:
                         if not blind:
-                                leg.AddEntry(gaeData,"Data","pel")  #left
-                                try: 
-                                        leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f") #right
-                                except: pass
-                                leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l")  #left
-                                try: 
-                                        leg.AddEntry(bkghists['wjets'+catStr],"W+jets","f") #right
-                                except: pass
-                                leg.AddEntry(hsig2,sig2leg+scaleFact2Str,"l") #left
-                                try: 
-                                        leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f") #right
-                                except: pass
-                                try: 
-                                        leg.AddEntry(bkghists['ttbar'+catStr],"t#bar{t}","f") #left
-                                except: pass
-                                try: 
-                                        leg.AddEntry(bkghists['singletop'+catStr],"single t","f") #left
-                                except: pass
-                                #leg.AddEntry(0, "", "") #left
-                                leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
+                                if plotABCDnn:
+                                        leg.AddEntry(gaeData,"Data","pel")
+                                        leg.AddEntry(bkghists['ABCDnn'+catStr],"ABCDnn","f")
+                                        leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f")
+                                        leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f")
+                                        leg.AddEntry(gaeData,"Data","pel")  #left
+                                else:
+                                        try: 
+                                                leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f") #right
+                                        except: pass
+                                        leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l")  #left
+                                        try: 
+                                                leg.AddEntry(bkghists['wjets'+catStr],"W+jets","f") #right
+                                        except: pass
+                                        leg.AddEntry(hsig2,sig2leg+scaleFact2Str,"l") #left
+                                        try: 
+                                                leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f") #right
+                                        except: pass
+                                        try: 
+                                                leg.AddEntry(bkghists['ttbar'+catStr],"t#bar{t}","f") #left
+                                        except: pass
+                                        try: 
+                                                leg.AddEntry(bkghists['singletop'+catStr],"single t","f") #left
+                                        except: pass
+                                        #leg.AddEntry(0, "", "") #left
+                                        leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
                         else:
                                 leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l")  #left
                                 try: 
@@ -561,6 +635,7 @@ for tag in taglist:
                                 except: pass
                                 leg.AddEntry(0, "", "") #left
                                 leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
+
 
                 leg.Draw("same")
 
@@ -605,6 +680,7 @@ for tag in taglist:
                         pull.SetFillColor(1)
                         pull.SetLineColor(1)
                         pull.SetMarkerStyle(20)
+
                         formatLowerHist(pull)
                         pull.Draw("E0")
 
@@ -702,17 +778,25 @@ for tag in taglist:
                 if blind: savePrefix+='_blind'
 
                 if doOneBand:
-                        c1.SaveAs(savePrefix+"totBand.pdf")
-                        c1.SaveAs(savePrefix+"totBand.png")
-                        #c1.SaveAs(savePrefix+"totBand.eps")
-                        #c1.SaveAs(savePrefix+"totBand.root")
-                        #c1.SaveAs(savePrefix+"totBand.C")
+                        if plotNorm:
+                                c1.SaveAs(f"{savePrefix}totBand_{region}_norm.pdf")
+                                c1.SaveAs(f"{savePrefix}totBand_{region}_norm.png")
+                        else:
+                                c1.SaveAs(f"{savePrefix}totBand_{region}.pdf")
+                                c1.SaveAs(f"{savePrefix}totBand_{region}.png")
+                                #c1.SaveAs(savePrefix+"totBand.eps")
+                                #c1.SaveAs(savePrefix+"totBand.root")
+                                #c1.SaveAs(savePrefix+"totBand.C")
                 else:
-                        c1.SaveAs(savePrefix+".pdf")
-                        c1.SaveAs(savePrefix+".png")
-                        #c1.SaveAs(savePrefix+".eps")
-                        #c1.SaveAs(savePrefix+".root")
-                        #c1.SaveAs(savePrefix+".C")
+                        if plotNorm:
+                                c1.SaveAs(f"{savePrefix}_{region}_norm.pdf")
+                                c1.SaveAs(f"{savePrefix}_{region}_norm.png")
+                        else:
+                                c1.SaveAs(f"{savePrefix}_{region}.pdf")
+                                c1.SaveAs(f"{savePrefix}_{region}.png")
+                                #c1.SaveAs(savePrefix+".eps")
+                                #c1.SaveAs(savePrefix+".root")
+                                #c1.SaveAs(savePrefix+".C")
                 for proc in bkgProcList:
                         try: 
                                 del bkghists[proc+catStr]

@@ -6,9 +6,8 @@ else: runDir = thisDir
 if os.getcwd()[-17:] == 'singleLepAnalyzer': os.chdir(os.getcwd()+'/makeTemplates/')
 outputDir = thisDir+'/'
 
-region='Y' #all, BAX, DCY, individuals
-
-categorize=1 #1==categorize into 6 tags
+region='all' #all, BAX, DCY, individuals
+categorize=0 #1==categorize into 6 tags
 
 cTime=datetime.datetime.now()
 date='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
@@ -16,11 +15,11 @@ time='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
 pfix = 'templates'+region
 if not categorize: pfix='kinematics'+region
 
-pfix+='_Oct2023statsonly_Extended'
+pfix+='_Oct2023SysAll'
 
 plotList = [#distribution name as defined in "doHists.py"
-        #'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
-        #'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
+        # 'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
+        # 'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
         # 'HT', #:('gcJet_HT',linspace(0, 5000, 51).tolist(),';H_{T} (GeV)'), 
         # 'lepPt' , #:('lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
         # 'lepEta', #:('lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
@@ -111,17 +110,18 @@ if '2D' in pfix: isEMlist = ['L']
 
 taglist = ['all']
 if categorize:
-        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep', 'allWlep','allTlep']#,'allWlep','allTlep']
+        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep', 'allWlep','allTlep']
         taglist=['allWlep','allTlep']
+        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
         ## later, can determine tag lists for different regions
 
 outDir = outputDir+pfix+'/'
 print(outDir)
 if not os.path.exists(outDir): os.system('mkdir '+outDir)
 if '2D' in outDir:
-        os.system('cp ../analyze2D.py doHists2D.py ../utils.py ../samples.py doCondorTemplates.py doCondorTemplates2D.sh '+outDir+'/')
+        os.system('cp ../analyze2D_RDF.py doHists2D_rdf.py ../utils.py ../samples.py doCondorHists.py doCondorHists2D.sh '+outDir+'/')
 else:
-        os.system('cp ../analyze.py doHists.py ../utils.py ../samples.py doCondorTemplates.py doCondorTemplates.sh '+outDir+'/')
+        os.system('cp ../analyze_RDF.py doHists_rdf.py ../utils.py ../samples.py doCondorHists.py doCondorHists.sh '+outDir+'/')
 os.chdir(outDir)
 
 catlist = list(itertools.product(isEMlist,taglist))
@@ -155,15 +155,16 @@ for iplot in iPlotList:
 		jdf.write(
 			"""use_x509userproxy = true
 universe = vanilla
-Executable = %(rundir)s/makeTemplates/doCondorTemplates%(2D)s.sh
+Executable = %(rundir)s/makeTemplates/doCondorHists%(2D)s.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = ../analyze%(2D)s.py, ../samples.py, ../utils.py, ../doHists%(2D)s.py
+Transfer_Input_Files = ../analyze_RDF%(2D)s.py, ../samples.py, ../utils.py, ../doHists_rdf%(2D)s.py
 Output = condor_%(iPlot)s.out
 Error = condor_%(iPlot)s.err
 Log = condor_%(iPlot)s.log
 Notification = Never
 Arguments = %(dir)s %(iPlot)s %(region)s %(isCategorized)s %(isEM)s %(tag)s
+request_memory = 8000
 
 Queue 1"""%dict)
 		jdf.close()
@@ -173,4 +174,3 @@ Queue 1"""%dict)
 		count+=1
 
 print("Total jobs submitted:", count)
-                  
