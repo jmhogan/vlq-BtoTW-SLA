@@ -12,6 +12,15 @@ TH1.SetDefaultSumw2(True)
 --Check the cuts below to make sure those are the desired full set of cuts!
 --The applied weights are defined in "weights.py". Also, the additional weights (SFs, 
 negative MC weights, ets) applied below should be checked!
+
+tTree        : TTree.
+sample       : Class. Instance of the corresponding sample
+doAllSys     : Bool. Whether to do all systematic uncertainties
+iPlot        : String. Physics quantity to be plotted
+plotDetails  : List. histogram branch, bin, x-axis title
+category     : Dictionary. final lepton (E, M, L), tag of decay mode (e.g. taggedTjet, ...)
+region       : String.
+isCategorized: Bool.
 """
 
 def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized):
@@ -26,10 +35,10 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         catStr = 'is'+isEM+'_'+tag
 
 	# Define weights
-        topCorr      = '1'
+        topCorr        = '1'
         topCorrUp      = '1'
         topCorrDn      = '1'
-        jetSFstr     = '1'
+        jetSFstr       = '1'
         jetSFstrUp     = '1'
         jetSFstrDn     = '1'
         if ('WJetsHT' in sample.prefix):
@@ -45,75 +54,83 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         doMuRF = True
         if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
                 doMuRF = False
-                
+        
+        doABCDnn = False
+        if "ABCDnn" in iPlot:
+                if (sample.prefix).find('QCD') == 0 or (sample.prefix).find('TTToSemiLeptonic') or (sample.prefix).find('WJetsToLNu_HT'):
+                        doABCDnn = True
+
         if 'Single' not in sample.prefix: #  # messed up abseta in analyzer! Put back next time 
-                weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
-
-                ### TO-DO: when iPlot == transform variable, check that "samples_abcdnn" gets the right weights
-                ### at minimum, sample.xsec/sample.nrun becomes the extendedABCD branch name instream (maybe also the *lumi?)
-                ### presumably other experimental weights go away, and an uncertainty weight would be added for peak and tail shifts
-
-                weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
-                weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
-                weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
-                weightmuRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
-                weightelIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
-                weightelIdSFDnStr= weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
-                weightmuIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[1])')
-                weightmuIdSFDnStr= weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[2])')
-                weightelIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isEl*leptonIsoSF[1])')
-                weightelIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isEl*leptonIsoSF[1])')
-                weightmuIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isMu*leptonIsoSF[1])')
-                weightmuIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isMu*leptonIsoSF[1])')
-                weightTrigEffElUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
-                weightTrigEffElDnStr= weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isEl*leptonIDSF[1])')
-                weightTrigEffMuUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isMu*leptonIDSF[1])')
-                weightTrigEffMuDnStr= weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isMu*leptonIDSF[1])')
-                weightPileupUpStr   = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
-                weightPileupDnStr   = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
-                weightBtagHFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[18]')
-                weightBtagHFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[19]')
-                weightBtagHFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[20]')
-                weightBtagHFUCDnStr   = weightStr.replace('btagWeights[17]','btagWeights[21]')
-                weightBtagLFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[22]')
-                weightBtagLFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[23]')
-                weightBtagLFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[24]')
-                weightBtagLFUCDnStr   = weightStr.replace('btagWeights[17]','btagWeights[25]')
-                ### These weights are here in case we go back to btag shape-reweighting SFs
-                # weightBtagHFUpStr   = weightStr.replace('btagWeights[0]','btagWeights[1]')
-                # weightBtagHFDnStr   = weightStr.replace('btagWeights[0]','btagWeights[2]')
-                # weightBtagLFUpStr   = weightStr.replace('btagWeights[0]','btagWeights[3]')
-                # weightBtagLFDnStr   = weightStr.replace('btagWeights[0]','btagWeights[4]')
-                # weightBtagHFS1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[5]')
-                # weightBtagHFS1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[6]')
-                # weightBtagHFS2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[7]')
-                # weightBtagHFS2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[8]')
-                # weightBtagLFS1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[9]')
-                # weightBtagLFS1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[10]')
-                # weightBtagLFS2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[11]')
-                # weightBtagLFS2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[12]')
-                # weightBtagCFE1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[13]')
-                # weightBtagCFE1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[14]')
-                # weightBtagCFE2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[15]')
-                # weightBtagCFE2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[16]')
-                if doMuRF:
-                        weightmuRFcorrdUpStr = 'LHEScaleWeight[8] * '+weightStr
-                        weightmuRFcorrdDnStr = 'LHEScaleWeight[0] * '+weightStr
-                        weightmuRUpStr       = 'LHEScaleWeight[7] * '+weightStr
-                        weightmuRDnStr       = 'LHEScaleWeight[1] * '+weightStr
-                        weightmuFUpStr       = 'LHEScaleWeight[5] * '+weightStr
-                        weightmuFDnStr       = 'LHEScaleWeight[3] * '+weightStr
+                if doABCDnn:
+                        weightStr += ' * transfer_ABCDnn'
                 else:
-                        weightmuRFcorrdUpStr = '1.15 * '+weightStr
-                        weightmuRFcorrdDnStr = '0.85 * '+weightStr
-                        weightmuRUpStr       = weightStr
-                        weightmuRDnStr       = weightStr
-                        weightmuFUpStr       = weightStr
-                        weightmuFDnStr       = weightStr
-                weighttopptUpStr             = weightStr.replace(topCorr,topCorrUp)
-                weighttopptDnStr             = weightStr.replace(topCorr,topCorrDn)
-                weightjsfUpStr               = weightStr.replace(jetSFstr,jetSFstrUp)
-                weightjsfDnStr               = weightStr.replace(jetSFstr,jetSFstrDn)
+                        weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
+
+                        ### TO-DO: when iPlot == transform variable, check that "samples_abcdnn" gets the right weights
+                        ### at minimum, sample.xsec/sample.nrun becomes the extendedABCD branch name instream (maybe also the *lumi?)
+                        ### presumably other experimental weights go away, and an uncertainty weight would be added for peak and tail shifts
+
+                        weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
+                        weightelRecoSFDnStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
+                        weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
+                        weightmuRecoSFDnStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
+                        weightelIdSFUpStr    = weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
+                        weightelIdSFDnStr    = weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
+                        weightmuIdSFUpStr    = weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[1])')
+                        weightmuIdSFDnStr    = weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[2])')
+                        weightelIsoSFUpStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isEl*leptonIsoSF[1])')
+                        weightelIsoSFDnStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isEl*leptonIsoSF[1])')
+                        weightmuIsoSFUpStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isMu*leptonIsoSF[1])')
+                        weightmuIsoSFDnStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isMu*leptonIsoSF[1])')
+                        weightTrigEffElUpStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
+                        weightTrigEffElDnStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isEl*leptonIDSF[1])')
+                        weightTrigEffMuUpStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isMu*leptonIDSF[1])')
+                        weightTrigEffMuDnStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isMu*leptonIDSF[1])')
+                        weightPileupUpStr    = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
+                        weightPileupDnStr    = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
+                        weightBtagHFCOUpStr  = weightStr.replace('btagWeights[17]','btagWeights[18]')
+                        weightBtagHFCODnStr  = weightStr.replace('btagWeights[17]','btagWeights[19]')
+                        weightBtagHFUCUpStr  = weightStr.replace('btagWeights[17]','btagWeights[20]')
+                        weightBtagHFUCDnStr  = weightStr.replace('btagWeights[17]','btagWeights[21]')
+                        weightBtagLFCOUpStr  = weightStr.replace('btagWeights[17]','btagWeights[22]')
+                        weightBtagLFCODnStr  = weightStr.replace('btagWeights[17]','btagWeights[23]')
+                        weightBtagLFUCUpStr  = weightStr.replace('btagWeights[17]','btagWeights[24]')
+                        weightBtagLFUCDnStr  = weightStr.replace('btagWeights[17]','btagWeights[25]')
+                        ### These weights are here in case we go back to btag shape-reweighting SFs
+                        # weightBtagHFUpStr   = weightStr.replace('btagWeights[0]','btagWeights[1]')
+                        # weightBtagHFDnStr   = weightStr.replace('btagWeights[0]','btagWeights[2]')
+                        # weightBtagLFUpStr   = weightStr.replace('btagWeights[0]','btagWeights[3]')
+                        # weightBtagLFDnStr   = weightStr.replace('btagWeights[0]','btagWeights[4]')
+                        # weightBtagHFS1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[5]')
+                        # weightBtagHFS1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[6]')
+                        # weightBtagHFS2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[7]')
+                        # weightBtagHFS2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[8]')
+                        # weightBtagLFS1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[9]')
+                        # weightBtagLFS1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[10]')
+                        # weightBtagLFS2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[11]')
+                        # weightBtagLFS2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[12]')
+                        # weightBtagCFE1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[13]')
+                        # weightBtagCFE1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[14]')
+                        # weightBtagCFE2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[15]')
+                        # weightBtagCFE2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[16]')
+                        if doMuRF:
+                                weightmuRFcorrdUpStr = 'LHEScaleWeight[8] * '+weightStr
+                                weightmuRFcorrdDnStr = 'LHEScaleWeight[0] * '+weightStr
+                                weightmuRUpStr       = 'LHEScaleWeight[7] * '+weightStr
+                                weightmuRDnStr       = 'LHEScaleWeight[1] * '+weightStr
+                                weightmuFUpStr       = 'LHEScaleWeight[5] * '+weightStr
+                                weightmuFDnStr       = 'LHEScaleWeight[3] * '+weightStr
+                        else:
+                                weightmuRFcorrdUpStr = '1.15 * '+weightStr
+                                weightmuRFcorrdDnStr = '0.85 * '+weightStr
+                                weightmuRUpStr       = weightStr
+                                weightmuRDnStr       = weightStr
+                                weightmuFUpStr       = weightStr
+                                weightmuFDnStr       = weightStr
+                        weighttopptUpStr             = weightStr.replace(topCorr,topCorrUp)
+                        weighttopptDnStr             = weightStr.replace(topCorr,topCorrDn)
+                        weightjsfUpStr               = weightStr.replace(jetSFstr,jetSFstrUp)
+                        weightjsfDnStr               = weightStr.replace(jetSFstr,jetSFstrDn)
 
 
         print("*****"*20)
@@ -140,7 +157,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 isEMCut+=' && isEl==1'
 		
 	# Define cuts by region. Use region "all" for all selected events
-        cut  = ' && W_MT < 160'
+        cut  = ' && W_MT < 160' # UPDATE
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
         if region == 'isoVT':
@@ -221,28 +238,37 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         tagCut += ' && gcFatJet_nT >= 2'
 	       	
 
-        fullcut = isEMCut+cut+tagCut
+        fullcut = f'{isEMCut}{cut}{tagCut}' # faster
 
-        print('plotTreeName: '+plotTreeName)
-        print('Flavour: '+isEM+', tag: '+tag)
-        print("Weights: "+weightStr)
-        print('Cuts: '+fullcut)
+        print(f'plotTreeName: {plotTreeName}')
+        print(f'Flavour: {isEM}, tag: {tag}')
+        print(f'Weights: {weightStr}')
+        print(f'Cuts: {fullcut}')
 
 	# Declare histograms --- COMMENTS FOR UNCERTAINTIES NOT BEING RUN YET
+        # THINK: how to incoporate var_ABCDnn_PEAKUP/DN, etc. depends on the condor setup
         hists = {}
         process = sample.prefix
-        hists[iPlot+'_'+lumiStr+'_'+catStr+'_'+process]  = TH1D(iPlot+'_'+lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
+        hists[f'{iPlot}_{lumiStr}_{catStr}_{process}']  = TH1D(f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
         if doAllSys:
-                hists[iPlot+'topptUp_'    +lumiStr+'_'+catStr+'_'+process] = TH1D(iPlot+'topptUp_'    +lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
-                hists[iPlot+'topptDn_'    +lumiStr+'_'+catStr+'_'+process] = TH1D(iPlot+'topptDn_'    +lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
-                hists[iPlot+'btagHFCOUp_' +lumiStr+'_'+catStr+'_'+process] = TH1D(iPlot+'btagHFCOUp_' +lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
-                hists[iPlot+'btagHFCODn_' +lumiStr+'_'+catStr+'_'+process] = TH1D(iPlot+'btagHFCODn_' +lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
-                hists[iPlot+'muRFcorrdUp_'+lumiStr+'_'+catStr+'_'+process] = TH1D(iPlot+'muRFcorrdUp_'+lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
-                hists[iPlot+'muRFcorrdDn_'+lumiStr+'_'+catStr+'_'+process] = TH1D(iPlot+'muRFcorrdDn_'+lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
+                if doABCDnn:
+                        hists[f'{iPlot}PEAKUP_{lumiStr}_{catStr}_{process}'     ] = TH1D(f'{iPlot}PEAKUP_{lumiStr}_{catStr}_{process}'   ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}PEAKDN_{lumiStr}_{catStr}_{process}'     ] = TH1D(f'{iPlot}PEAKDN_{lumiStr}_{catStr}_{process}'   ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}TAILUP_{lumiStr}_{catStr}_{process}'     ] = TH1D(f'{iPlot}TAILUP_{lumiStr}_{catStr}_{process}'   ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}TAILDN_{lumiStr}_{catStr}_{process}'     ] = TH1D(f'{iPlot}TAILDN_{lumiStr}_{catStr}_{process}'   ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}CLOSUREUP_{lumiStr}_{catStr}_{process}'  ] = TH1D(f'{iPlot}CLOSUREUP_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}CLOSUREDN_{lumiStr}_{catStr}_{process}'  ] = TH1D(f'{iPlot}CLOSUREDN_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
+                else:
+                        hists[f'{iPlot}topptUp_{lumiStr}_{catStr}_{process}'    ] = TH1D(f'{iPlot}topptUp_{lumiStr}_{catStr}_{process}'    ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}topptDn_{lumiStr}_{catStr}_{process}'    ] = TH1D(f'{iPlot}topptDn_{lumiStr}_{catStr}_{process}'     ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}btagHFCOUp_{lumiStr}_{catStr}_{process}' ] = TH1D(f'{iPlot}btagHFCOUp_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}btagHFCODn_{lumiStr}_{catStr}_{process}' ] = TH1D(f'{iPlot}btagHFCODn_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}muRFcorrdUp_{lumiStr}_{catStr}_{process}'] = TH1D(f'{iPlot}muRFcorrdUp_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}muRFcorrdDn_{lumiStr}_{catStr}_{process}'] = TH1D(f'{iPlot}muRFcorrdDn_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
 
                 if process+'jecUp' in tTree:
-                        hists[iPlot+'jecUp_'+lumiStr+'_'+catStr+'_'+process]  = TH1D(iPlot+'jecUp_'+lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
-                        hists[iPlot+'jecDn_'+lumiStr+'_'+catStr+'_'+process]  = TH1D(iPlot+'jecDn_'+lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}jecUp_{lumiStr}_{catStr}_{process}']  = TH1D(f'{iPlot}jecUp_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}jecDn_{lumiStr}_{catStr}_{process}']  = TH1D(f'{iPlot}jecDn_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
 
                 ### These are commented because the drawing is sooooooo sllllooooooowwwwww
                 # if isCategorized:
@@ -298,18 +324,19 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 #         #         hists[iPlot+'pdf'+str(i)+'_'+lumiStr+'_'+catStr+'_'+process] = TH1D(iPlot+'pdf'+str(i)+'_'+lumiStr+'_'+catStr+'_'+process,xAxisLabel,len(xbins)-1,xbins)
 
 	# DRAW histograms
-        tTree[process].Draw(plotTreeName+' >> '+iPlot+''+'_'+lumiStr+'_'+catStr+'_' +process, weightStr+'*('+fullcut+')', 'GOFF')
-        print('Nominal hist integral: '+str(hists[iPlot+''+'_'+lumiStr+'_'+catStr+'_' +process].Integral()))
+        tTree[process].Draw(f'{plotTreeName} >> {iPlot}_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
+
+        print('Nominal hist integral: '+str(hists[f'{iPlot}_{lumiStr}_{catStr}_{process}'].Integral()))
         if doAllSys:
-                tTree[process].Draw(plotTreeName+' >> '+iPlot+'muRFcorrdUp_'+lumiStr+'_'+catStr+'_'+process, weightmuRFcorrdUpStr  +'*('+fullcut+')', 'GOFF')
-                tTree[process].Draw(plotTreeName+' >> '+iPlot+'muRFcorrdDn_'+lumiStr+'_'+catStr+'_'+process, weightmuRFcorrdDnStr+'*('+fullcut+')', 'GOFF')
-                tTree[process].Draw(plotTreeName+' >> '+iPlot+'topptUp_'    +lumiStr+'_'+catStr+'_'+process, weighttopptUpStr+'*('+fullcut+')', 'GOFF')
-                tTree[process].Draw(plotTreeName+' >> '+iPlot+'topptDn_'    +lumiStr+'_'+catStr+'_'+process, weighttopptDnStr+'*('+fullcut+')', 'GOFF')
-                tTree[process].Draw(plotTreeName+' >> '+iPlot+'btagHFCOUp_' +lumiStr+'_'+catStr+'_'+process, weightBtagHFCOUpStr+'*('+fullcut+')', 'GOFF')
-                tTree[process].Draw(plotTreeName+' >> '+iPlot+'btagHFCODn_' +lumiStr+'_'+catStr+'_'+process, weightBtagHFCODnStr+'*('+fullcut+')', 'GOFF')
+                tTree[process].Draw(f'{plotTreeName} >> {iPlot}muRFcorrdUp_{lumiStr}_{catStr}_{process}', f'{weightmuRFcorrdUpStr}*({fullcut})', 'GOFF')
+                tTree[process].Draw(f'{plotTreeName} >> {iPlot}muRFcorrdDn_{lumiStr}_{catStr}_{process}', f'{weightmuRFcorrdDnStr}*({fullcut})', 'GOFF')
+                tTree[process].Draw(f'{plotTreeName} >> {iPlot}topptUp_{lumiStr}_{catStr}_{process}'    , f'{weighttopptUpStr}*({fullcut})'    , 'GOFF')
+                tTree[process].Draw(f'{plotTreeName} >> {iPlot}topptDn_{lumiStr}_{catStr}_{process}'    , f'{weighttopptDnStr}*({fullcut})'    , 'GOFF')
+                tTree[process].Draw(f'{plotTreeName} >> {iPlot}btagHFCOUp_{lumiStr}_{catStr}_{process}' , f'{weightBtagHFCOUpStr}*({fullcut})' , 'GOFF')
+                tTree[process].Draw(f'{plotTreeName} >> {iPlot}btagHFCODn_{lumiStr}_{catStr}_{process}' , f'{weightBtagHFCODnStr}*({fullcut})' , 'GOFF')
                 if process+'jecUp' in tTree:
-                        tTree[process+'jecUp'].Draw(plotTreeName+' >> '+iPlot+'jecUp_'+lumiStr+'_'+catStr+'_' +process, weightStr+'*('+fullcut+')', 'GOFF')
-                        tTree[process+'jecDn'].Draw(plotTreeName+' >> '+iPlot+'jecDn_'+lumiStr+'_'+catStr+'_' +process, weightStr+'*('+fullcut+')', 'GOFF')
+                        tTree[f'{process}jecUp'].Draw(f'{plotTreeName} >> {iPlot}jecUp_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
+                        tTree[f'{process}jecDn'].Draw(f'{plotTreeName} >> {iPlot}jecDn_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
 
                 ### These are commented because the drawing is sooooooo sllllooooooowwwwww
                 # if isCategorized:
