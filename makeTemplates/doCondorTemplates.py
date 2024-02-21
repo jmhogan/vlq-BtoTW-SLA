@@ -8,7 +8,7 @@ outputDir = thisDir+'/'
 
 region='Y' #all, BAX, DCY, individuals
 
-categorize=1 #1==categorize into 4 tags
+categorize=1 #1==categorize into 6 tags
 
 cTime=datetime.datetime.now()
 date='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
@@ -16,15 +16,13 @@ time='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
 pfix = 'templates'+region
 if not categorize: pfix='kinematics'+region
 
-pfix+='_Oct2023statonly'
+pfix+='_Oct2023statsonly'
 
 plotList = [#distribution name as defined in "doHists.py"
         #'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
-        'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
-
+        #'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
         # 'HT', #:('gcJet_HT',linspace(0, 5000, 51).tolist(),';H_{T} (GeV)'), 
         # 'lepPt' , #:('lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
-
         # 'lepEta', #:('lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
         # 'lepPhi', #:('lepton_phi',linspace(-3.2,3.2,65).tolist(),';lepton #phi'),
         # 'lepIso', #:('lepton_miniIso',linspace(0,0.2,51).tolist(),';lepton mini-isolation'),
@@ -104,6 +102,8 @@ plotList = [#distribution name as defined in "doHists.py"
         # 'BpPtBal', #:('Bprime_ptbal',linspace(0,3,51).tolist(),';B quark t/W p_{T} ratio'),
         # 'BpChi2', #:('Bprime_chi2',linspace(0,1000,51).tolist(),';B quark reconstruction #chi^{2}'), # CHECK ME, what range?
         # 'BpDecay', #:('Bdecay_obs',linspace(0,5,6).tolist(),';B quark mode (1: Tjet+lepW, 2: Wjet+lepT, 3: AK8+lepW, 4: AK8+lepT')
+        'BpMass_ABCDnn', #:('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]')
+        'ST_ABCDnn', #:('gcJet_ST_ABCDnn',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)')
 	]
 
 isEMlist = ['L'] #['E','M']
@@ -111,7 +111,7 @@ if '2D' in pfix: isEMlist = ['L']
 
 taglist = ['all']
 if categorize:
-        taglist=['tagTjet','tagWjet','untagTlep','untagWlep']#,'allWlep','allTlep']
+        taglist=['tagTjet','tagWjet','untagTlep','untagWlep', 'allWlep','allTlep']#,'allWlep','allTlep']
         ## later, can determine tag lists for different regions
 
 outDir = outputDir+pfix+'/'

@@ -57,8 +57,10 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         
         doABCDnn = False
         if "ABCDnn" in iPlot:
-                if (sample.prefix).find('QCD') == 0 or (sample.prefix).find('TTToSemiLeptonic') or (sample.prefix).find('WJetsToLNu_HT'):
+                if (sample.prefix).find('QCD') == 0 or (sample.prefix).find('TTToSemiLeptonic')==0 or (sample.prefix).find('WJetsToLNu_HT') == 0:
                         doABCDnn = True
+                else:
+                        plotTreeName = plotTreeName.split('_ABCDnn')[0]
 
         if 'Single' not in sample.prefix: #  # messed up abseta in analyzer! Put back next time 
                 if doABCDnn:
@@ -157,7 +159,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 isEMCut+=' && isEl==1'
 		
 	# Define cuts by region. Use region "all" for all selected events
-        cut  = ' && W_MT < 160' # UPDATE
+        cut  = ' && W_MT < 200' # UPDATE
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
         if region == 'isoVT':
@@ -260,7 +262,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hists[f'{iPlot}CLOSUREDN_{lumiStr}_{catStr}_{process}'  ] = TH1D(f'{iPlot}CLOSUREDN_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
                 else:
                         hists[f'{iPlot}topptUp_{lumiStr}_{catStr}_{process}'    ] = TH1D(f'{iPlot}topptUp_{lumiStr}_{catStr}_{process}'    ,xAxisLabel,len(xbins)-1,xbins)
-                        hists[f'{iPlot}topptDn_{lumiStr}_{catStr}_{process}'    ] = TH1D(f'{iPlot}topptDn_{lumiStr}_{catStr}_{process}'     ,xAxisLabel,len(xbins)-1,xbins)
+                        hists[f'{iPlot}topptDn_{lumiStr}_{catStr}_{process}'    ] = TH1D(f'{iPlot}topptDn_{lumiStr}_{catStr}_{process}'    ,xAxisLabel,len(xbins)-1,xbins)
                         hists[f'{iPlot}btagHFCOUp_{lumiStr}_{catStr}_{process}' ] = TH1D(f'{iPlot}btagHFCOUp_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins)
                         hists[f'{iPlot}btagHFCODn_{lumiStr}_{catStr}_{process}' ] = TH1D(f'{iPlot}btagHFCODn_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins)
                         hists[f'{iPlot}muRFcorrdUp_{lumiStr}_{catStr}_{process}'] = TH1D(f'{iPlot}muRFcorrdUp_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins)
@@ -327,16 +329,24 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         tTree[process].Draw(f'{plotTreeName} >> {iPlot}_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
 
         print('Nominal hist integral: '+str(hists[f'{iPlot}_{lumiStr}_{catStr}_{process}'].Integral()))
-        if doAllSys:
-                tTree[process].Draw(f'{plotTreeName} >> {iPlot}muRFcorrdUp_{lumiStr}_{catStr}_{process}', f'{weightmuRFcorrdUpStr}*({fullcut})', 'GOFF')
-                tTree[process].Draw(f'{plotTreeName} >> {iPlot}muRFcorrdDn_{lumiStr}_{catStr}_{process}', f'{weightmuRFcorrdDnStr}*({fullcut})', 'GOFF')
-                tTree[process].Draw(f'{plotTreeName} >> {iPlot}topptUp_{lumiStr}_{catStr}_{process}'    , f'{weighttopptUpStr}*({fullcut})'    , 'GOFF')
-                tTree[process].Draw(f'{plotTreeName} >> {iPlot}topptDn_{lumiStr}_{catStr}_{process}'    , f'{weighttopptDnStr}*({fullcut})'    , 'GOFF')
-                tTree[process].Draw(f'{plotTreeName} >> {iPlot}btagHFCOUp_{lumiStr}_{catStr}_{process}' , f'{weightBtagHFCOUpStr}*({fullcut})' , 'GOFF')
-                tTree[process].Draw(f'{plotTreeName} >> {iPlot}btagHFCODn_{lumiStr}_{catStr}_{process}' , f'{weightBtagHFCODnStr}*({fullcut})' , 'GOFF')
-                if process+'jecUp' in tTree:
-                        tTree[f'{process}jecUp'].Draw(f'{plotTreeName} >> {iPlot}jecUp_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
-                        tTree[f'{process}jecDn'].Draw(f'{plotTreeName} >> {iPlot}jecDn_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
+        if doAllSys: # Todo: edit all doAllSys related code
+                if doABCDnn:
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}PEAKUP_{lumiStr}_{catStr}_{process}'    , f'{weightStr}*({fullcut})', 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}PEAKDN_{lumiStr}_{catStr}_{process}'    , f'{weightStr}*({fullcut})', 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}TAILUP_{lumiStr}_{catStr}_{process}'    , f'{weightStr}*({fullcut})', 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}TAILDN_{lumiStr}_{catStr}_{process}'    , f'{weightStr}*({fullcut})', 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}CLOSUREUP_{lumiStr}_{catStr}_{process}' , f'{weightStr}*({fullcut})', 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}CLOSUREDN_{lumiStr}_{catStr}_{process}' , f'{weightStr}*({fullcut})', 'GOFF')
+                else:
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}muRFcorrdUp_{lumiStr}_{catStr}_{process}', f'{weightmuRFcorrdUpStr}*({fullcut})', 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}muRFcorrdDn_{lumiStr}_{catStr}_{process}', f'{weightmuRFcorrdDnStr}*({fullcut})', 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}topptUp_{lumiStr}_{catStr}_{process}'    , f'{weighttopptUpStr}*({fullcut})'    , 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}topptDn_{lumiStr}_{catStr}_{process}'    , f'{weighttopptDnStr}*({fullcut})'    , 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}btagHFCOUp_{lumiStr}_{catStr}_{process}' , f'{weightBtagHFCOUpStr}*({fullcut})' , 'GOFF')
+                        tTree[process].Draw(f'{plotTreeName} >> {iPlot}btagHFCODn_{lumiStr}_{catStr}_{process}' , f'{weightBtagHFCODnStr}*({fullcut})' , 'GOFF')
+                        if process+'jecUp' in tTree:
+                                tTree[f'{process}jecUp'].Draw(f'{plotTreeName} >> {iPlot}jecUp_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
+                                tTree[f'{process}jecDn'].Draw(f'{plotTreeName} >> {iPlot}jecDn_{lumiStr}_{catStr}_{process}', f'{weightStr}*({fullcut})', 'GOFF')
 
                 ### These are commented because the drawing is sooooooo sllllooooooowwwwww
                 # if isCategorized:
