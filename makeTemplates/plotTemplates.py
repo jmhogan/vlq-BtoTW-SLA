@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# python3 -u plotTemplates.py BpMass_ABCDnn all True 
+
 import os,sys,time,math,pickle,itertools
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
@@ -21,7 +23,7 @@ isCategorized=False
 if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Sep2023'
+pfix+='_Oct2023statsonly'
 if len(sys.argv)>4: pfix=str(sys.argv[4])
 templateDir=os.getcwd()+'/'+pfix+'/'
 
@@ -56,7 +58,7 @@ bkgHistColors = {'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'ewk':kMage
 
 systematicList = systListShort
 if len(isRebinned)>0 or isCategorized: systematicList = systListFull
-doAllSys = True
+doAllSys = False # UPDATE
 print('doAllSys: ',doAllSys,'systematicList: ',systematicList)
 
 doNormByBinWidth=False
@@ -75,13 +77,15 @@ if len(sys.argv)>6: yLog=bool(eval(sys.argv[6]))
 print('Plotting blind?',blind,' yLog?',yLog)
 if yLog: scaleSignals = False
 
-
+partialBlind = False
 histrange = {}
 
 isEMlist =['L']#'E','M']
 taglist = ['all']
 if isCategorized == True:
         taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        if region.find('D')==0 or region=='all':
+                partialBlind = True
 print(taglist)
 
 lumiSys = 0.018 # lumi uncertainty
@@ -167,6 +171,7 @@ def formatLowerHist(histogram):
                 histogram.GetYaxis().SetRangeUser(0.1,1.9)
         histogram.GetYaxis().CenterTitle()
 
+print(templateDir+tempsig)
 RFile1 = TFile(templateDir+tempsig)
 print(templateDir+tempsig)
 print(RFile1)
@@ -199,6 +204,15 @@ for tag in taglist:
                                 pass
                 hData = RFile1.Get(histPrefix+'__'+datalabel).Clone()
                 histrange = [hData.GetBinLowEdge(1),hData.GetBinLowEdge(hData.GetNbinsX()+1)]
+                if (partialBlind and (tag=="tagTjet" or tag=="tagWjet")): # Todo: generalize it for other branches
+                        if ("BpMass" in iPlot):
+                                start_bin = hData.GetXaxis().FindFixBin(1500)+1 # specifically for BpMass
+                                end_bin = hData.GetNbinsX()+1
+                                for b in range(start_bin, end_bin):
+                                        hData.SetBinContent(b, 0)
+                                        hData.SetBinError(b, 0)
+                        else:
+                                sys.exit("Error: Edit partial unblinding for {}!".format(iPlot))
                 gaeData = TGraphAsymmErrors(hData.Clone(hData.GetName().replace(datalabel,'gaeDATA')))
                 hsig1 = RFile1.Get(histPrefix+'__'+sig1).Clone(histPrefix+'__sig1')
                 hsig2 = RFile1.Get(histPrefix+'__'+sig2).Clone(histPrefix+'__sig2')
@@ -306,7 +320,8 @@ for tag in taglist:
                 try: 
                         drawQCD = bkghists['qcd'+catStr].Integral()/bkgHT.Integral()>.005 #don't plot QCD if it is less than 0.5%
                 except: pass
-
+                
+                drawQCD=True # TEMP
                 stackbkgHT = THStack("stackbkgHT","")
                 bkgProcListNew = bkgProcList[:]
                 if region=='WJCR':
@@ -386,7 +401,8 @@ for tag in taglist:
                 formatUpperHist(gaeData,hData)
                 uPad.cd()
                 gaeData.SetTitle("")
-                if not blind: gaeData.Draw("apz")
+                if not blind:
+                        gaeData.Draw("apz")
                 if blind: 
                         hsig1.SetMinimum(0.015)
                         if doNormByBinWidth:
