@@ -2,8 +2,7 @@
 from ROOT import TH1D,TTree,TFile,RDataFrame,TH1,EnableImplicitMT
 from array import array
 from numpy import linspace
-from weights import *
-from dnnJcorrSF import *
+from samples import targetlumi, lumiStr
 import math,time
 
 TH1.SetDefaultSumw2(True)
@@ -16,7 +15,7 @@ EnableImplicitMT()
 negative MC weights, ets) applied below should be checked!
 """
 
-def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized):
+def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized, outHistFile):
         start_time = time.time()
         plotTreeName=plotDetails[0]
         xbins=array('d', plotDetails[1])
@@ -28,12 +27,12 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         catStr = 'is'+isEM+'_'+tag
 
 	# Define weights
-        topCorr      = '1'
-        topCorrUp      = '1'
-        topCorrDn      = '1'
-        jetSFstr     = '1'
-        jetSFstrUp     = '1'
-        jetSFstrDn     = '1'
+        topCorr     = '1'
+        topCorrUp   = '1'
+        topCorrDn   = '1'
+        jetSFstr    = '1'
+        jetSFstrUp  = '1'
+        jetSFstrDn  = '1'
         if ('WJetsHT' in sample.prefix):
                 jetSFstr = 'gcHTCorr_WjetLHE[0]' # 
                 jetSFstrUp = 'gcHTCorr_WjetLHE[1]' #
@@ -131,7 +130,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 isEMCut+=' && isEl==1'
 		
 	# Define cuts by region. Use region "all" for all selected events
-        cut  = ' && W_MT < 160'
+        cut  = ' && W_MT < 200' # TODO: 160 or 200
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
         if region == 'isoVT':
@@ -219,18 +218,16 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         print("Weights: "+weightStr)
         print('Cuts: '+fullcut)
 
-	# Declare histograms --- COMMENTS FOR UNCERTAINTIES NOT BEING RUN YET
-	histptrs = {}
-        hists = {}
+        # Declare histograms --- COMMENTS FOR UNCERTAINTIES NOT BEING RUN YET
         process = sample.prefix
         df = RDataFrame(tTree[process]) 
 
         try:
                 sel = df.Filter(fullcut).Define('weight',weightStr)
         except:
-                print 'No dataframe built!!'
-                return hists
-        if doAllSys and 'Single' not in process:
+                print("No dataframe built!!")
+
+        if doAllSys and 'Single' not in process: # TODO: compare with analyze.py
                 try:
                         selMC = df.Filter(fullcut)\
                                   .Define('weight',weightStr)\
@@ -261,7 +258,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                   .Define('weightmuRUp'      ,weightmuRUpStr)\
                                   .Define('weightmuRDn'      ,weightmuRDnStr)\
                                   .Define('weightmuFUp'      ,weightmuFUpStr)\
-                                  .Define('weightmuFDn'      ,weightmuFDnStr)
+                                  .Define('weightmuFDn'      ,weightmuFDnStr)\
                                   .Define('weightbtagHFCOUp' ,weightBtagHFCOUpStr)\
                                   .Define('weightbtagHFCODn' ,weightBtagHFCODnStr)\
                                   .Define('weightbtagHFUCUp' ,weightBtagHFUCUpStr)\
@@ -270,64 +267,53 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                   .Define('weightbtagLFCODn' ,weightBtagLFCODnStr)\
                                   .Define('weightbtagLFUCUp' ,weightBtagLFUCUpStr)\
                                   .Define('weightbtagLFUCDn' ,weightBtagLFUCDnStr)\
+                
                 except:
-                        print 'No dataframe built!!'
-                        return hists
+                        print('No dataframe built!!')
+        
+        hist = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+        hist.Write()
 
-        histptrs[iPlot+'_'+lumicatproc] = sel.Histo1D((iPlot+'_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-        if doAllSys and 'Single' not in process:
-		histptrs[iPlot+'elIdSFUp_'     +lumicatproc] = selMC.Histo1D((iPlot+'elIdSFUp_'     +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'     )
-		histptrs[iPlot+'elIdSFDown_'   +lumicatproc] = selMC.Histo1D((iPlot+'elIdSFDown_'   +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDown'   )
-		histptrs[iPlot+'trigeffElUp_'  +lumicatproc] = selMC.Histo1D((iPlot+'trigeffElUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffElUp'  )
-		histptrs[iPlot+'trigeffElDown_'+lumicatproc] = selMC.Histo1D((iPlot+'trigeffElDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffElDown')
-                histptrs[iPlot+'trigeffMuUp_'  +lumicatproc] = selMC.Histo1D((iPlot+'trigeffMuUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffMuUp'  )
-                histptrs[iPlot+'trigeffMuDown_'+lumicatproc] = selMC.Histo1D((iPlot+'trigeffMuDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffMuDown')
-		histptrs[iPlot+'pileupUp_'     +lumicatproc] = selMC.Histo1D((iPlot+'pileupUp_'     +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpileupUp'     )
-		histptrs[iPlot+'pileupDown_'   +lumicatproc] = selMC.Histo1D((iPlot+'pileupDown_'   +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpileupDown'   )
-		histptrs[iPlot+'muRFcorrdUp_'  +lumicatproc] = selMC.Histo1D((iPlot+'muRFcorrdUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdUp'  )
-		histptrs[iPlot+'muRFcorrdDown_'+lumicatproc] = selMC.Histo1D((iPlot+'muRFcorrdDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdDown')
-		histptrs[iPlot+'topptUp_'      +lumicatproc] = selMC.Histo1D((iPlot+'topptUp_'      +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptUp'      )
-		histptrs[iPlot+'topptDown_'    +lumicatproc] = selMC.Histo1D((iPlot+'topptDown_'    +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptDown'    )
-		histptrs[iPlot+'jsfUp_'+lumicatproc]    = selMC.Histo1D((iPlot+'jsfUp_'   +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfUp'   )
-		histptrs[iPlot+'jsfDown_'+lumicatproc]  = selMC.Histo1D((iPlot+'jsfDown_' +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfDown' )
-                ## TO-DO: expand this to get the other lepton and btagging weights in!
+        #if doAllSys and 'Single' not in process:
+                # histptrs[iPlot+'elIdSFUp_'+lumicatproc] = selMC.Histo1D((iPlot+'elIdSFUp_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp')
+                # histptrs[iPlot+'elIdSFUp_'     +lumicatproc] = selMC.Histo1D((iPlot+'elIdSFUp_'     +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'     )
+		# histptrs[iPlot+'elIdSFDown_'   +lumicatproc] = selMC.Histo1D((iPlot+'elIdSFDown_'   +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDown'   )
+		# histptrs[iPlot+'trigeffElUp_'  +lumicatproc] = selMC.Histo1D((iPlot+'trigeffElUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffElUp'  )
+		# histptrs[iPlot+'trigeffElDown_'+lumicatproc] = selMC.Histo1D((iPlot+'trigeffElDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffElDown')
+                # histptrs[iPlot+'trigeffMuUp_'  +lumicatproc] = selMC.Histo1D((iPlot+'trigeffMuUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffMuUp'  )
+                # histptrs[iPlot+'trigeffMuDown_'+lumicatproc] = selMC.Histo1D((iPlot+'trigeffMuDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttrigeffMuDown')
+		# histptrs[iPlot+'pileupUp_'     +lumicatproc] = selMC.Histo1D((iPlot+'pileupUp_'     +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpileupUp'     )
+		# histptrs[iPlot+'pileupDown_'   +lumicatproc] = selMC.Histo1D((iPlot+'pileupDown_'   +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpileupDown'   )
+		# histptrs[iPlot+'muRFcorrdUp_'  +lumicatproc] = selMC.Histo1D((iPlot+'muRFcorrdUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdUp'  )
+		# histptrs[iPlot+'muRFcorrdDown_'+lumicatproc] = selMC.Histo1D((iPlot+'muRFcorrdDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdDown')
+		# histptrs[iPlot+'topptUp_'      +lumicatproc] = selMC.Histo1D((iPlot+'topptUp_'      +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptUp'      )
+		# histptrs[iPlot+'topptDown_'    +lumicatproc] = selMC.Histo1D((iPlot+'topptDown_'    +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptDown'    )
+		# histptrs[iPlot+'jsfUp_'+lumicatproc]    = selMC.Histo1D((iPlot+'jsfUp_'   +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfUp'   )
+		# histptrs[iPlot+'jsfDown_'+lumicatproc]  = selMC.Histo1D((iPlot+'jsfDown_' +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfDown' )
+                # ## TO-DO: expand this to get the other lepton and btagging weights in!
 			
-		if process+'jerUp' in tTree: 
-                        dfjerUp = RDataFrame(tTree[process+'jerUp'])
-                        seljerUp = dfjerUp.Filter(fullcut).Define('weight',weightStr)
-                        dfjerDown = RDataFrame(tTree[process+'jerDown'])
-                        seljerDown = dfjerDown.Filter(fullcut).Define('weight',weightStr)
-			histptrs[iPlot+'jerUp_'   +lumicatproc] = seljerUp.Histo1D((iPlot+'jerUp_'    +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-			histptrs[iPlot+'jerDown_' +lumicatproc] = seljerDown.Histo1D((iPlot+'jerDown_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-		if process+'jecUp' in tTree:                                                                                                                            
-                        dfjecUp = RDataFrame(tTree[process+'jecUp'])
-                        seljecUp = dfjecUp.Filter(fullcut).Define('weight',weightStr)
-                        dfjecDown = RDataFrame(tTree[process+'jecDown'])
-                        seljecDown = dfjecDown.Filter(fullcut).Define('weight',weightStr)
-			histptrs[iPlot+'jecUp_'   +lumicatproc] = seljecUp.Histo1D((iPlot+'jecUp_'    +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-			histptrs[iPlot+'jecDown_' +lumicatproc] = seljecDown.Histo1D((iPlot+'jecDown_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+		# if process+'jerUp' in tTree: 
+                #         dfjerUp = RDataFrame(tTree[process+'jerUp'])
+                #         seljerUp = dfjerUp.Filter(fullcut).Define('weight',weightStr)
+                #         dfjerDown = RDataFrame(tTree[process+'jerDown'])
+                #         seljerDown = dfjerDown.Filter(fullcut).Define('weight',weightStr)
+		# 	histptrs[iPlot+'jerUp_'   +lumicatproc] = seljerUp.Histo1D((iPlot+'jerUp_'    +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+		# 	histptrs[iPlot+'jerDown_' +lumicatproc] = seljerDown.Histo1D((iPlot+'jerDown_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+		# if process+'jecUp' in tTree:                                                                                                                            
+                #         dfjecUp = RDataFrame(tTree[process+'jecUp'])
+                #         seljecUp = dfjecUp.Filter(fullcut).Define('weight',weightStr)
+                #         dfjecDown = RDataFrame(tTree[process+'jecDown'])
+                #         seljecDown = dfjecDown.Filter(fullcut).Define('weight',weightStr)
+		# 	histptrs[iPlot+'jecUp_'   +lumicatproc] = seljecUp.Histo1D((iPlot+'jecUp_'    +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+		# 	histptrs[iPlot+'jecDown_' +lumicatproc] = seljecDown.Histo1D((iPlot+'jecDown_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
 
-		if isCategorized:
-			histptrs[iPlot+'muRUp_'   +lumicatproc] = selMC.Histo1D((iPlot+'muRUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRUp')
-			histptrs[iPlot+'muRDown_' +lumicatproc] = selMC.Histo1D((iPlot+'muRDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRDown')
-			histptrs[iPlot+'muFUp_'   +lumicatproc] = selMC.Histo1D((iPlot+'muFUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightFUp')
-			histptrs[iPlot+'muFDown_' +lumicatproc] = selMC.Histo1D((iPlot+'muFDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightFDown')
+		# if isCategorized:
+		# 	histptrs[iPlot+'muRUp_'   +lumicatproc] = selMC.Histo1D((iPlot+'muRUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRUp')
+		# 	histptrs[iPlot+'muRDown_' +lumicatproc] = selMC.Histo1D((iPlot+'muRDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRDown')
+		# 	histptrs[iPlot+'muFUp_'   +lumicatproc] = selMC.Histo1D((iPlot+'muFUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightFUp')
+		# 	histptrs[iPlot+'muFDown_' +lumicatproc] = selMC.Histo1D((iPlot+'muFDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightFDown')
 
                         ### TO-DO: check how many PDF variations live in NanoAOD, find branch names and get this segment set up correctly
                         # for i in range(100): histptrs[iPlot+'pdf'+str(i)+'_'+lumicatproc] = selMC.Define('weightpdf'+str(i),weightStr+'*pdfWeights['+str(i)+']').Histo1D((iPlot+'pdf'+str(i)+'_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpdf'+str(i))
-                                
-
-        ### THIS SEEMS TO BE THE SLOW PART. Can we just return the dictionary called "histptrs" to the main script? (doHists.py)
-        ### The main function will save the dictionaries to pickle files -- should we rather have it .Write() all the elements of histptrs to a ROOT file? 
-        ### Should be straightforward to change the doTemplates.py script to open a ROOT file and .Get histograms rather than pickle.load() a .p file and 
-        ### access histograms by name from a list.... Could be 1 ROOT per plot per sample...but ideally 1 ROOT for bkg, for sig, for data as done currently.
-        ###
-        ### The "Sumw2()" here might not be meaningful with RDataFrame...we usually called it on the empty TH1D before doing TTree->Draw()
-        ### The "SetDirectory(0)" was needed so that the file could be closed without losing histogram contents. Can it be called on the histptr? Is it needed? 
-        for key in histptrs.keys():
-                hists[key] = histptrs[key].GetValue()
-                hists[key].SetDirectory(0)
 
         print("--- Analyze: %s minutes ---" % (round((time.time() - start_time)/60,2)))
-
-	return hists
