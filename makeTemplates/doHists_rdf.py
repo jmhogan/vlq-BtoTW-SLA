@@ -29,11 +29,11 @@ step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Oct2023_fullRun2/'
 #step1Dir = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnn/'
 
 # ------------- Arguments and default values ------------
-iPlot = 'HT' #choose a discriminant from plotList below!
+iPlot = 'BpMass' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
-region = 'all'
+region = 'A'
 if len(sys.argv)>3: region=sys.argv[3]
-isCategorized = False
+isCategorized = True
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 
 doABCDnn = False
@@ -52,7 +52,12 @@ print('Set pfix to '+pfix)
 # -------------- Groups of background samples to use --------------
 
 # this is a list of group dictionaries. "wjets" has entries like "WJetsHT2002018":WJetsHT2002018, where the 2nd is the class
-bkgList = [samples_electroweak,samples_wjets,samples_ttbar,samples_singletop,samples_ttbarx,samples_qcd]
+bkgList = {"ewk"      : samples_electroweak,
+           "wjets"    : samples_wjets,
+           "ttbar"    : samples_ttbar,
+           "singletop": samples_singletop,
+           "ttx"      : samples_ttbarx,
+           "qcd"      : samples_qcd}
 
 ### TO-DO: in samples.py, make up an entry for each year for ABCDnn with dummy information where needed.
 ### When iPlot == a transform variable, bkgList = [samples_electroweak,samples_ttbarx,samples_abcdnn] (singletop?)
@@ -62,11 +67,12 @@ bkgList = [samples_electroweak,samples_wjets,samples_ttbar,samples_singletop,sam
 # ------------- Parameters to divide up the histograms --------------
 
 if len(sys.argv)>5: isEMlist=[str(sys.argv[5])]
-else: isEMlist = ['E']
+else: isEMlist = ['L']
 if len(sys.argv)>6: taglist=[str(sys.argv[6])]
 else: 
 	taglist = ['all']
-	if isCategorized: taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+	if isCategorized: #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+                taglist=['allWlep','allTlep']
 
 # ------------- Definition of plots to make ------------------
 ### TO-DO: add ABCDnn branches
@@ -173,17 +179,14 @@ print('Cat list: '+str(catList))
 nCats  = len(catList)
 catInd = 1
 
-mkDir = True
-if len(sys.argv)>1:
-        outDir=sys.argv[1]
-        sys.path.append(outDir)
-        mkDir = False
-
 for cat in catList:
         print('==================== Category: '+str(cat)+' ======================')
         catDir = cat[0]+'_'+cat[1]
 
-        if mkDir:
+        if len(sys.argv)>1:
+                outDir=sys.argv[1]
+                sys.path.append(outDir)
+        else:
                 outDir = os.getcwd()+'/'+pfix+'/'+catDir
                 if not os.path.exists(outDir): os.system('mkdir -p '+outDir)
 
@@ -206,10 +209,10 @@ for cat in catList:
 
 
         # ### Now we begin the same general process but for simulated backgrounds
-        igrp = 0
-        bkgHistFile = TFile.Open(outDir+'/bkghists_'+str(igrp)+'_'+iPlot+'.root', "RECREATE") # TODO: remove_
-        for bkgGrp in bkgList:
-                for bkg in bkgGrp.keys():
+        for proc in bkgList:
+                bkgHistFile = TFile.Open(f'{outDir}/bkghists_{proc}_{iPlot}.root', "RECREATE")
+                bkgGrp = bkgList[proc]
+                for bkg in bkgGrp:
                         print('------------ '+bkg+' -------------')
                         fileprefix = (bkgGrp[bkg].samplename).split('/')[1]
                         tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir)
@@ -226,8 +229,7 @@ for cat in catList:
                                 if doAllSys:
                                         for syst in shapesFiles:
                                                 for ud in ['Up','Dn']: del tTreeBkg[bkg+syst+ud]
-                igrp += 1
-        bkgHistFile.Close()
+                bkgHistFile.Close()
         
 
         sigHistFile = TFile.Open(f'{outDir}/sighists_{iPlot}.root', "RECREATE")
@@ -255,7 +257,10 @@ for cat in catList:
 ### Deals with overflow and negBinCorrection
 for cat in catList:
         catDir = cat[0]+'_'+cat[1]
-        if mkDir:
+        if len(sys.argv)>1:
+                outDir=sys.argv[1]
+                sys.path.append(outDir)
+        else:   
                 outDir = os.getcwd()+'/'+pfix+'/'+catDir
         print(f'Formatting histograms in {outDir}')
 
@@ -269,16 +274,14 @@ for cat in catList:
                         hist.Print()
         dataHistFile.Close()
         
-        igrp = 0
         for bkgGrp in bkgList:
-                bkgHistFile = TFile.Open(outDir+'/bkghists_'+str(igrp)+'_'+iPlot+'.root', "UPDATE")
+                bkgHistFile = TFile.Open(f'{outDir}/bkghists_{bkgGrp}_{iPlot}.root', "UPDATE")
                 for key in gDirectory.GetListOfKeys():
                         hist = key.ReadObj()
                         negBinCorrection(hist)
                         overflow(hist)
                         hist.Write()
                 bkgHistFile.Close()
-                igrp+=1
 
         sigHistFile = TFile.Open(f'{outDir}/sighists_{iPlot}.root', "UPDATE")
         for key in gDirectory.GetListOfKeys():
