@@ -17,8 +17,8 @@ parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
 from numpy import linspace
 
-from analyze_RDF import *
-from samples import samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal
+from analyze_noWeights import *
+from samples import samples_electroweak, samples_wjets, samples_ttbar, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal
 from utils import *
 
 gROOT.SetBatch(1)
@@ -26,7 +26,7 @@ start_time = time.time()
 
 # ------------- File location and total lumi ---------------
 step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Oct2023_fullRun2/'
-step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2/'
+#step1Dir = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnn/'
 
 # ------------- Arguments and default values ------------
 iPlot = 'BpMass' #choose a discriminant from plotList below!
@@ -39,12 +39,9 @@ if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 doABCDnn = False
 if 'ABCDnn' in iPlot:
         doABCDnn = True
-        from samples import samples_ttbar_abcdnn as samples_ttbar
-else:
-        from samples import samples_ttbar
 
 doJetRwt= 1
-doAllSys= True
+doAllSys= False
 cTime=datetime.datetime.now()
 datestr='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
 timestr='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
@@ -215,20 +212,15 @@ for cat in catList:
         for proc in bkgList:
                 bkgHistFile = TFile.Open(f'{outDir}/bkghists_{proc}_{iPlot}.root', "RECREATE")
                 bkgGrp = bkgList[proc]
-                if proc=="ewk" or proc=="ttx":
-                        step1Dir_apply = step1Dir
-                else:
-                        step1Dir_apply = step1Dir_ABCDnn
-                        
                 for bkg in bkgGrp:
                         print('------------ '+bkg+' -------------')
                         fileprefix = (bkgGrp[bkg].samplename).split('/')[1]
-                        tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir_apply)
+                        tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir)
                         if doAllSys: # TODO: consider ABCDnn
                                 for syst in shapesFiles:
                                         for ud in ['Up','Dn']:
                                                 print("        "+syst+ud)
-                                                tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,syst.upper()+ud.lower(),step1Dir_apply) ## located in utils.py
+                                                tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,syst.upper()+ud.lower(),step1Dir) ## located in utils.py
                         bkgHistFile.cd()
                         analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, bkgHistFile)
                         if catInd==nCats:

@@ -7,7 +7,6 @@ if os.getcwd()[-17:] == 'singleLepAnalyzer': os.chdir(os.getcwd()+'/makeTemplate
 outputDir = thisDir+'/'
 
 region='Y' #all, BAX, DCY, individuals
-
 categorize=1 #1==categorize into 6 tags
 
 cTime=datetime.datetime.now()
@@ -16,11 +15,11 @@ time='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
 pfix = 'templates'+region
 if not categorize: pfix='kinematics'+region
 
-pfix+='_Oct2023statsonly_Extended'
+pfix+='_Oct2023statsonly'
 
 plotList = [#distribution name as defined in "doHists.py"
         #'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
-        #'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
+        'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
         # 'HT', #:('gcJet_HT',linspace(0, 5000, 51).tolist(),';H_{T} (GeV)'), 
         # 'lepPt' , #:('lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
         # 'lepEta', #:('lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
@@ -102,7 +101,7 @@ plotList = [#distribution name as defined in "doHists.py"
         # 'BpPtBal', #:('Bprime_ptbal',linspace(0,3,51).tolist(),';B quark t/W p_{T} ratio'),
         # 'BpChi2', #:('Bprime_chi2',linspace(0,1000,51).tolist(),';B quark reconstruction #chi^{2}'), # CHECK ME, what range?
         # 'BpDecay', #:('Bdecay_obs',linspace(0,5,6).tolist(),';B quark mode (1: Tjet+lepW, 2: Wjet+lepT, 3: AK8+lepW, 4: AK8+lepT')
-        'BpMass_ABCDnn', #:('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]')
+        #'BpMass_ABCDnn', #:('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]')
         #'ST_ABCDnn', #:('gcJet_ST_ABCDnn',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)')
 	]
 
@@ -119,9 +118,9 @@ outDir = outputDir+pfix+'/'
 print(outDir)
 if not os.path.exists(outDir): os.system('mkdir '+outDir)
 if '2D' in outDir:
-        os.system('cp ../analyze2D.py doHists2D.py ../utils.py ../samples.py doCondorTemplates.py doCondorTemplates2D.sh '+outDir+'/')
+        os.system('cp ../analyze2D_RDF.py doHists2D_rdf.py ../utils.py ../samples.py doCondorHists.py doCondorHists2D.sh '+outDir+'/')
 else:
-        os.system('cp ../analyze.py doHists.py ../utils.py ../samples.py doCondorTemplates.py doCondorTemplates.sh '+outDir+'/')
+        os.system('cp ../analyze_noWeights.py doHists_noWeights.py ../utils.py ../samples.py doCondorNoWeights.py doCondorNoWeights.sh '+outDir+'/')
 os.chdir(outDir)
 
 catlist = list(itertools.product(isEMlist,taglist))
@@ -155,10 +154,10 @@ for iplot in iPlotList:
 		jdf.write(
 			"""use_x509userproxy = true
 universe = vanilla
-Executable = %(rundir)s/makeTemplates/doCondorTemplates%(2D)s.sh
+Executable = %(rundir)s/makeTemplates/doCondorNoWeights%(2D)s.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = ../analyze%(2D)s.py, ../samples.py, ../utils.py, ../doHists%(2D)s.py
+Transfer_Input_Files = ../analyze_noWeights%(2D)s.py, ../samples.py, ../utils.py, ../doHists_noWeights%(2D)s.py
 Output = condor_%(iPlot)s.out
 Error = condor_%(iPlot)s.err
 Log = condor_%(iPlot)s.log
@@ -173,4 +172,3 @@ Queue 1"""%dict)
 		count+=1
 
 print("Total jobs submitted:", count)
-                  

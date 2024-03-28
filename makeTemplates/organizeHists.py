@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os,sys,time,math,datetime,itertools,fnmatch
+import os,sys,time,math,datetime,itertools
 from ROOT import gROOT,TFile,TH1F, TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
@@ -10,13 +10,19 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-region='all' # BAX, DCY, individuals, or all
-isCategorized=False
+region='D' # BAX, DCY, individuals, or all
+if len(sys.argv)>1: region = str(sys.argv[1])
+
+isCategorized=True
 year='all' # all
 
-outDir = 'kinematicsall_Oct2023statsonly/'
+pfix='templates'+region
+if not isCategorized: pfix='kinematics'+region
+pfix+='_Oct2023statsonly'
+#pfix = 'templatesTestA' # TEMP
+outDir = os.getcwd()+'/'+pfix+'/'
 
-removeThreshold = 0.0005
+removeThreshold = 0.0005 # TODO: add if necessary
 
 scaleSignalXsecTo1pb = False # Set to True if analyze.py ever uses a non-1 cross section
 doAllSys = False
@@ -41,6 +47,7 @@ if isCategorized:
 catList = ['is'+item[0]+'_'+item[1] for item in list(itertools.product(isEMlist,taglist))]
 
 lumiSys = 0.018 #lumi uncertainty
+#iPlot = "BpMass_ABCDnn"
 iPlot = "BpMass"
 
 groupHists = True
@@ -49,15 +56,15 @@ groupHists = True
 ### TODO: add Up and Dn
 ### TODO: ABCDnn
 if groupHists:
+        outHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "RECREATE")
         for cat in catList:
-                histoPrefix=iPlot+'_'+lumiStr+'_'+cat
-                outHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "RECREATE")
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
 
                 dataHistFile = TFile.Open(f'{outDir}{cat[2:]}/datahists_{iPlot}.root', "READ")
                 isFirstHist = True
                 for dat in samples_data:
                         if isFirstHist:
-                                hists = dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix).Clone(histoPrefix+'__data_obs').Clone()
+                                hists = dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix).Clone(histoPrefix+'__data_obs')
                                 isFirstHist = False
                         else:
                                 hists.Add(dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix))
@@ -71,10 +78,15 @@ if groupHists:
                         bkgGrp = bkgProcs[proc]
                         isFirstHist = True
                         for bkg in bkgGrp:
+                                # if 'QCDHT300' in bkg:
+                                #         print("Plotting without QCDHT300.")
+                                #         continue
                                 if isFirstHist:
                                         hists = bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix).Clone(histoPrefix+'__'+proc)
+                                        #print(hists)
                                         isFirstHist = False
                                 else:
+                                        #print(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         hists.Add(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                         outHistFile.cd()
                         hists.Write()

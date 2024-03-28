@@ -18,7 +18,7 @@ sys.path.append(parent)
 from numpy import linspace
 
 from analyze import *
-from samples import samples_electroweak, samples_wjets, samples_ttbar, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal
+from samples import samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal
 from utils import *
 
 gROOT.SetBatch(1)
@@ -27,7 +27,7 @@ start_time = time.time()
 # ------------- File location and total lumi ---------------
 
 #step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Oct2023_fullRun2/'
-step1Dir = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnn/'
+step1Dir = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnnMar2024/'
 
 # ------------- Arguments and default values ------------
 iPlot = 'HT' #choose a discriminant from plotList below!
@@ -40,6 +40,9 @@ if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 doABCDnn = False
 if 'ABCDnn' in iPlot:
         doABCDnn = True
+        import samples_ttbar_abcdnn
+else:
+        import samples_ttbar
 
 doJetRwt= 1
 doAllSys= False
