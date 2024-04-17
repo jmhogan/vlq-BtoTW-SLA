@@ -26,10 +26,10 @@ start_time = time.time()
 
 # ------------- File location and total lumi ---------------
 step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Oct2023_fullRun2/'
-step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnnBestApr2024/'
+step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2/'
 
 # ------------- Arguments and default values ------------
-iPlot = 'BpMass_ABCDnn' #choose a discriminant from plotList below!
+iPlot = 'BpMass' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
 region = 'A'
 if len(sys.argv)>3: region=sys.argv[3]
@@ -44,11 +44,11 @@ else:
         from samples import samples_ttbar
 
 doJetRwt= 1
-doAllSys= True
+doAllSys= False
 cTime=datetime.datetime.now()
 datestr='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
 timestr='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
-pfix='templatesTest'+region
+pfix='templatesTestNoSys'+region
 if not isCategorized: pfix='kinematicsTEST'+region
 print('Set pfix to '+pfix)
 
@@ -60,8 +60,7 @@ bkgList = {"ewk"      : samples_electroweak,
            "ttbar"    : samples_ttbar,
            "singletop": samples_singletop,
            "ttx"      : samples_ttbarx,
-           "qcd"      : samples_qcd
-}
+           "qcd"      : samples_qcd}
 
 ### TO-DO: in samples.py, make up an entry for each year for ABCDnn with dummy information where needed.
 ### When iPlot == a transform variable, bkgList = [samples_electroweak,samples_ttbarx,samples_abcdnn] (singletop?)
@@ -71,15 +70,14 @@ bkgList = {"ewk"      : samples_electroweak,
 # ------------- Parameters to divide up the histograms --------------
 
 if len(sys.argv)>5: isEMlist=[str(sys.argv[5])]
-else:
-        isEMlist = ['L']
+else: isEMlist = ['L']
 if len(sys.argv)>6: taglist=[str(sys.argv[6])]
 else: 
 	taglist = ['all']
 	if isCategorized: 
-                #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
+                taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
                 #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
-                taglist=['allWlep','allTlep'] # TEMP
+                #taglist=['allWlep','allTlep'] # TEMP
 
 # ------------- Definition of plots to make ------------------
 ### TO-DO: add ABCDnn branches
@@ -159,8 +157,7 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
          'tphiSSB':('t_phi_SSb',linspace(-3.2,3.2, 65).tolist(),';reco t phi (SSb method)'),
          'tdrWbMLJ':('DR_W_b_minMlj',linspace(0,6.3,51).tolist(),';reco t, #DeltaR(W,b) (minMlj method)'),
          'tdrWbSSB':('DR_W_b_SSb',linspace(0,6.3,51).tolist(),';reco t, #DeltaR(W,b) (SSb method)'),
-         # 'BpMass':('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
-         'BpMass':('Bprime_mass',linspace(0,2500,51).tolist(),';B quark mass [GeV]'), #TEMP
+         'BpMass':('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
          'BpPt':('Bprime_pt',linspace(0,3000,51).tolist(),';B quark p_{T} [GeV]'),
          'BpEta':('Bprime_eta',linspace(-5,5,51).tolist(),';B quark #eta'),
          'BpPhi':('Bprime_phi',linspace(-3.14,3.14,51).tolist(),';B quark #phi'),
@@ -168,7 +165,7 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
          'BpPtBal':('Bprime_ptbal',linspace(0,3,51).tolist(),';B quark t/W p_{T} ratio'),
          'BpChi2':('Bprime_chi2',linspace(0,1000,51).tolist(),';B quark reconstruction #chi^{2}'), # CHECK ME, what range?
          'BpDecay':('Bdecay_obs',linspace(0,5,6).tolist(),';B quark mode (1: Tjet+lepW, 2: Wjet+lepT, 3: AK8+lepW, 4: AK8+lepT'),
-         'BpMass_ABCDnn':('Bprime_mass_ABCDnn',linspace(0,2500,51).tolist(),';B quark mass [GeV]'),
+         #'BpMass_ABCDnn':('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]'),
          #'ST_ABCDnn':('gcJet_ST_ABCDnn',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
 }
 
@@ -191,11 +188,11 @@ for cat in catList:
         print('==================== Category: '+str(cat)+' ======================')
         catDir = cat[0]+'_'+cat[1]
 
-        if len(sys.argv)>1:
-                outDir=sys.argv[1]
-                sys.path.append(outDir)
-        else:
-                outDir = os.getcwd()+'/'+pfix+'/'+catDir
+        # if len(sys.argv)>1:
+        #         outDir=sys.argv[1]
+        #         sys.path.append(outDir)
+        # else:
+        outDir = os.getcwd()+'/'+pfix+'/'+catDir
         if not os.path.exists(outDir): os.system('mkdir -p '+outDir)
 
         category = {'isEM':cat[0],'tag':cat[1]} # THINK: is this necessary?
@@ -209,7 +206,7 @@ for cat in catList:
 
                 ### For analyze_RDF make the switch here (and similar regions below)
                 #dataHistFile.cd()
-                analyze(tTreeData,samples_data[data],False,iPlot,plotList[iPlot],category,region,isCategorized,dataHistFile, False)
+                analyze(tTreeData,samples_data[data],False,iPlot,plotList[iPlot],category,region,isCategorized,dataHistFile)
                 if catInd==nCats: 
                         print('deleting '+data)
                         del tTreeData[data]
@@ -220,32 +217,29 @@ for cat in catList:
         for proc in bkgList:
                 bkgHistFile = TFile.Open(f'{outDir}/bkghists_{proc}_{iPlot}.root', "RECREATE")
                 bkgGrp = bkgList[proc]
-                step1Dir_apply = step1Dir
-                if doABCDnn:
-                        if (proc=="ewk" or proc=="ttx"):
-                                step1Dir_apply = step1Dir
-                                doABCDnn = False
-                        else:
-                                step1Dir_apply = step1Dir_ABCDnn
+                doSystUD = False
+                if proc=="ewk" or proc=="ttx":
+                        step1Dir_apply = step1Dir
+                        if doAllSys:
+                                doSystUD = True
+                else:
+                        step1Dir_apply = step1Dir_ABCDnn
 
                 for bkg in bkgGrp:
                         print('------------ '+bkg+' -------------')
                         fileprefix = (bkgGrp[bkg].samplename).split('/')[1]
                         tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir_apply)
-                        if doAllSys and not doABCDnn:
+                        if doSystUD:
                                 for syst in shapesFiles:
-                                        for ud in ['up','dn']: # TODO: can be optimized
-                                                print(f'        {syst}{ud}') # TEMP: skipped missing ud in util. switch back
-                                                if bkg=="WJetsHT12002018":
-                                                        tTreeBkg[bkg+syst+ud]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir_apply) # TEMP!!!!! FIXME
-                                                else:
-                                                        tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,f'{syst}{ud}',step1Dir_apply) ## located in utils.py
+                                        for ud in ['up','dn']:
+                                                print(f'        {syst}{ud}')
+                                                tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,f'{syst}{ud}',step1Dir_apply) ## located in utils.py
                         #bkgHistFile.cd()
-                        analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, bkgHistFile, doABCDnn)
+                        analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, bkgHistFile)
                         if catInd==nCats:
                                 print('deleting '+bkg)
                                 del tTreeBkg[bkg]
-                                if doAllSys and not doABCDnn:
+                                if doSystUD:
                                         for syst in shapesFiles:
                                                 for ud in ['up','dn']: del tTreeBkg[bkg+syst+ud]
                 bkgHistFile.Close()
@@ -262,7 +256,7 @@ for cat in catList:
                                         print(f'        {syst}{ud}')
                                         tTreeSig[sig+syst+ud]=readTreeShift(fileprefix,samples_signal[sig].year,f'{syst}{ud}',step1Dir)
                 #sigHistFile.cd()
-                analyze(tTreeSig,samples_signal[sig],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, sigHistFile, False)
+                analyze(tTreeSig,samples_signal[sig],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, sigHistFile)
                 if catInd==nCats: 
                         print('deleting '+sig)
                         del tTreeSig[sig]

@@ -23,7 +23,7 @@ isCategorized=False
 if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Oct2023statsonly'
+pfix+='_Oct2023SysAll'
 #pfix = 'templatesTestA' # TEMP
 if len(sys.argv)>4: pfix=str(sys.argv[4])
 templateDir=os.getcwd()+'/'+pfix+'/'
@@ -40,7 +40,7 @@ if len(sys.argv)>7:
 saveKey = '' # tag for plot names
 
 datalabel = 'data_obs'
-shiftlist = ['__Up','__Down']
+#shiftlist = ['__Up','__Down']
 sig1='BpM1000' #  choose the 1st signal to plot
 sig1leg='B (1.0 TeV)'
 sig2='BpM1800' #  choose the 2nd signal to plot
@@ -73,9 +73,10 @@ if plotABCDnn:
 else:
         bkgHistColors = {'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'ewk':kMagenta-6,'singletop':kGreen-6,'ttx':kAzure+2}
 
-systematicList = systListShort
-if len(isRebinned)>0 or isCategorized: systematicList = systListFull
-doAllSys = False # UPDATE
+# systematicList = systListShort
+# if len(isRebinned)>0 or isCategorized: systematicList = systListFull
+systematicList = systListFull # TEMP. remove this variable later
+doAllSys = True
 print('doAllSys: ',doAllSys,'systematicList: ',systematicList)
 
 doNormByBinWidth=False
@@ -315,14 +316,16 @@ for tag in taglist:
 
                 if doAllSys:
                         for syst in systematicList:
-                                #print(syst)
-                                for ud in shiftlist:
+                                if (syst!='elIdSF'): #TEMP
                                         for proc in bkgProcList:
-                                                try: 
-                                                        systHists[proc+catStr+syst+ud] = RFile1.Get(histPrefix+'__'+proc+'__'+syst+ud).Clone()
-                                                        if doNormByBinWidth: normByBinWidth(systHists[proc+catStr+syst+ud],perNGeV)
+                                                try:
+                                                        systHists[f'{histPrefix}__{proc}__{syst}__Up'] = RFile1.Get(f'{histPrefix}__{proc}__{syst}__Up').Clone()
+                                                        systHists[f'{histPrefix}__{proc}__{syst}__Dn'] = RFile1.Get(f'{histPrefix}__{proc}__{syst}__Dn').Clone()
+                                                        if doNormByBinWidth: 
+                                                                normByBinWidth(systHists[f'{histPrefix}__{proc}__{syst}__Up'],perNGeV)
+                                                                normByBinWidth(systHists[f'{histPrefix}__{proc}__{syst}__Dn'],perNGeV)
                                                 except: 
-                                                        print('FAILED to open '+proc+'__'+syst+ud)
+                                                        print(f'FAILED to open {histPrefix}__{proc}__{syst}__Up or {histPrefix}__{proc}__{syst}__Dn')
                                                         pass
 
                 totBkgTemp1[catStr] = TGraphAsymmErrors(bkgHT.Clone(bkgHT.GetName()+'shapeOnly'))
