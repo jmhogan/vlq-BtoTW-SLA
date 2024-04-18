@@ -36,13 +36,12 @@ if len(sys.argv)>3: region=sys.argv[3]
 isCategorized = True
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 
-doABCDnn = False
 if 'ABCDnn' in iPlot:
-        doABCDnn = True
         from samples import samples_ttbar_abcdnn as samples_ttbar
 else:
         from samples import samples_ttbar
 
+doABCDnn = False
 doJetRwt= 1
 doAllSys= True
 cTime=datetime.datetime.now()
@@ -221,11 +220,12 @@ for cat in catList:
                 bkgHistFile = TFile.Open(f'{outDir}/bkghists_{proc}_{iPlot}.root', "RECREATE")
                 bkgGrp = bkgList[proc]
                 step1Dir_apply = step1Dir
-                if doABCDnn:
+                if 'ABCDnn' in iPlot:
                         if (proc=="ewk" or proc=="ttx"):
-                                step1Dir_apply = step1Dir
                                 doABCDnn = False
+                                step1Dir_apply = step1Dir
                         else:
+                                doABCDnn = True
                                 step1Dir_apply = step1Dir_ABCDnn
 
                 for bkg in bkgGrp:
