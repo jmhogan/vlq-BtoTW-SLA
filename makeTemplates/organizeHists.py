@@ -137,7 +137,7 @@ plotList = ['ST',
 ]
 
 #iPlot = "BpMass"
-iPlot = "BpChi2"
+iPlot = "OS1FatJetProbJ"
 
 doABCDnn = False
 if "ABCDnn" in iPlot:
@@ -185,12 +185,12 @@ if groupHists:
                                                         for syst in systListFull:
                                                                 if(syst!='elIdSF'): # TEMP # rerun
                                                                         print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
-                                                                        if 'jer' in syst or 'jec' in syst: # TEMP # rerun
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Up'] = bkgHistFile.Get(f'{iPlot}_{syst}Up_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up')
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Dn'] = bkgHistFile.Get(f'{iPlot}_{syst}Dn_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn')
-                                                                        else:
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up')
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Dn'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn')
+                                                                        # if 'jer' in syst or 'jec' in syst: # TEMP # rerun
+                                                                        #         systHists[f'{histoPrefix}__{proc}__{syst}__Up'] = bkgHistFile.Get(f'{iPlot}_{syst}Up_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up')
+                                                                        #         systHists[f'{histoPrefix}__{proc}__{syst}__Dn'] = bkgHistFile.Get(f'{iPlot}_{syst}Dn_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn')
+                                                                        # else:
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up')
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Dn'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn')
                                 else:
                                         #print(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         hists.Add(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
@@ -201,12 +201,12 @@ if groupHists:
                                                         for syst in systListFull:
                                                                 if(syst!='elIdSF'): # TEMP # rerun
                                                                         print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
-                                                                        if 'jer' in syst or 'jec' in syst: # TEMP # rerun 
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Up'].Add(bkgHistFile.Get(f'{iPlot}_{syst}Up_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up'))
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Dn'].Add(bkgHistFile.Get(f'{iPlot}_{syst}Dn_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn'))
-                                                                        else:   
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up'))
-                                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Dn'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn'))
+                                                                        # if 'jer' in syst or 'jec' in syst: # TEMP # rerun 
+                                                                        #         systHists[f'{histoPrefix}__{proc}__{syst}__Up'].Add(bkgHistFile.Get(f'{iPlot}_{syst}Up_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up'))
+                                                                        #         systHists[f'{histoPrefix}__{proc}__{syst}__Dn'].Add(bkgHistFile.Get(f'{iPlot}_{syst}Dn_{lumiStr}_{cat}_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn'))
+                                                                        # else:   
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up'))
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Dn'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn'))
 
                         outHistFile.cd()
                         hists.Write()

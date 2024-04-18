@@ -40,7 +40,7 @@ if len(sys.argv)>7:
 saveKey = '' # tag for plot names
 
 datalabel = 'data_obs'
-#shiftlist = ['__Up','__Down']
+shiftlist = ['__Up','__Dn']
 sig1='BpM1000' #  choose the 1st signal to plot
 sig1leg='B (1.0 TeV)'
 sig2='BpM1800' #  choose the 2nd signal to plot
@@ -317,16 +317,15 @@ for tag in taglist:
                 if doAllSys:
                         for syst in systematicList:
                                 if (syst!='elIdSF'): #TEMP
-                                        for proc in bkgProcList:
-                                                try:
-                                                        systHists[f'{histPrefix}__{proc}__{syst}__Up'] = RFile1.Get(f'{histPrefix}__{proc}__{syst}__Up').Clone()
-                                                        systHists[f'{histPrefix}__{proc}__{syst}__Dn'] = RFile1.Get(f'{histPrefix}__{proc}__{syst}__Dn').Clone()
-                                                        if doNormByBinWidth: 
-                                                                normByBinWidth(systHists[f'{histPrefix}__{proc}__{syst}__Up'],perNGeV)
-                                                                normByBinWidth(systHists[f'{histPrefix}__{proc}__{syst}__Dn'],perNGeV)
-                                                except: 
-                                                        print(f'FAILED to open {histPrefix}__{proc}__{syst}__Up or {histPrefix}__{proc}__{syst}__Dn')
-                                                        pass
+                                        for ud in shiftlist:
+                                                for proc in bkgProcList:
+                                                        try:
+                                                                systHists[proc+catStr+syst+ud] = RFile1.Get(f'{histPrefix}__{proc}__{syst}{ud}').Clone()
+                                                                if doNormByBinWidth: 
+                                                                        normByBinWidth(systHists[proc+catStr+syst+ud],perNGeV)
+                                                        except: 
+                                                                print(f'FAILED to open {histPrefix}__{proc}__{syst}__{ud}')
+                                                                pass
 
                 totBkgTemp1[catStr] = TGraphAsymmErrors(bkgHT.Clone(bkgHT.GetName()+'shapeOnly'))
                 totBkgTemp2[catStr] = TGraphAsymmErrors(bkgHT.Clone(bkgHT.GetName()+'shapePlusNorm'))
