@@ -7,7 +7,8 @@ import os
 targetlumi = {'2016APV':19500, '2016':16800, '2017':41480, '2018':59830}
 lumiStr = '138fbfb' #str(targetlumi/1000).replace('.','p') # 1/fb
 systListShort = ['toppt','muRFcorrd','jec','btagHFCO']
-systListFull = ['toppt','muRFcorrd','jec','elIdSF','muIdSF','trigeffEl','trigeffMu','pileup','elIsoSF','muIsoSF','elRecoSF','muRecoSF','muR','muF'] #'jsf','btagLF','btagHFS1','btagHFS2','btagLFS1','btagLFS2','btagCFE1','btagCFE2','jer','btagHF',
+systListFull = ['elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', 'Pileup', 'jsf', 'toppt', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec']
+systListABCDnn = ['peak', 'tail', 'closure']
 
 class sample:
     def __init__(self, prefix, xsec, year, textlist, samplename): #, color
