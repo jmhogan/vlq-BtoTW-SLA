@@ -4,7 +4,7 @@ import os,sys,time,math,datetime,itertools
 from ROOT import gROOT,TFile,TH1F, TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from samples import targetlumi, lumiStr, systListFull, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, samples_ttbar, samples_ttbar_abcdnn
+from samples import targetlumi, lumiStr, systListFull, systListABCDnn, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd
 from utils import *
 
 gROOT.SetBatch(1)
@@ -29,6 +29,17 @@ doAllSys = True # TEMP
 doPDF = False
 if isCategorized: doPDF=False # FIXME later
 
+#iPlot = "BpMass"
+iPlot = "OS1FatJetProbJ"
+#iPlot = "BpMass_ABCDnn"
+
+if 'ABCDnn' in iPlot:
+        doABCDnn = True
+        from samples import samples_ttbar_abcdnn as samples_ttbar
+else:
+        doABCDnn = False
+        from samples import samples_ttbar
+
 bkgProcs = {'ewk':samples_electroweak,'wjets':samples_wjets,'ttbar':samples_ttbar,'singletop':samples_singletop,'ttx':samples_ttbarx,'qcd':samples_qcd}
 massList = [800,1000,1200,1300,1400,1500,1600,1700,1800,2000,2200]
 sigList = ['BpM'+str(mass) for mass in massList]
@@ -38,9 +49,9 @@ if '2D' in outDir:
         isEMlist =['L']
 taglist = ['all']
 if isCategorized: 
-        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
         #taglist=['allWlep','allTlep']
-        taglist=['allWlep']
+        #taglist=['allWlep']
         #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
         
 catList = ['is'+item[0]+'_'+item[1] for item in list(itertools.product(isEMlist,taglist))]
@@ -136,13 +147,6 @@ plotList = ['ST',
             # 'ST_ABCDnn'
 ]
 
-#iPlot = "BpMass"
-iPlot = "OS1FatJetProbJ"
-
-doABCDnn = False
-if "ABCDnn" in iPlot:
-        doABCDnn = True
-
 ### Group histograms
 ### TODO: add Up and Dn
 ### TODO: ABCDnn
@@ -171,6 +175,12 @@ if groupHists:
                         bkgGrp = bkgProcs[proc]
                         systHists = {}
                         isFirstHist = True
+
+                        if doABCDnn and (proc=="ttbar" or proc=="qcd" or proc=="wjets" or proc=="singletop"):
+                                systematicList = systListABCDnn
+                        else:
+                                systematicList = systListFull
+
                         for bkg in bkgGrp:
                                 if 'QCDHT300' in bkg:
                                         print("Plotting without QCDHT300.")
@@ -179,24 +189,21 @@ if groupHists:
                                         hists = bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix).Clone(histoPrefix+'__'+proc)
                                         isFirstHist = False
                                         if doAllSys:
-                                                if doABCDnn: #TEMP #TODO
-                                                        pass
-                                                else:
-                                                        for syst in systListFull:
-                                                                print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
-                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up')
-                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Dn'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn')
+                                                for syst in systematicList:
+                                                        print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
+                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up')
+                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Dn'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn')
                                 else:
                                         #print(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         hists.Add(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         if doAllSys:
-                                                if doABCDnn:
-                                                        pass
-                                                else:
-                                                        for syst in systListFull:
-                                                                print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
+                                                for syst in systematicList:
+                                                        print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
+                                                        try:
                                                                 systHists[f'{histoPrefix}__{proc}__{syst}__Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up'))
                                                                 systHists[f'{histoPrefix}__{proc}__{syst}__Dn'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn'))
+                                                        except:
+                                                                print(systHists)
 
                         outHistFile.cd()
                         hists.Write()

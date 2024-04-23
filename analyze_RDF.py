@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from ROOT import TH1D,TTree,TFile,RDataFrame,TH1,EnableImplicitMT
+from ROOT import TH1D,TTree,TFile,RDataFrame,TH1,EnableImplicitMT,DisableImplicitMT
 from array import array
 from numpy import linspace
 from samples import targetlumi, lumiStr
@@ -15,7 +15,7 @@ EnableImplicitMT()
 negative MC weights, ets) applied below should be checked!
 """
 
-def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized, outHistFile):
+def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized, outHistFile, doABCDnn):
         start_time = time.time()
         plotTreeName=plotDetails[0]
         xbins=array('d', plotDetails[1])
@@ -47,13 +47,11 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
                 doMuRF = False
 
-        doABCDnn = False
-        if "ABCDnn" in iPlot:
-                if (sample.prefix).find('QCD') == 0 or (sample.prefix).find('TTTo')==0 or (sample.prefix).find('TTMT')==0 or (sample.prefix).find('ST')==0 or (sample.prefix).find('WJets') == 0:
-                        doABCDnn = True
-                        plotTreeName = plotTreeName.split('_ABCDnn')[0] #TEMP
-                else:
-                        plotTreeName = plotTreeName.split('_ABCDnn')[0]
+        if 'ABCDnn' in iPlot and not doABCDnn:
+                plotTreeName = plotTreeName.split('_ABCDnn')[0]
+        # else:
+        #         plotTreeName = plotTreeName.split('_ABCDnn')[0] #TEMP # only when doing extended ABCDnn
+        print(sample.prefix, plotTreeName)
 
         if 'Single' not in sample.prefix: 
                 if doABCDnn:
@@ -232,165 +230,181 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
         # Declare histograms --- COMMENTS FOR UNCERTAINTIES NOT BEING RUN YET
         process = sample.prefix
-        df = RDataFrame(tTree[process])
 
-        try:
-                sel = df.Filter(fullcut).Define('weight',weightStr)
-        except:
-                print("No dataframe built!!")
-        
-        if doAllSys and 'Single' not in process:
-                try:
-                        selMC = df.Filter(fullcut)\
-                                  .Define('weight',weightStr)\
-                                  .Define('weightelRecoSFUp' ,weightelRecoSFUpStr)\
-                                  .Define('weightelRecoSFDn' ,weightelRecoSFDnStr)\
-                                  .Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                  .Define('weightelIdSFDn'   ,weightelIdSFDnStr)\
-                                  .Define('weightelIsoSFUp'  ,weightelIsoSFUpStr)\
-                                  .Define('weightelIsoSFDn'  ,weightelIsoSFDnStr)\
-                                  .Define('weightTrigEffElUp',weightTrigEffElUpStr)\
-                                  .Define('weightTrigEffElDn',weightTrigEffElDnStr)\
-                                  .Define('weightmuRecoSFUp' ,weightmuRecoSFUpStr)\
-                                  .Define('weightmuRecoSFDn' ,weightmuRecoSFDnStr)\
-                                  .Define('weightmuIdSFUp'   ,weightmuIdSFUpStr)\
-                                  .Define('weightmuIdSFDn'   ,weightmuIdSFDnStr)\
-                                  .Define('weightmuIsoSFUp'  ,weightmuIsoSFUpStr)\
-                                  .Define('weightmuIsoSFDn'  ,weightmuIsoSFDnStr)\
-                                  .Define('weightTrigEffMuUp',weightTrigEffMuUpStr)\
-                                  .Define('weightTrigEffMuDn',weightTrigEffMuDnStr)\
-                                  .Define('weightPileupUp'   ,weightPileupUpStr)\
-                                  .Define('weightPileupDn'   ,weightPileupDnStr)\
-                                  .Define('weightjsfUp'      ,weightjsfUpStr)\
-                                  .Define('weightjsfDn'      ,weightjsfDnStr)\
-                                  .Define('weighttopptUp'    ,weighttopptUpStr)\
-                                  .Define('weighttopptDn'    ,weighttopptDnStr)\
-                                  .Define('weightmuRFcorrdUp',weightmuRFcorrdUpStr)\
-                                  .Define('weightmuRFcorrdDn',weightmuRFcorrdDnStr)\
-                                  .Define('weightmuRUp'      ,weightmuRUpStr)\
-                                  .Define('weightmuRDn'      ,weightmuRDnStr)\
-                                  .Define('weightmuFUp'      ,weightmuFUpStr)\
-                                  .Define('weightmuFDn'      ,weightmuFDnStr)\
-                                  .Define('weightbtagHFCOUp' ,weightBtagHFCOUpStr)\
-                                  .Define('weightbtagHFCODn' ,weightBtagHFCODnStr)\
-                                  .Define('weightbtagHFUCUp' ,weightBtagHFUCUpStr)\
-                                  .Define('weightbtagHFUCDn' ,weightBtagHFUCDnStr)\
-                                  .Define('weightbtagLFCOUp' ,weightBtagLFCOUpStr)\
-                                  .Define('weightbtagLFCODn' ,weightBtagLFCODnStr)\
-                                  .Define('weightbtagLFUCUp' ,weightBtagLFUCUpStr)\
-                                  .Define('weightbtagLFUCDn' ,weightBtagLFUCDnStr)\
-                
-                except:
-                        print('No dataframe built!!')
-        
-        hist = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+        if '[0]' in plotTreeName: # TODO: this needs to be changed if ABCDnn variable contains [0]
+                df = RDataFrame(tTree[process]).Filter(fullcut)\
+                                               .Define('weight',weightStr)\
+                                               .Define(iPlot, plotTreeName)
+                plotTreeName = iPlot
+        else:
+                df = RDataFrame(tTree[process]).Filter(fullcut)\
+                                               .Define('weight',weightStr)\
+
+        hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
         hist.Write()
-        del hist
 
-        if doAllSys and 'Single' not in process:
-                hist_elRecoSFUp  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp' )
-                hist_elRecoSFDn  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn' )
-                hist_elIdSFUp    = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'   )
-                hist_elIdSFDn    = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDn'   )
-                hist_elIsoSFUp   = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFUp'  )
-                hist_elIsoSFDn   = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFDn'  )
-                hist_TrigEffElUp = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElUp')
-                hist_TrigEffElDn = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElDn')
-                hist_muRecoSFUp  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFUp' )
-                hist_muRecoSFDn  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFDn' )
-                hist_muIdSFUp    = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFUp'   )
-                hist_muIdSFDn    = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFDn'   )
-                hist_muIsoSFUp   = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFUp'  )
-                hist_muIsoSFDn   = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFDn'  )
-                hist_TrigEffMuUp = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuUp')
-                hist_TrigEffMuDn = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuDn')
-                hist_PileupUp    = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupUp'   )
-                hist_PileupDn    = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupDn'   )
-                hist_jsfUp       = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfUp'      )
-                hist_jsfDn       = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfDn'      )
-                hist_topptUp     = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_topptUp_{process}'    ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptUp'    )
-                hist_topptDn     = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_topptDn_{process}'    ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptDn'    )
-                hist_muRFcorrdUp = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRFcorrdUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdUp')
-                hist_muRFcorrdDn = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRFcorrdDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdDn')
-                hist_muRUp       = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRUp'      )
-                hist_muRDn       = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRDn'      )
-                hist_muFUp       = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFUp'      )
-                hist_muFDn       = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFDn'      )
-                hist_btagHFCOUp  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFCOUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFCOUp' )
-                hist_btagHFCODn  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFCODn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFCODn' )
-                hist_btagHFUCUp  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFUCUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFUCUp' )
-                hist_btagHFUCDn  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFCODn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFUCDn' )
-                hist_btagLFCOUp  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFCOUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFCOUp' )
-                hist_btagLFCODn  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFCODn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFCODn' )
-                hist_btagLFUCUp  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFUCUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFUCUp' )
-                hist_btagLFUCDn  = selMC.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFCODn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFUCDn' )
                 
-                hist_elRecoSFUp.Write()
-                hist_elRecoSFDn.Write()
-                hist_elIdSFUp.Write()
-                hist_elIdSFUp.Write()
-                hist_elIsoSFUp.Write()
-                hist_elIsoSFDn.Write()
-                hist_TrigEffElUp.Write()
-                hist_TrigEffElDn.Write()
-                hist_muRecoSFUp.Write()
-                hist_muRecoSFDn.Write()
-                hist_muIdSFUp.Write()
-                hist_muIdSFDn.Write()
-                hist_muIsoSFUp.Write()
-                hist_muIsoSFDn.Write()
-                hist_TrigEffMuUp.Write()
-                hist_TrigEffMuDn.Write()
-                hist_PileupUp.Write()
-                hist_PileupDn.Write()
-                hist_jsfUp.Write()
-                hist_jsfDn.Write()
-                hist_topptUp.Write()
-                hist_topptDn.Write()
-                hist_muRFcorrdUp.Write()
-                hist_muRFcorrdDn.Write()
-                hist_muRUp.Write()
-                hist_muRDn.Write()
-                hist_muFUp.Write()
-                hist_muFDn.Write()
-                hist_btagHFCOUp.Write()
-                hist_btagHFCODn.Write()
-                hist_btagHFUCUp.Write()
-                hist_btagHFUCDn.Write()
-                hist_btagLFCOUp.Write()
-                hist_btagLFCODn.Write()
-                hist_btagLFUCUp.Write()
-                hist_btagLFUCDn.Write()
-                
-                ## TO-DO: Add ABCDnn Uncertainties!
-                
-                ## TO-DO: check tree names for jer and jec!
-                if process+'JERup' in tTree:
-                        dfjerUp    = RDataFrame(tTree[process+'JERup'])
-                        seljerUp   = dfjerUp.Filter(fullcut).Define('weight',weightStr)
-                        dfjerDn    = RDataFrame(tTree[process+'JERdn'])
-                        seljerDn   = dfjerDn.Filter(fullcut).Define('weight',weightStr)
-                        hist_jerUp = seljerUp.Histo1D((f'{iPlot}_jerUp_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-                        hist_jerDn = seljerDn.Histo1D((f'{iPlot}_jerDn_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-                        hist_jerUp.Write()
-                        hist_jerDn.Write()
-                if process+'JECup' in tTree:                                                                                                      
-                        dfjecUp  = RDataFrame(tTree[process+'JECup'])
-                        seljecUp = dfjecUp.Filter(fullcut).Define('weight',weightStr)
-                        dfjecDn  = RDataFrame(tTree[process+'JECdn'])
-                        seljecDn = dfjecDn.Filter(fullcut).Define('weight',weightStr)
-                        hist_jecUp = seljecUp.Histo1D((f'{iPlot}_jecUp_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-                        hist_jecDn = seljecDn.Histo1D((f'{iPlot}_jecDn_{lumiStr}_{catStr}_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
-                        hist_jecUp.Write()
-                        hist_jecDn.Write()
+        if 'Single' not in process and doAllSys:
+                if doABCDnn:
+                        hist_PEAKUP    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKUP','weight')
+                        hist_PEAKDN    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKDN','weight')
+                        hist_TAILUP    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILUP','weight')
+                        hist_TAILDN    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILDN','weight')
+                        hist_CLOSUREUP = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREUP','weight')
+                        hist_CLOSUREDN = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREDN','weight')
                         
-		# if isCategorized:
-		# 	histptrs[iPlot+'muRUp_'   +lumicatproc] = selMC.Histo1D((iPlot+'muRUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRUp')
-		# 	histptrs[iPlot+'muRDown_' +lumicatproc] = selMC.Histo1D((iPlot+'muRDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRDown')
-		# 	histptrs[iPlot+'muFUp_'   +lumicatproc] = selMC.Histo1D((iPlot+'muFUp_'  +lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightFUp')
-		# 	histptrs[iPlot+'muFDown_' +lumicatproc] = selMC.Histo1D((iPlot+'muFDown_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightFDown')
+                        hist_PEAKUP.Write()
+                        hist_PEAKDN.Write()
+                        hist_TAILUP.Write()
+                        hist_TAILDN.Write()
+                        hist_CLOSUREUP.Write()
+                        hist_CLOSUREDN.Write()
+                        
+                else:
+                        sel = df.Define('weightelRecoSFUp' ,weightelRecoSFUpStr)\
+                                .Define('weightelRecoSFDn' ,weightelRecoSFDnStr)\
+                                .Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                .Define('weightelIdSFDn'   ,weightelIdSFDnStr)\
+                                .Define('weightelIsoSFUp'  ,weightelIsoSFUpStr)\
+                                .Define('weightelIsoSFDn'  ,weightelIsoSFDnStr)\
+                                .Define('weightTrigEffElUp',weightTrigEffElUpStr)\
+                                .Define('weightTrigEffElDn',weightTrigEffElDnStr)\
+                                .Define('weightmuRecoSFUp' ,weightmuRecoSFUpStr)\
+                                .Define('weightmuRecoSFDn' ,weightmuRecoSFDnStr)\
+                                .Define('weightmuIdSFUp'   ,weightmuIdSFUpStr)\
+                                .Define('weightmuIdSFDn'   ,weightmuIdSFDnStr)\
+                                .Define('weightmuIsoSFUp'  ,weightmuIsoSFUpStr)\
+                                .Define('weightmuIsoSFDn'  ,weightmuIsoSFDnStr)\
+                                .Define('weightTrigEffMuUp',weightTrigEffMuUpStr)\
+                                .Define('weightTrigEffMuDn',weightTrigEffMuDnStr)\
+                                .Define('weightPileupUp'   ,weightPileupUpStr)\
+                                .Define('weightPileupDn'   ,weightPileupDnStr)\
+                                .Define('weightjsfUp'      ,weightjsfUpStr)\
+                                .Define('weightjsfDn'      ,weightjsfDnStr)\
+                                .Define('weighttopptUp'    ,weighttopptUpStr)\
+                                .Define('weighttopptDn'    ,weighttopptDnStr)\
+                                .Define('weightmuRFcorrdUp',weightmuRFcorrdUpStr)\
+                                .Define('weightmuRFcorrdDn',weightmuRFcorrdDnStr)\
+                                .Define('weightmuRUp'      ,weightmuRUpStr)\
+                                .Define('weightmuRDn'      ,weightmuRDnStr)\
+                                .Define('weightmuFUp'      ,weightmuFUpStr)\
+                                .Define('weightmuFDn'      ,weightmuFDnStr)\
+                                .Define('weightbtagHFCOUp' ,weightBtagHFCOUpStr)\
+                                .Define('weightbtagHFCODn' ,weightBtagHFCODnStr)\
+                                .Define('weightbtagHFUCUp' ,weightBtagHFUCUpStr)\
+                                .Define('weightbtagHFUCDn' ,weightBtagHFUCDnStr)\
+                                .Define('weightbtagLFCOUp' ,weightBtagLFCOUpStr)\
+                                .Define('weightbtagLFCODn' ,weightBtagLFCODnStr)\
+                                .Define('weightbtagLFUCUp' ,weightBtagLFUCUpStr)\
+                                .Define('weightbtagLFUCDn' ,weightBtagLFUCDnStr)
+                        
+                        hist_elRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp' )
+                        hist_elRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn' )
+                        hist_elIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'   )
+                        hist_elIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDn'   )
+                        hist_elIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFUp'  )
+                        hist_elIsoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFDn'  )
+                        hist_TrigEffElUp = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElUp')
+                        hist_TrigEffElDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElDn')
+                        hist_muRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFUp' )
+                        hist_muRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFDn' )
+                        hist_muIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFUp'   )
+                        hist_muIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFDn'   )
+                        hist_muIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFUp'  )
+                        hist_muIsoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFDn'  )
+                        hist_TrigEffMuUp = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuUp')
+                        hist_TrigEffMuDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuDn')
+                        hist_PileupUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupUp'   )
+                        hist_PileupDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupDn'   )
+                        hist_jsfUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfUp'      )
+                        hist_jsfDn       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfDn'      )
+                        hist_topptUp     = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_topptUp_{process}'    ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptUp'    )
+                        hist_topptDn     = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_topptDn_{process}'    ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptDn'    )
+                        hist_muRFcorrdUp = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRFcorrdUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdUp')
+                        hist_muRFcorrdDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRFcorrdDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRFcorrdDn')
+                        hist_muRUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRUp'      )
+                        hist_muRDn       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRDn'      )
+                        hist_muFUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFUp'      )
+                        hist_muFDn       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFDn'      )
+                        hist_btagHFCOUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFCOUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFCOUp' )
+                        hist_btagHFCODn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFCODn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFCODn' )
+                        hist_btagHFUCUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFUCUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFUCUp' )
+                        hist_btagHFUCDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagHFUCDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagHFUCDn' )
+                        hist_btagLFCOUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFCOUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFCOUp' )
+                        hist_btagLFCODn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFCODn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFCODn' )
+                        hist_btagLFUCUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFUCUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFUCUp' )
+                        hist_btagLFUCDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFUCDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFUCDn' )
 
+                        hist_elRecoSFUp.Write()
+                        hist_elRecoSFDn.Write()
+                        hist_elIdSFUp.Write()
+                        hist_elIdSFDn.Write()
+                        hist_elIsoSFUp.Write()
+                        hist_elIsoSFDn.Write()
+                        hist_TrigEffElUp.Write()
+                        hist_TrigEffElDn.Write()
+                        hist_muRecoSFUp.Write()
+                        hist_muRecoSFDn.Write()
+                        hist_muIdSFUp.Write()
+                        hist_muIdSFDn.Write()
+                        hist_muIsoSFUp.Write()
+                        hist_muIsoSFDn.Write()
+                        hist_TrigEffMuUp.Write()
+                        hist_TrigEffMuDn.Write()
+                        hist_PileupUp.Write()
+                        hist_PileupDn.Write()
+                        hist_jsfUp.Write()
+                        hist_jsfDn.Write()
+                        hist_topptUp.Write()
+                        hist_topptDn.Write()
+                        hist_muRFcorrdUp.Write()
+                        hist_muRFcorrdDn.Write()
+                        hist_muRUp.Write()
+                        hist_muRDn.Write()
+                        hist_muFUp.Write()
+                        hist_muFDn.Write()
+                        hist_btagHFCOUp.Write()
+                        hist_btagHFCODn.Write()
+                        hist_btagHFUCUp.Write()
+                        hist_btagHFUCDn.Write()
+                        hist_btagLFCOUp.Write()
+                        hist_btagLFCODn.Write()
+                        hist_btagLFUCUp.Write()
+                        hist_btagLFUCDn.Write()
+
+                        ## TO-DO: check tree names for jer and jec!
+                        if process+'JERup' in tTree:
+                                dfjerUp    = RDataFrame(tTree[process+'JERup'])
+                                dfjerDn    = RDataFrame(tTree[process+'JERdn'])
+                                if '[0]' in plotDetails[0]:
+                                        seljerUp   = dfjerUp.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
+                                        seljerDn   = dfjerDn.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
+                                else:
+                                        seljerUp   = dfjerUp.Filter(fullcut).Define('weight',weightStr)
+                                        seljerDn   = dfjerDn.Filter(fullcut).Define('weight',weightStr)
+                                hist_jerUp = seljerUp.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jerUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+                                hist_jerDn = seljerDn.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jerDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+
+                                hist_jerUp.Write()
+                                hist_jerDn.Write()
+
+                        if process+'JECup' in tTree:
+                                dfjecUp    = RDataFrame(tTree[process+'JECup'])
+                                dfjecDn    = RDataFrame(tTree[process+'JECdn'])
+                                if '[0]' in plotDetails[0]:
+                                        seljecUp   = dfjecUp.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
+                                        seljecDn   = dfjecDn.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
+                                else:
+                                        seljecUp   = dfjecUp.Filter(fullcut).Define('weight',weightStr)
+                                        seljecDn   = dfjecDn.Filter(fullcut).Define('weight',weightStr)
+                                hist_jecUp = seljecUp.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jecUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+                                hist_jecDn = seljecDn.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jecDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
+
+                                hist_jecUp.Write()
+                                hist_jecDn.Write()
+                        
                         ### TO-DO: check how many PDF variations live in NanoAOD, find branch names and get this segment set up correctly
-                        # for i in range(100): histptrs[iPlot+'pdf'+str(i)+'_'+lumicatproc] = selMC.Define('weightpdf'+str(i),weightStr+'*pdfWeights['+str(i)+']').Histo1D((iPlot+'pdf'+str(i)+'_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpdf'+str(i))
+                        # for i in range(100): histptrs[iPlot+'pdf'+str(i)+'_'+lumicatproc] = sel.Define('weightpdf'+str(i),weightStr+'*pdfWeights['+str(i)+']').Histo1D((iPlot+'pdf'+str(i)+'_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpdf'+str(i))
 
         print("--- Analyze: %s minutes ---" % (round((time.time() - start_time)/60,2)))
+        #DisableImplicitMT()

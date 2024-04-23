@@ -25,7 +25,7 @@ gROOT.SetBatch(1)
 start_time = time.time()
 
 # ------------- File location and total lumi ---------------
-step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Oct2023_fullRun2/'
+step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Apr2024_fullRun2/'
 step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnnBestApr2024/'
 
 # ------------- Arguments and default values ------------
@@ -235,11 +235,11 @@ for cat in catList:
                         if doAllSys and not doABCDnn:
                                 for syst in shapesFiles:
                                         for ud in ['up','dn']: # TODO: can be optimized
-                                                print(f'        {syst}{ud}') # TEMP: skipped missing ud in util. switch back
-                                                if bkg=="WJetsHT12002018":
-                                                        tTreeBkg[bkg+syst+ud]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir_apply) # TEMP!!!!! FIXME
-                                                else:
-                                                        tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,f'{syst}{ud}',step1Dir_apply) ## located in utils.py
+                                                print(f'        {syst}{ud}')
+                                                #if bkg=="WJetsHT12002018": # TEMP
+                                                #        tTreeBkg[bkg+syst+ud]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir_apply)
+                                                #else:
+                                                tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,f'{syst}{ud}',step1Dir_apply) ## located in utils.py
                         #bkgHistFile.cd()
                         analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, bkgHistFile, doABCDnn)
                         if catInd==nCats:

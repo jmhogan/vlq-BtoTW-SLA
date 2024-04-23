@@ -6,7 +6,7 @@ import os,sys,time,math
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
 from ROOT import *
-from samples import lumiStr, systListShort, systListFull
+from samples import lumiStr, systListShort, systListFull,  systListABCDnn
 from utils import *
 
 gROOT.SetBatch(1)
@@ -57,6 +57,9 @@ if year != 'all': tempsig='templates_'+iPlot+'_'+year+''+isRebinned+'.root'#+'_D
 plotABCDnn = False
 if 'ABCDnn' in iPlot:
         plotABCDnn = True
+        systematicList = systListABCDnn
+else:
+        systematicList = systListFull
 
 bkgProcList = ['qcd',
                'ewk',
@@ -75,7 +78,6 @@ else:
 
 # systematicList = systListShort
 # if len(isRebinned)>0 or isCategorized: systematicList = systListFull
-systematicList = systListFull # TEMP. remove this variable later
 doAllSys = True
 print('doAllSys: ',doAllSys,'systematicList: ',systematicList)
 
@@ -316,7 +318,6 @@ for tag in taglist:
 
                 if doAllSys:
                         for syst in systematicList:
-                                if (syst!='elIdSF'): #TEMP
                                         for ud in shiftlist:
                                                 for proc in bkgProcList:
                                                         try:
