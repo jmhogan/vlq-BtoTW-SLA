@@ -10,7 +10,23 @@ systListShort = ['toppt','muRFcorrd','jec','btagHFCO']
 systListFull = ['elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', 'Pileup', 'jsf', 'toppt', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec']
 systListABCDnn = ['peak', 'tail', 'closure', 'factor']
 
-yieldUncertABCDnn = {'allWlep':'0.029303223', 'allTlep':'0.03193199'} # allWLep alpha ratio. allTlep extended ABCD. sqrt(sys^2+stat^2+closure^2)
+# Oct2023
+factorABCDnn = {'allWlep':'0.12200339',
+                'allTlep':'0.041773722',
+                'tagTjet':'0.025187588',
+                'tagWjet':'0.03245591',
+                'untagTlep':'0.045448751',
+                'untagWlep':'0.129725258'
+}
+
+yieldUncertABCDnn = {'allWlep':'0.029303223',
+                     'allTlep':'0.078408583',
+                     'tagTjet':'0.085098034',
+                     'tagWjet': '0.053388503',
+                     'untagTlep': '0.086131523',
+                     'untagWlep':'0.027883556'}
+# allWLep alpha ratio. allTlep extended ABCD. sqrt(sys^2+stat^2+closure^2)
+# TODO: replace tagTjet and untagWlep uncertainties with the true combined uncertainty. now only using the dominant closure
 
 class sample:
     def __init__(self, prefix, xsec, year, textlist, samplename): #, color
