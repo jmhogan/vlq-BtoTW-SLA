@@ -105,10 +105,10 @@ histrange = {}
 isEMlist =['L']#'E','M']
 taglist = ['all']
 if isCategorized == True:
-    taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
-    #taglist=['allWlep','allTlep']
-    if 'D' in region or 'C' in region or region=='all':
-        partialBlind = True
+        taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        #taglist=['allWlep','allTlep']
+        if 'D' in region or 'C' in region or region=='all':
+                partialBlind = True
 print(taglist)
 
 lumiSys = 0.018 # lumi uncertainty
@@ -165,7 +165,7 @@ def formatUpperHist(histogram,th1hist):
                         if region == 'SR' and isCategorized:
                                 histogram.SetMinimum(0.000101);
                         else: 
-                                histogram.SetMinimum(0.25)  
+                                histogram.SetMinimum(0.25)
                 if yLog:
                         uPad.SetLogy()
                         if not doNormByBinWidth:
@@ -224,11 +224,12 @@ for tag in taglist:
                 histPrefix+=catStr
                 if isCategorized: 
                         histPrefix+='_'+region
+
                 totBkg = 0.
                 totMajor = 0.
                 totMinor = 0.
                 for proc in bkgProcList: 
-                        try:     
+                        try:
                                 bkghists[proc+catStr] = RFile1.Get(histPrefix+'__'+proc).Clone()
                                 if plotABCDnn and not partialBlind:
                                         if proc in minorProcList:
@@ -262,10 +263,10 @@ for tag in taglist:
                         totBkg += bkghists[proc+catStr].Integral()
 
                 histrange = [hData.GetBinLowEdge(1),hData.GetBinLowEdge(hData.GetNbinsX()+1)]
-                #if (partialBlind and (tag!="untagTlep" or tag!="untagWlep")): # Todo: generalize it for other branches
-                if (partialBlind and (tag=="tagTjet" or tag=="tagWjet")): # Todo: generalize it for other branches
+
+                if (partialBlind and (tag!="untagTlep" or tag!="untagWlep")): # Todo: generalize it for other branches
                         if ("BpMass" in iPlot):
-                                start_bin = hData.GetXaxis().FindFixBin(1000)+1 # specifically for BpMass
+                                start_bin = hData.GetXaxis().FindFixBin(1000)+1 # specifically for BpMasS
                                 end_bin = hData.GetNbinsX()+1
                                 for b in range(start_bin, end_bin):
                                         hData.SetBinContent(b, 0)
@@ -696,7 +697,7 @@ for tag in taglist:
                         for binNo in range(0,hData.GetNbinsX()+2):
                                 if bkgHT.GetBinContent(binNo)!=0:
                                         pullUncBandTot.SetPointEYhigh(binNo-1,totBkgTemp3[catStr].GetErrorYhigh(binNo-1)/bkgHT.GetBinContent(binNo))
-                                        pullUncBandTot.SetPointEYlow(binNo-1,totBkgTemp3[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))   
+                                        pullUncBandTot.SetPointEYlow(binNo-1,totBkgTemp3[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))
                         if not doOneBand: 
                                 pullUncBandTot.SetFillStyle(3001)
                         else: pullUncBandTot.SetFillStyle(3344)
@@ -710,7 +711,7 @@ for tag in taglist:
                         for binNo in range(0,hData.GetNbinsX()+2):
                                 if bkgHT.GetBinContent(binNo)!=0:
                                         pullUncBandNorm.SetPointEYhigh(binNo-1,totBkgTemp2[catStr].GetErrorYhigh(binNo-1)/bkgHT.GetBinContent(binNo))
-                                        pullUncBandNorm.SetPointEYlow(binNo-1,totBkgTemp2[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))   
+                                        pullUncBandNorm.SetPointEYlow(binNo-1,totBkgTemp2[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))
                         pullUncBandNorm.SetFillStyle(3001)
                         pullUncBandNorm.SetFillColor(2)
                         pullUncBandNorm.SetLineColor(2)
@@ -722,7 +723,7 @@ for tag in taglist:
                         for binNo in range(0,hData.GetNbinsX()+2):
                                 if bkgHT.GetBinContent(binNo)!=0:
                                         pullUncBandStat.SetPointEYhigh(binNo-1,totBkgTemp1[catStr].GetErrorYhigh(binNo-1)/bkgHT.GetBinContent(binNo))
-                                        pullUncBandStat.SetPointEYlow(binNo-1,totBkgTemp1[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))   
+                                        pullUncBandStat.SetPointEYlow(binNo-1,totBkgTemp1[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))
                         pullUncBandStat.SetFillStyle(3001)
                         pullUncBandStat.SetFillColor(3)
                         pullUncBandStat.SetLineColor(3)
@@ -1126,7 +1127,7 @@ for tag in taglist:
         #         #scale = str(hDatamerged.Integral()/bkgHTmerged.Integral())
         #         #print('SCALING TOTAL BACKGOUND FOR RATIO: data =',hDatamerged.Integral(),', mc =',bkgHTmerged.Integral())
         #         #pullmerged.Scale(hDatamerged.Integral()/bkgHTmerged.Integral())
- #  pullmerged.Divide(hDatamerged, pullmerged)                
+ #  pullmerged.Divide(hDatamerged, pullmerged)
         #         # if 'probj' in iPlot:
         #         #         print('probjratio = {')
         #         #         for binNo in range(0,hDatamerged.GetNbinsX()+2):

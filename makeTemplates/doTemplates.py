@@ -10,13 +10,13 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-region='DCY' # BAX, DCY, individuals, or all
+region='A' # BAX, DCY, individuals, or all
 isCategorized=True
-year='all'
+year='all' # all
 
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Oct2023statonly'
+pfix+='_Oct2023statsonly_ABCDnn'
 outDir = os.getcwd()+'/'+pfix+'/'
 
 removeThreshold = 0.0005
@@ -33,12 +33,13 @@ bkgProcs = {'ewk':samples_electroweak,'wjets':samples_wjets,'ttbar':samples_ttba
 massList = [800,1000,1200,1300,1400,1500,1600,1700,1800,2000,2200]
 sigList = ['BpM'+str(mass) for mass in massList]
 
-isEMlist = ['L'] #['E','M'] #
+isEMlist = ['L'] #['E','M'], 'L' #
 if '2D' in outDir: 
         isEMlist =['L']
 taglist = ['all']
 if isCategorized: 
-        taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        taglist=['allWlep','allTlep']
 	
 catList = ['is'+item[0]+'_'+item[1] for item in list(itertools.product(isEMlist,taglist))]
 

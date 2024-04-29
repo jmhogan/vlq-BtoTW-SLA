@@ -57,9 +57,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         
         doABCDnn = False
         if "ABCDnn" in iPlot:
-                if (sample.prefix).find('QCD') == 0 or (sample.prefix).find('TTTo')==0 or (sample.prefix).find('TTMT')==0 or (sample.prefix).find('ST')==0 or (sample.prefix).find('WJets') == 0:
+                if (sample.prefix).find('QCD') == 0 or (sample.prefix).find('TTToSemiLeptonic')==0 or (sample.prefix).find('WJetsToLNu_HT') == 0:
                         doABCDnn = True
-                        plotTreeName = plotTreeName.split('_ABCDnn')[0] # TEMP
                 else:
                         plotTreeName = plotTreeName.split('_ABCDnn')[0]
 

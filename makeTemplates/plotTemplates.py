@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# python3 -u plotTemplates.py BpMass all True 
+
 import os,sys,time,math,pickle,itertools
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
@@ -21,7 +23,7 @@ isCategorized=False
 if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Sep2023'
+pfix+='_Oct2023statsonly_ABCDnn'
 if len(sys.argv)>4: pfix=str(sys.argv[4])
 templateDir=os.getcwd()+'/'+pfix+'/'
 
@@ -51,12 +53,18 @@ print('Scale factor = ',sigScaleFact)
 tempsig='templates_'+iPlot+'_'+lumiInTemplates+''+isRebinned+'.root'#+'_Data18.root'
 if year != 'all': tempsig='templates_'+iPlot+'_'+year+''+isRebinned+'.root'#+'_Data18.root'
 
-bkgProcList = ['qcd','ewk','wjets','ttx','singletop','ttbar']
+bkgProcList = ['qcd',
+               'ewk',
+               'wjets',
+               'ttx',
+               'singletop',
+               'ttbar'
+]
 bkgHistColors = {'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'ewk':kMagenta-6,'singletop':kGreen-6,'ttx':kAzure+2}
 
 systematicList = systListShort
 if len(isRebinned)>0 or isCategorized: systematicList = systListFull
-doAllSys = True
+doAllSys = False # UPDATE
 print('doAllSys: ',doAllSys,'systematicList: ',systematicList)
 
 doNormByBinWidth=False
@@ -70,18 +78,21 @@ if doRealPull: doOneBand=False
 blind = False
 if len(sys.argv)>5: blind=bool(eval(sys.argv[5]))
 
-yLog  = True
+yLog  = False
 if len(sys.argv)>6: yLog=bool(eval(sys.argv[6]))
 print('Plotting blind?',blind,' yLog?',yLog)
 if yLog: scaleSignals = False
 
-
+partialBlind = False
 histrange = {}
 
 isEMlist =['L']#'E','M']
 taglist = ['all']
 if isCategorized == True:
-        taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        taglist=['allTlep', 'allWlep']
+        if region.find('D')==0 or region=='all':
+                partialBlind = True
 print(taglist)
 
 lumiSys = 0.018 # lumi uncertainty
@@ -167,6 +178,7 @@ def formatLowerHist(histogram):
                 histogram.GetYaxis().SetRangeUser(0.1,1.9)
         histogram.GetYaxis().CenterTitle()
 
+print(templateDir+tempsig)
 RFile1 = TFile(templateDir+tempsig)
 print(templateDir+tempsig)
 print(RFile1)
@@ -190,15 +202,30 @@ for tag in taglist:
                 histPrefix+=catStr
                 totBkg = 0.
                 for proc in bkgProcList: 
-                        try: 				
+                        try:    
                                 bkghists[proc+catStr] = RFile1.Get(histPrefix+'__'+proc).Clone()
+                                if tag=='allTlep':
+                                        bkghists[proc+catStr].Scale(0.2)
+                                if tag=='allWlep':
+                                        bkghists[proc+catStr].Scale(0.2)
+                                print(proc, bkghists[proc+catStr].Integral())
                                 totBkg += bkghists[proc+catStr].Integral()
                         except:
                                 print("There is no "+proc+"!!!!!!!!")
                                 print("tried to open "+histPrefix+'__'+proc)
                                 pass
                 hData = RFile1.Get(histPrefix+'__'+datalabel).Clone()
+                #print("data: ", hData.Integral())
                 histrange = [hData.GetBinLowEdge(1),hData.GetBinLowEdge(hData.GetNbinsX()+1)]
+                if (partialBlind and (tag=="tagTjet" or tag=="tagWjet")): # Todo: generalize it for other branches
+                        if ("BpMass" in iPlot):
+                                start_bin = hData.GetXaxis().FindFixBin(1500)+1 # specifically for BpMass
+                                end_bin = hData.GetNbinsX()+1
+                                for b in range(start_bin, end_bin):
+                                        hData.SetBinContent(b, 0)
+                                        hData.SetBinError(b, 0)
+                        else:
+                                sys.exit("Error: Edit partial unblinding for {}!".format(iPlot))
                 gaeData = TGraphAsymmErrors(hData.Clone(hData.GetName().replace(datalabel,'gaeDATA')))
                 hsig1 = RFile1.Get(histPrefix+'__'+sig1).Clone(histPrefix+'__sig1')
                 hsig2 = RFile1.Get(histPrefix+'__'+sig2).Clone(histPrefix+'__sig2')
@@ -306,7 +333,8 @@ for tag in taglist:
                 try: 
                         drawQCD = bkghists['qcd'+catStr].Integral()/bkgHT.Integral()>.005 #don't plot QCD if it is less than 0.5%
                 except: pass
-
+                
+                drawQCD=True # TEMP
                 stackbkgHT = THStack("stackbkgHT","")
                 bkgProcListNew = bkgProcList[:]
                 if region=='WJCR':
@@ -386,7 +414,8 @@ for tag in taglist:
                 formatUpperHist(gaeData,hData)
                 uPad.cd()
                 gaeData.SetTitle("")
-                if not blind: gaeData.Draw("apz")
+                if not blind:
+                        gaeData.Draw("apz")
                 if blind: 
                         hsig1.SetMinimum(0.015)
                         if doNormByBinWidth:
@@ -490,30 +519,48 @@ for tag in taglist:
                                 leg.AddEntry(0, "", "") #left
                                 leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
 
-                if not drawQCD:  ## FIXME LATER, WON'T WORK
-                        if not blind: 
-                                leg.AddEntry(gaeData,"Data","pel") #left 
+                if not drawQCD:
+                        if not blind:
+                                leg.AddEntry(gaeData,"Data","pel")  #left
                                 try: 
-                                        leg.AddEntry(bkghists['top'+catStr],"TOP","f") #right
+                                        leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f") #right
                                 except: pass
-                                leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l") #left
+                                leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l")  #left
                                 try: 
-                                        leg.AddEntry(bkghists['ewk'+catStr],"EW","f") #right
-                                except: pass
-                                leg.AddEntry(hsig2,sig2leg+scaleFact2Str,"l") #left
-                                leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
-                        else:
-                                leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l") #left
-                                try: 
-                                        leg.AddEntry(bkghists['top'+catStr],"TOP","f") #right
+                                        leg.AddEntry(bkghists['wjets'+catStr],"W+jets","f") #right
                                 except: pass
                                 leg.AddEntry(hsig2,sig2leg+scaleFact2Str,"l") #left
                                 try: 
-                                        leg.AddEntry(bkghists['ewk'+catStr],"EW","f") #right
+                                        leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f") #right
+                                except: pass
+                                try: 
+                                        leg.AddEntry(bkghists['ttbar'+catStr],"t#bar{t}","f") #left
+                                except: pass
+                                try: 
+                                        leg.AddEntry(bkghists['singletop'+catStr],"single t","f") #left
                                 except: pass
                                 #leg.AddEntry(0, "", "") #left
                                 leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
-
+                        else:
+                                leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l")  #left
+                                try: 
+                                        leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f") #right
+                                except: pass
+                                leg.AddEntry(hsig2,sig2leg+scaleFact2Str,"l") #left
+                                try: 
+                                        leg.AddEntry(bkghists['wjets'+catStr],"W+jets","f") #right
+                                except: pass
+                                try: 
+                                        leg.AddEntry(bkghists['ttbar'+catStr],"t#bar{t}","f") #left
+                                except: pass
+                                try: 
+                                        leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f") #right
+                                except: pass
+                                try: 
+                                        leg.AddEntry(bkghists['singletop'+catStr],"single t","f") #left
+                                except: pass
+                                leg.AddEntry(0, "", "") #left
+                                leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
 
                 leg.Draw("same")
 

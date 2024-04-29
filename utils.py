@@ -70,7 +70,7 @@ def readTreeShift(sample,year,shift,step1Dir):
     pathstring0 = 'RDF_'+sample+'_'+year+'_0.root'
     if not EOSpathExists(step1Dir[23:]+'/',pathstring0): #and not EOSpathExists(step1Dir[23:]+'/',pathstring1):
         print("Error: path does not exist! Aborting ... no "+pathstring0) #,"nor",pathstring1
-        os._exit(1)
+        #os._exit(1) #TEMP
     rootfiles = EOSlist_root_files(step1Dir[23:])	
 
     tChain = TChain('Events_'+shift)
