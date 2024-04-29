@@ -2,7 +2,7 @@
 from ROOT import TH1D,TTree,TFile,RDataFrame,TH1,EnableImplicitMT,DisableImplicitMT
 from array import array
 from numpy import linspace
-from samples import targetlumi, lumiStr
+from samples import targetlumi, lumiStr, factorABCDnn, yieldUncertABCDnn
 import math,time
 
 TH1.SetDefaultSumw2(True)
@@ -18,6 +18,7 @@ negative MC weights, ets) applied below should be checked!
 def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized, outHistFile, doABCDnn):
         start_time = time.time()
         plotTreeName=plotDetails[0]
+        plotTreeNameTemp = plotDetails[0] #TEMP
         xbins=array('d', plotDetails[1])
         xAxisLabel=plotDetails[2]
         
@@ -48,19 +49,24 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 doMuRF = False
 
         if 'ABCDnn' in iPlot and not doABCDnn:
-                plotTreeName = plotTreeName.split('_ABCDnn')[0]
+                if 'FatJet' in iPlot: # TEMP
+                        plotTreeName  = "gcOSFatJet_pNetJ[0]"
+                        plotTreeNameTemp = "gcOSFatJet_pNetJ[0]"
+                else:
+                        plotTreeName  = plotTreeName.split('_ABCDnn')[0]
         # else:
         #         plotTreeName = plotTreeName.split('_ABCDnn')[0] #TEMP # only when doing extended ABCDnn
-        print(sample.prefix, plotTreeName)
+        #print(sample.prefix, plotTreeName)
 
         if 'Single' not in sample.prefix: 
                 if doABCDnn:
-                        weightStr += ' * transfer_ABCDnn'
+                        #weightStr += ' * transfer_ABCDnn'
+                        weightStr += f' * {factorABCDnn[tag]}'
                 else:
                         weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
 
                         weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
-                        weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
+                        weightelRecoSFDnStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
                         weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
                         weightmuRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
                         weightelIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
@@ -231,27 +237,37 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         # Declare histograms --- COMMENTS FOR UNCERTAINTIES NOT BEING RUN YET
         process = sample.prefix
 
-        if '[0]' in plotTreeName: # TODO: this needs to be changed if ABCDnn variable contains [0]
+        if '[0]' in plotTreeName:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
                                                .Define('weight',weightStr)\
                                                .Define(iPlot, plotTreeName)
                 plotTreeName = iPlot
         else:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
-                                               .Define('weight',weightStr)\
+                                               .Define('weight',weightStr)
 
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
         hist.Write()
 
-                
+        
         if 'Single' not in process and doAllSys:
                 if doABCDnn:
-                        hist_PEAKUP    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKUP','weight')
-                        hist_PEAKDN    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKDN','weight')
-                        hist_TAILUP    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILUP','weight')
-                        hist_TAILDN    = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILDN','weight')
-                        hist_CLOSUREUP = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREUP','weight')
-                        hist_CLOSUREDN = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREDN','weight')
+                        shift = yieldUncertABCDnn[tag]
+                        sel = df.Define("weightfactorUp", f"weight * (1 + {shift})")\
+                                .Define("weightfactorDn", f"weight * (1 - {shift})")
+
+                        #print("weightfactorUp", f"weight * (1 + {shift})") # TEMP. Debug only
+
+                        # TODO: add other cases and error handling
+
+                        hist_PEAKUP    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKUP','weight')
+                        hist_PEAKDN    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKDN','weight')
+                        hist_TAILUP    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILUP','weight')
+                        hist_TAILDN    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILDN','weight')
+                        hist_CLOSUREUP = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREUP','weight')
+                        hist_CLOSUREDN = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREDN','weight')
+                        hist_FACTORUP  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_factorUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}','weightfactorUp')
+                        hist_FACTORDN  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_factorDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}','weightfactorDn')
                         
                         hist_PEAKUP.Write()
                         hist_PEAKDN.Write()
@@ -259,6 +275,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_TAILDN.Write()
                         hist_CLOSUREUP.Write()
                         hist_CLOSUREDN.Write()
+                        hist_FACTORUP.Write()
+                        hist_FACTORDN.Write()
                         
                 else:
                         sel = df.Define('weightelRecoSFUp' ,weightelRecoSFUpStr)\
@@ -376,9 +394,9 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         if process+'JERup' in tTree:
                                 dfjerUp    = RDataFrame(tTree[process+'JERup'])
                                 dfjerDn    = RDataFrame(tTree[process+'JERdn'])
-                                if '[0]' in plotDetails[0]:
-                                        seljerUp   = dfjerUp.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
-                                        seljerDn   = dfjerDn.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
+                                if '[0]' in plotTreeNameTemp: #TEMP
+                                        seljerUp   = dfjerUp.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotTreeNameTemp)
+                                        seljerDn   = dfjerDn.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotTreeNameTemp)
                                 else:
                                         seljerUp   = dfjerUp.Filter(fullcut).Define('weight',weightStr)
                                         seljerDn   = dfjerDn.Filter(fullcut).Define('weight',weightStr)
@@ -391,9 +409,9 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         if process+'JECup' in tTree:
                                 dfjecUp    = RDataFrame(tTree[process+'JECup'])
                                 dfjecDn    = RDataFrame(tTree[process+'JECdn'])
-                                if '[0]' in plotDetails[0]:
-                                        seljecUp   = dfjecUp.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
-                                        seljecDn   = dfjecDn.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotDetails[0])
+                                if '[0]' in plotTreeNameTemp: #TEMP
+                                        seljecUp   = dfjecUp.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotTreeNameTemp)
+                                        seljecDn   = dfjecDn.Filter(fullcut).Define('weight',weightStr).Define(iPlot,plotTreeNameTemp)
                                 else:
                                         seljecUp   = dfjecUp.Filter(fullcut).Define('weight',weightStr)
                                         seljecDn   = dfjecDn.Filter(fullcut).Define('weight',weightStr)
