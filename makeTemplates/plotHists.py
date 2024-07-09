@@ -23,13 +23,13 @@ isCategorized=False
 if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Oct2023SysAll'
-#pfix = 'templatesTestA' # TEMP
+#pfix+='_Apr2024SysAll_correctQCD300'
+pfix += '_Oct2023SysAll' # TEMP
 if len(sys.argv)>4: pfix=str(sys.argv[4])
 templateDir=os.getcwd()+'/'+pfix+'/'
 
 year = 'all'
-if len(sys.argv)>7: year=sys.argv[7]
+if len(sys.argv)>8: year=sys.argv[8]
 
 print('Plotting',region,'is categorized?',isCategorized,' for year',year)
 
@@ -40,7 +40,7 @@ if len(sys.argv)>7:
 saveKey = '' # tag for plot names
 
 datalabel = 'data_obs'
-shiftlist = ['__Up','__Down']
+shiftlist = ['Up','Down'] # change to Down for future
 sig1='BpM1000' #  choose the 1st signal to plot
 sig1leg='B (1.0 TeV, 1 pb)'
 sig2='BpM1800' #  choose the 2nd signal to plot
@@ -102,8 +102,9 @@ histrange = {}
 isEMlist =['L']#'E','M']
 taglist = ['all']
 if isCategorized == True:
-        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
-        taglist = ['tagTjet','tagWjet','allWlep','allTlep']
+        taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        #taglist = ['tagTjet','tagWjet','allWlep','allTlep']
+        #taglist = ['allWlep','allTlep']
         if ('D' in region or 'C' in region or region=='all') and 'BpMass' in iPlot:
                 partialBlind = True
 print(taglist)
@@ -223,21 +224,17 @@ for tag in taglist:
                 histPrefix=iPlot+'_'+lumiInTemplates+'_'
                 catStr='is'+isEM+'_'+tagStr
                 histPrefix+=catStr
-		if isCategorized:
-			histPrefix+='_'+region
+                if isCategorized: histPrefix+='_'+region
                 totBkg = 0.
                 totMajor = 0.
                 totMinor = 0.
                 for proc in bkgProcList: 
                         try:
                                 bkghists[proc+catStr] = RFile1.Get(histPrefix+'__'+proc).Clone()
-                                #if proc not in minorProcList:
-                                #        bkghists[proc+catStr].Scale(4)
                                 if plotABCDnn and not partialBlind:
                                         if proc in minorProcList:
                                                 totMinor += bkghists[proc+catStr].Integral()
                                         else:
-                                                #bkghists[proc+catStr].Scale(1/2.413352108)
                                                 totMajor += bkghists[proc+catStr].Integral()
                         except:
                                 print("There is no "+proc+"!!!!!!!!")
@@ -266,7 +263,8 @@ for tag in taglist:
                         totBkg += bkghists[proc+catStr].Integral()
 
                 histrange = [hData.GetBinLowEdge(1),hData.GetBinLowEdge(hData.GetNbinsX()+1)]
-                if (partialBlind and (tag!="untagTlep" or tag!="untagWlep")): # Todo: generalize it for other branches
+
+                if (partialBlind and (tag!="untagTlep" and tag!="untagWlep")): # Todo: generalize it for other branches
                         if ("BpMass" in iPlot): # TEMP
                                 start_bin = hData.GetXaxis().FindFixBin(1000)+1 # specifically for BpMass
                                 end_bin = hData.GetNbinsX()+1
@@ -275,6 +273,7 @@ for tag in taglist:
                                         hData.SetBinError(b, 0)
                         else:
                                 sys.exit("Error: Edit partial unblinding for {}!".format(iPlot))
+
                 gaeData = TGraphAsymmErrors(hData.Clone(hData.GetName().replace(datalabel,'gaeDATA')))
                 hsig1 = RFile1.Get(histPrefix+'__'+sig1).Clone(histPrefix+'__sig1')
                 hsig2 = RFile1.Get(histPrefix+'__'+sig2).Clone(histPrefix+'__sig2')
@@ -328,6 +327,16 @@ for tag in taglist:
                                         systematicList = systListABCDnn
                                 else:
                                         systematicList = systListFull
+                                        if isRebinned: 
+                                                systematicList.remove('muR')
+                                                systematicList.remove('muF')
+                                                systematicList.remove('muRFcorrd')
+                                                systematicList.append('muRFcorrdNewQCD')
+                                                systematicList.append('muRFcorrdNewEWK')
+                                                systematicList.append('muRFcorrdNewST')
+                                                systematicList.append('muRFcorrdNewTTX')
+                                                systematicList.append('muRFcorrdNewTT')
+                                                systematicList.append('muRFcorrdNewWJT')
                                 for syst in systematicList:
                                         for ud in shiftlist:
                                                         try:
@@ -335,7 +344,7 @@ for tag in taglist:
                                                                 if doNormByBinWidth: 
                                                                         normByBinWidth(systHists[proc+catStr+syst+ud],perNGeV)
                                                         except: 
-                                                                print(f'FAILED to open {histPrefix}__{proc}__{syst}__{ud}')
+                                                                print(f'FAILED to open {histPrefix}__{proc}__{syst}{ud}')
                                                                 pass
 
                 totBkgTemp1[catStr] = TGraphAsymmErrors(bkgHT.Clone(bkgHT.GetName()+'shapeOnly'))
@@ -530,7 +539,7 @@ for tag in taglist:
                 tagString = ''
                 if isEM=='E': flvString+='e+jets'
                 if isEM=='M': flvString+='#mu+jets'
-		if isEM=='L': flvString+='region '+region
+		#if isEM=='L': flvString+='region '+region # TEMP
                 tagString = ''
                 if isCategorized: tagString = tag
                 if tagString.endswith(', '): tagString = tagString[:-2]		
@@ -673,14 +682,14 @@ for tag in taglist:
                 prelimTex3.SetTextAlign(12)
                 #prelimTex3.SetTextFont(52)
                 prelimTex3.SetTextFont(42)
-		prelimTex3.SetTextSize(0.05)
+                prelimTex3.SetTextSize(0.05)
                 if blind: prelimTex3.SetTextSize(0.05)
                 prelimTex3.SetLineWidth(2)
                 # if not blind:
                 #         prelimTex3.DrawLatex(0.23,0.945,"Private work (CMS data & simulation)") #"Preliminary")
                 # if blind: 
                 #         prelimTex3.DrawLatex(0.26,0.945,"Private work (CMS data & simulation)") #"Preliminary")
-		prelimTex3.DrawLatex(0.12,0.94,"Private work (CMS data & simulation)") #"Preliminary")
+                prelimTex3.DrawLatex(0.12,0.94,"Private work (CMS data & simulation)") #"Preliminary")
 
                 if blind == False and not doRealPull:
                         lPad.cd()

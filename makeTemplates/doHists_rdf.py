@@ -26,12 +26,12 @@ start_time = time.time()
 
 # ------------- File location and total lumi ---------------
 step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Apr2024_fullRun2/'
-step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnnBestApr2024/'
+step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Apr2024_fullRun2_ABCDnnBestApr2024/'
 
 # ------------- Arguments and default values ------------
 iPlot = 'BpMass_ABCDnn' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
-region = 'A'
+region = 'D'
 if len(sys.argv)>3: region=sys.argv[3]
 isCategorized = True
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])

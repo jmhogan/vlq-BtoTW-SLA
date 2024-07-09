@@ -31,9 +31,11 @@ lumiInTemplates= lumiStr
 # -- Use "removalKeys" to remove specific systematics from the output file.
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-iPlot='BpMass'
+#iPlot='BpMass_ABCDnn'
+iPlot='BpMass' #TEMP
 if len(sys.argv)>1: iPlot=str(sys.argv[1])
-folder = 'templatesD_Apr2024'
+#folder = 'templatesD_Apr2024SysAll_correctQCD300'
+folder = 'templatesD_Oct2023SysAll' #TEMP
 
 if len(sys.argv)>2: folder=str(sys.argv[2])
 cutString = ''
@@ -51,6 +53,7 @@ if 'kinematics' in folder:
 massList = [800,1000,1200,1300,1400,1500,1600,1700,1800,2000,2200]
 sigProcList = ['BpM'+str(mass) for mass in massList]
 bkgProcList = ['ttbar','singletop','wjets','ttx','ewk','qcd'] #put the most dominant process first
+#ABCDProcList = ['',]
 
 stat_saved = 0.2 #statistical uncertainty requirement (enter >1.0 for no rebinning; i.g., "1.1")
 if len(sys.argv)>3: stat_saved=float(sys.argv[3])
@@ -62,8 +65,8 @@ if len(sys.argv)>4: FullMu=bool(eval(sys.argv[4]))
 print("FullMu: "+str(FullMu))
 
 dataName = 'data_obs'
-upTag = '__Up'
-downTag = '__Down'
+upTag = 'Up'
+downTag = 'Down'
 sigName = 'Bp'
 
 addCRsys = False
@@ -71,11 +74,16 @@ addShapes = True
 lumiSys = math.sqrt(0.018**2) #lumi uncertainty plus higgs prop
 
 removalKeys = {} # True == keep, False == remove
-removalKeys['__muRecoSF'] = True
-removalKeys['__muR'] = False
+removalKeys['__muRUp'] = False
+removalKeys['__muRDown'] = False
 removalKeys['__muF'] = False
 if 'kinematics' not in folder: removalKeys['__muRFcorrd'] = False
 removalKeys['__pdf'] = False
+if 'ABCDnn' in iPlot:
+        removalKeys['__ttbar'] = False
+        removalKeys['__wjets'] = False
+        removalKeys['__singletop'] = False
+        removalKeys['__qcd'] = False
 
 def findfiles(path, filtre):
     for root, dirs, files in os.walk(path):
@@ -238,6 +246,9 @@ for rfile in rfiles:
                 for hist in allhists[chn]:
                         rebinnedHists[hist] = tfiles[iRfile].Get(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
                         rebinnedHists[hist].SetDirectory(0)
+                        if rebinnedHists[hist].Integral() < 1e-12: 
+                                print("Empty hist found, skipping: "+hist)
+                                continue
                         if '__pdf' in hist:
                                 if 'Up' not in hist or 'Down' not in hist: continue
                         if any([item in hist and not removalKeys[item] for item in removalKeys.keys()]): continue
@@ -254,6 +265,23 @@ for rfile in rfiles:
                 #sighist = rebinnedHists[iPlot+'_36p814fb_'+chn+'__sig']
                 #for ibin in range(1,sighist.GetNbinsX()+1):
                 #	if sighist.GetBinContent(ibin) == 0: print 'chn = '+chn+', mass = '+sigName+', empty minMlb > '+str(sighist.GetBinLowEdge(ibin))
+
+                #For ABCDnn, combine the major backgrounds into one histogram
+                if 'ABCDnn' in iPlot:
+                        ttbarhists = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if '__ttbar' in k.GetName() and chn in k.GetName()]
+                        #print(str(ttbarhists))
+                        for hist in ttbarhists:
+                                majorhist = rebinnedHists[hist].Clone(hist.replace('__ttbar','__major'))
+                                majorhist.Add(rebinnedHists[hist.replace('__ttbar','__wjets')])
+                                majorhist.Add(rebinnedHists[hist.replace('__ttbar','__singletop')])
+                                majorhist.Add(rebinnedHists[hist.replace('__ttbar','__qcd')])
+                                print('\t Writing majorhist: '+majorhist.GetName())
+                                majorhist.Write()
+                                yieldsAll[majorhist.GetName()] = majorhist.Integral()
+                                yieldsErrsAll[majorhist.GetName()] = 0.
+                                for ibin in range(1,majorhist.GetXaxis().GetNbins()+1):
+                                        yieldsErrsAll[majorhist.GetName()] += majorhist.GetBinError(ibin)**2
+                                yieldsErrsAll[majorhist.GetName()] = math.sqrt(yieldsErrsAll[majorhist.GetName()])
 
                 #Constructing muRF shapes
                 muRUphists = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if 'muR'+upTag in k.GetName() and chn in k.GetName()]
@@ -277,6 +305,9 @@ for rfile in rfiles:
                                 rebinnedHists[hist.replace('muR'+upTag,'muRFcorrd'+upTag)],
                                 rebinnedHists[hist.replace('muR'+upTag,'muRFcorrd'+downTag)]
                         ]
+                        if histList[0].Integral() < 1e-6: 
+                                print("muRF: Empty hist found, skipping: "+hist)
+                                continue
                         for ibin in range(1,histList[0].GetNbinsX()+1):
                                 weightList = [histList[ind].GetBinContent(ibin) for ind in range(len(histList))]
                                 indCorrdUp = weightList.index(max(weightList))
@@ -292,7 +323,7 @@ for rfile in rfiles:
                                 #scalefactorDn = muSFsDn[signame]
                                 #muRFcorrdNewUpHist.Scale(scalefactorUp) #drop down .7   ### FIXME, NEED THIS FOR BPRIME
                                 #muRFcorrdNewDnHist.Scale(scalefactorDn) #raise up 1.3
-                                renormNomHist = tfiles[iRfile].Get(hist[:hist.find('__mu')]).Clone()
+                                renormNomHist = histList[0]
                                 muRFcorrdNewUpHist.Scale(renormNomHist.Integral()/muRFcorrdNewUpHist.Integral())
                                 muRFcorrdNewDnHist.Scale(renormNomHist.Integral()/muRFcorrdNewDnHist.Integral())
                         if ('__'+sigName not in hist and normalizeRENORM and not FullMu):
@@ -300,9 +331,9 @@ for rfile in rfiles:
                                 muRFcorrdNewUpHist.Scale(renormNomHist.Integral()/muRFcorrdNewUpHist.Integral())
                                 muRFcorrdNewDnHist.Scale(renormNomHist.Integral()/muRFcorrdNewDnHist.Integral())
                         muRFcorrdNewUpHist.Write()
-                        print('Writing histogram: '+muRFcorrdNewUpHist.GetName())
+                        #print('Writing histogram: '+muRFcorrdNewUpHist.GetName())
                         muRFcorrdNewDnHist.Write()
-                        print('Writing histogram: '+muRFcorrdNewDnHist.GetName())
+                        #print('Writing histogram: '+muRFcorrdNewDnHist.GetName())
 
                         yieldsAll[muRFcorrdNewUpHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewUpHist.Integral()
                         yieldsAll[muRFcorrdNewDnHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewDnHist.Integral()
@@ -350,6 +381,8 @@ for chn in channels:
 	if chn.split('_')[0] not in isEMlist: isEMlist.append(chn.split('_')[0])
 	if chn.split('_')[1] not in taglist: taglist.append(chn.split('_')[1])
 
+if 'ABCDnn' in iPlot:
+        bkgProcList = ['major','ttx','ewk'] #put the most dominant process first
 print("List of systematics for "+bkgProcList[0]+" process and "+channels[0]+" channel:")
 print("        "+str(sorted([hist[hist.find(bkgProcList[0])+len(bkgProcList[0])+2:hist.find(upTag)] for hist in yieldsAll.keys() if channels[0] in hist and '__'+bkgProcList[0]+'__' in hist and upTag in hist])))
 
