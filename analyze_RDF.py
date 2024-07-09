@@ -25,7 +25,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         # Define categories
         isEM  = category['isEM']
         tag   = category['tag']
-        #catStr = 'is'+isEM+'_'+tag
+        catStr = 'is'+isEM+'_'+tag
         if isCategorized: catStr += '_'+region
         
 	# Define weights
@@ -149,7 +149,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 isEMCut+=' && isEl==1'
 
 	# Define cuts by region. Use region "all" for all selected events
-        cut  = ' && W_MT < 200' # TODO: 160 or 200
+        cut  = ' && W_MT < 200'
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
         if region == 'isoVT':
