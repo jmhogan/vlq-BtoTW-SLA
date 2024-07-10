@@ -284,9 +284,8 @@ for cat in catList:
         yieldTable[histoPrefix]['dataOverBkg'] = yieldTable[histoPrefix]['data']/yieldTable[histoPrefix]['totBkg']
         yieldStatErrTable[histoPrefix]['dataOverBkg'] = yieldStatErrTable[histoPrefix]['data']/yieldStatErrTable[histoPrefix]['totBkg']
 
-        if doABCDnn:
-                yieldTable[histoPrefix]['ABCDnn'] = yieldTable[histoPrefix]['ttbar'] + yieldTable[histoPrefix]['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[histoPrefix]['singletop']
-                yieldStatErrTable[histoPrefix]['ABCDnn'] = math.sqrt(yieldStatErrTable[histoPrefix]['ttbar']**2 + yieldStatErrTable[histoPrefix]['wjets']**2 + yieldStatErrTable[histoPrefix]['qcd']**2 + yieldStatErrTable[histoPrefix]['singletop']**2)
+        yieldTable[histoPrefix]['ABCDnn'] = yieldTable[histoPrefix]['ttbar'] + yieldTable[histoPrefix]['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[histoPrefix]['singletop']
+        yieldStatErrTable[histoPrefix]['ABCDnn'] = math.sqrt(yieldStatErrTable[histoPrefix]['ttbar']**2 + yieldStatErrTable[histoPrefix]['wjets']**2 + yieldStatErrTable[histoPrefix]['qcd']**2 + yieldStatErrTable[histoPrefix]['singletop']**2)
 
         if doAllSys:
                 for syst in systListFull+systListABCDnn:
@@ -310,13 +309,13 @@ for cat in catList:
 table = []
 table.append(['break'])
 table.append(['break'])
-table.append(['YIELDS']+[proc for proc in list(bkgProcs.keys())+['data']])
+table.append(['YIELDS']+[proc for proc in list(bkgProcs.keys())+['ABCDnn', 'data']])
 
 # yields for bkg and data
 for cat in catList:
         row = [cat]
         histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
-        for proc in list(bkgProcs.keys())+['data']:
+        for proc in list(bkgProcs.keys())+['ABCDnn', 'data']:
                 row.append(str(round(yieldTable[histoPrefix][proc],3))+' $\pm$ '+str(round(yieldStatErrTable[histoPrefix][proc],3)))
         table.append(row)
 table.append(['break'])
@@ -339,7 +338,7 @@ for isEM in isEMlist:
         table.append(['break'])
         #table.append(['YIELDS']+[cat for cat in catList if 'is'+isEM in cat]+['\\\\'])
         table.append(['YIELDS']+catList+['\\\\'])
-        for proc in list(bkgProcs.keys())+['totBkg','data','dataOverBkg']+sigList:
+        for proc in list(bkgProcs.keys())+['ABCDnn', 'totBkg','data','dataOverBkg']+sigList:
                 row = [proc]
                 for cat in catList:
                         if not ('is'+isEM in cat): continue
