@@ -29,9 +29,9 @@ doAllSys = True # TEMP
 doPDF = False
 if isCategorized: doPDF=False # FIXME later
 
-iPlot = "BpMass"
+#iPlot = "BpMass"
 #iPlot = "OS1FatJetProbJ"
-#iPlot = "BpMass_ABCDnn"
+iPlot = "BpMass_ABCDnn"
 
 if 'ABCDnn' in iPlot:
         doABCDnn = True
@@ -283,6 +283,10 @@ for cat in catList:
 
         yieldTable[histoPrefix]['dataOverBkg'] = yieldTable[histoPrefix]['data']/yieldTable[histoPrefix]['totBkg']
         yieldStatErrTable[histoPrefix]['dataOverBkg'] = yieldStatErrTable[histoPrefix]['data']/yieldStatErrTable[histoPrefix]['totBkg']
+
+        if doABCDnn:
+                yieldTable[histoPrefix]['ABCDnn'] = yieldTable[histoPrefix]['ttbar'] + yieldTable[histoPrefix]['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[histoPrefix]['singletop']
+                yieldStatErrTable[histoPrefix]['ABCDnn'] = math.sqrt(yieldStatErrTable[histoPrefix]['ttbar']**2 + yieldStatErrTable[histoPrefix]['wjets']**2 + yieldStatErrTable[histoPrefix]['qcd']**2 + yieldStatErrTable[histoPrefix]['singletop']**2)
 
         if doAllSys:
                 for syst in systListFull+systListABCDnn:
