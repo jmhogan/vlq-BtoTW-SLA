@@ -62,22 +62,31 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
                         weightPrefireUpStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
                         weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')
+
+                        # Reco has the main value in [0], up in [1], down in [2]. Up/Down are not additive on [0]
                         weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
                         weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
                         weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
                         weightmuRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
-                        weightelIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
-                        weightelIdSFDnStr= weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
-                        weightmuIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[1])')
-                        weightmuIdSFDnStr= weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[2])')
+
+                        # FIXED 7/24/24 (HLT --> ID). Muon has independent [0] nominal, [1] up, [2] down. Electron has the shift stored in [1]
+                        weightelIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
+                        weightelIdSFDnStr= weightStr.replace('leptonIDSF[0]','(leptonIDSF[0]-isEl*leptonIDSF[1])')
+                        weightmuIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(isEl*leptonIDSF[0]+isMu*leptonIDSF[1])')
+                        weightmuIdSFDnStr= weightStr.replace('leptonIDSF[0]','(isEl*leptonIDSF[0]+isMu*leptonIDSF[2])') # plus symbol is correct
+
+                        # ISOs are not from correctionlib, [0] nominal, [1] is additive shift
                         weightelIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isEl*leptonIsoSF[1])')
                         weightelIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isEl*leptonIsoSF[1])')
                         weightmuIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isMu*leptonIsoSF[1])')
                         weightmuIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isMu*leptonIsoSF[1])')
-                        weightTrigEffElUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
-                        weightTrigEffElDnStr= weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isEl*leptonIDSF[1])')
-                        weightTrigEffMuUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isMu*leptonIDSF[1])')
-                        weightTrigEffMuDnStr= weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isMu*leptonIDSF[1])')
+
+                        # FIXED 7/24/24 (ID --> HLT). Muon has indpependent [0] nominal, [1] up, [2] down. Electron has the shift stored in [1]
+                        weightTrigEffElUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
+                        weightTrigEffElDnStr= weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
+                        weightTrigEffMuUpStr  = weightStr.replace('leptonHLTSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[1])')
+                        weightTrigEffMuDnStr= weightStr.replace('leptonHLTSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[2])') # plus symbol is correct
+                        
                         weightPileupUpStr   = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
                         weightPileupDnStr   = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
                         weightBtagHFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[18]')
