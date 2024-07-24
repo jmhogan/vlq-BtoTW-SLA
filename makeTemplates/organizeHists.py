@@ -10,15 +10,17 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-region='all' # BAX, DCY, individuals, or all
+region='D' # BAX, DCY, individuals, or all
 if len(sys.argv)>1: region = str(sys.argv[1])
 
-isCategorized=False
+isCategorized=True
 year='all' # all
 
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
+
 pfix+='_Oct2023SysAll'
+
 #pfix = 'templatesTestA' # TEMP
 outDir = os.getcwd()+'/'+pfix+'/'
 
@@ -30,8 +32,9 @@ doPDF = False
 if isCategorized: doPDF=False # FIXME later
 
 #iPlot = "BpMass"
-iPlot = "OS1FatJetProbJ"
-#iPlot = "BpMass_ABCDnn"
+#iPlot = "OS1FatJetProbJ"
+iPlot = "BpMass_ABCDnn"
+
 
 if 'ABCDnn' in iPlot:
         doABCDnn = True
@@ -153,8 +156,8 @@ plotList = ['ST',
 if groupHists:
         outHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "RECREATE")
         for cat in catList:
-                histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
-
+                print("PROGRESS: "+cat)
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
                 dataHistFile = TFile.Open(f'{outDir}{cat[2:]}/datahists_{iPlot}.root', "READ")
                 isFirstHist = True
                 for dat in samples_data:
@@ -171,7 +174,8 @@ if groupHists:
                 for proc in bkgProcs:
                         # DID NOT IMPLEMENT REMOVETHRESHOLD
                         bkgHistFile = TFile.Open(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root', "READ")
-                        print(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root')
+
+                        #print(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root')
                         bkgGrp = bkgProcs[proc]
                         systHists = {}
                         isFirstHist = True
@@ -183,27 +187,34 @@ if groupHists:
 
                         for bkg in bkgGrp:
                                 if 'QCDHT300' in bkg:
-                                        print("Plotting without QCDHT300.")
+
+                                        #print("Plotting without QCDHT300.")
+
                                         continue
                                 if isFirstHist:
                                         hists = bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix).Clone(histoPrefix+'__'+proc)
                                         isFirstHist = False
                                         if doAllSys:
                                                 for syst in systematicList:
-                                                        print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
-                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up')
-                                                        systHists[f'{histoPrefix}__{proc}__{syst}__Dn'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn')
+
+                                                        #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
+                                                        try:
+                                                                systHists[f'{histoPrefix}__{proc}__{syst}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Up')
+                                                                systHists[f'{histoPrefix}__{proc}__{syst}Down'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Down')
+                                                        except: 
+                                                                print('could not process '+syst+' for '+bkg)
                                 else:
                                         #print(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         hists.Add(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         if doAllSys:
                                                 for syst in systematicList:
-                                                        print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
+
+                                                        #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
                                                         try:
-                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Up'))
-                                                                systHists[f'{histoPrefix}__{proc}__{syst}__Dn'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}__Dn'))
+                                                                systHists[f'{histoPrefix}__{proc}__{syst}Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Up'))
+                                                                systHists[f'{histoPrefix}__{proc}__{syst}Down'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Down'))
                                                         except:
-                                                                print(systHists)
+                                                                print('could not process '+syst+' for '+bkg)
 
                         outHistFile.cd()
                         hists.Write()
@@ -212,17 +223,38 @@ if groupHists:
                         bkgHistFile.Close()
 
                 sigHistFile = TFile.Open(f'{outDir}{cat[2:]}/sighists_{iPlot}.root', "READ")
+
+                systematicList = systListFull                                
                 for mass in massList:
+                        systHists = {}
                         isFirstHist = True
                         for signal in samples_signal:
                                 if f'Bprime_M{mass}' in signal:
                                         if isFirstHist:
                                                 hists = sigHistFile.Get(histoPrefix+'_'+signal).Clone(histoPrefix+'__BpM'+str(mass))
                                                 isFirstHist = False
+                                                if doAllSys:
+                                                        for syst in systematicList:
+                                                                #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
+                                                                try:
+                                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Up')
+                                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Down')
+                                                                except:
+                                                                        print('could not process '+syst+' for '+str(mass))
                                         else:
                                                 hists.Add(sigHistFile.Get(histoPrefix+'_'+signal))
+                                                if doAllSys:
+                                                        for syst in systematicList:
+                                                                #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
+                                                                try:
+                                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'].Add(sigHistFile.Get(f'{histoPrefix}_{syst}Up_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Up'))
+                                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'].Add(sigHistFile.Get(f'{histoPrefix}_{syst}Dn_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Down'))
+                                                                except:
+                                                                        print('could not process '+syst+' for '+str(mass))
                         outHistFile.cd()
                         hists.Write()
+                        for systHist in systHists:
+                                systHists[systHist].Write()
                 sigHistFile.Close()
 
 # ### Get yields
