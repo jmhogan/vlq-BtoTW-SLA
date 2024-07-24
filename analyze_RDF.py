@@ -25,6 +25,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         isEM  = category['isEM']
         tag   = category['tag']
         catStr = 'is'+isEM+'_'+tag
+
         if isCategorized: catStr += '_'+region
         
  # Define weights
@@ -86,7 +87,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         weightTrigEffElDnStr= weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
                         weightTrigEffMuUpStr  = weightStr.replace('leptonHLTSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[1])')
                         weightTrigEffMuDnStr= weightStr.replace('leptonHLTSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[2])') # plus symbol is correct
-                        
+
                         weightPileupUpStr   = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
                         weightPileupDnStr   = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
                         weightBtagHFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[18]')
@@ -121,6 +122,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 weightmuRDnStr       = 'LHEScaleWeight[1] * '+weightStr
                                 weightmuFUpStr       = 'LHEScaleWeight[5] * '+weightStr
                                 weightmuFDnStr       = 'LHEScaleWeight[3] * '+weightStr
+
                                 if 'Bprime' in sample.prefix: # signals don't have [4] being the 1,1 shift! [8] undefined
                                         weightmuRFcorrdUpStr = 'LHEScaleWeight[7] * '+weightStr
                                         weightmuRUpStr       = 'LHEScaleWeight[6] * '+weightStr
@@ -256,6 +258,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         else:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
                                                .Define('weight',weightStr)\
+
 
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')             
         if 'Single' not in process and doAllSys:

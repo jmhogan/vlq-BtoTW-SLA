@@ -8,6 +8,7 @@ targetlumi = {'2016APV':19500, '2016':16800, '2017':41480, '2018':59830}
 lumiStr = '138fbfb' #str(targetlumi/1000).replace('.','p') # 1/fb
 systListShort = ['toppt','muRFcorrd','jec','btagHFCO']
 systListFull = ['elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', 'Pileup', 'Prefire', 'jsf', 'toppt', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] 
+
 systListABCDnn = ['peak', 'tail', 'closure']
 
 class sample:
@@ -739,6 +740,7 @@ samples_ttbar = {
     "TTToSemiLeptonic20171000":TTToSemiLeptonic20171000,
     "TTToSemiLeptonic20181000":TTToSemiLeptonic20181000,
 }
+
 samples_singletop = {
     "STs2016APV":STs2016APV,
     "STs2016":STs2016,
@@ -796,10 +798,10 @@ samples_qcd = {
     "QCDHT20002016":QCDHT20002016,
     "QCDHT20002017":QCDHT20002017,
     "QCDHT20002018":QCDHT20002018,
-#    "QCDHT2002016APV":QCDHT2002016APV,
-#    "QCDHT2002016":QCDHT2002016,
-#    "QCDHT2002017":QCDHT2002017,
-#    "QCDHT2002018":QCDHT2002018,
+    #"QCDHT2002016APV":QCDHT2002016APV,
+    #"QCDHT2002016":QCDHT2002016,
+    #"QCDHT2002017":QCDHT2002017,
+    #"QCDHT2002018":QCDHT2002018,
     "QCDHT3002016APV":QCDHT3002016APV,
     "QCDHT3002016":QCDHT3002016,
     "QCDHT3002017":QCDHT3002017,

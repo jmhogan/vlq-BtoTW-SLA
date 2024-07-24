@@ -18,7 +18,9 @@ year='all' # all
 
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Oct2023Xiaohe'
+
+pfix+='_Oct2023SysAll'
+
 #pfix = 'templatesTestA' # TEMP
 outDir = os.getcwd()+'/'+pfix+'/'
 
@@ -32,6 +34,7 @@ if isCategorized: doPDF=False # FIXME later
 #iPlot = "BpMass"
 #iPlot = "OS1FatJetProbJ"
 iPlot = "BpMass_ABCDnn"
+
 
 if 'ABCDnn' in iPlot:
         doABCDnn = True
@@ -60,89 +63,89 @@ lumiSys = 0.018 #lumi uncertainty
 
 groupHists = True
 
-plotList = ['BpMass',
+plotList = ['ST',
+            'BpMass',
+            'HT',
+            'lepPt',
+            'lepEta',
+            'lepPhi',
+            'lepIso',
+            'MET',
+            'METphi',
+            'JetEta',
+            'JetPt'
+            'JetPhi',
+            'JetBtag',
+            'ForwJetEta',
+            'ForwJetPt' ,
+            'ForwJetPhi',
+            'FatJetEta',
+            'FatJetPt' ,
+            'FatJetPhi',
+            'FatJetSD' ,
+            'FatJetMatch',
+            'OS1FatJetEta',
+            'OS1FatJetPt' ,
+            'OS1FatJetPhi',
+            'OS1FatJetSD' ,
+            'NJetsCentral' ,
+            'NJetsForward' ,
+            'NBJets',
+            'NOSJets',
+            'NSSJets',
+            'NOSBJets',
+            'NSSBJets',
+            'NFatJets',
+            'NOSFatJets',
+            'NSSFatJets',
+            'minDR_twoAK8s',
+            'minDR_twoAK4s',
+            'PtRel',
+            'PtRelAK8',
+            'minDR',
+            'minDRAK8',
+            'FatJetTau21'  ,
+            'FatJetTau32'  ,
+            'OS1FatJetTau21'  ,
+            'OS1FatJetTau32'  ,
+            'FatJetProbJ',
+            'FatJetProbT',
+            'FatJetProbW',
+            'FatJetProbTvJ',
+            'FatJetProbWvJ',
+            'FatJetTag',
             'OS1FatJetProbJ',
-            # 'ST',
-            # 'HT',
-            # 'lepPt',
-            # 'lepEta',
-            # 'lepPhi',
-            # 'lepIso',
-            # 'MET',
-            # 'METphi',
-            # 'JetEta',
-            # 'JetPt'
-            # 'JetPhi',
-            # 'JetBtag',
-            # 'ForwJetEta',
-            # 'ForwJetPt' ,
-            # 'ForwJetPhi',
-            # 'FatJetEta',
-            # 'FatJetPt' ,
-            # 'FatJetPhi',
-            # 'FatJetSD' ,
-            # 'FatJetMatch',
-            # 'OS1FatJetEta',
-            # 'OS1FatJetPt' ,
-            # 'OS1FatJetPhi',
-            # 'OS1FatJetSD' ,
-            # 'NJetsCentral' ,
-            # 'NJetsForward' ,
-            # 'NBJets',
-            # 'NOSJets',
-            # 'NSSJets',
-            # 'NOSBJets',
-            # 'NSSBJets',
-            # 'NFatJets',
-            # 'NOSFatJets',
-            # 'NSSFatJets',
-            # 'minDR_twoAK8s',
-            # 'minDR_twoAK4s',
-            # 'PtRel',
-            # 'PtRelAK8',
-            # 'minDR',
-            # 'minDRAK8',
-            # 'FatJetTau21'  ,
-            # 'FatJetTau32'  ,
-            # 'OS1FatJetTau21'  ,
-            # 'OS1FatJetTau32'  ,
-            # 'FatJetProbJ',
-            # 'FatJetProbT',
-            # 'FatJetProbW',
-            # 'FatJetProbTvJ',
-            # 'FatJetProbWvJ',
-            # 'FatJetTag',
-            # 'OS1FatJetProbT',
-            # 'OS1FatJetProbW',
-            # 'OS1FatJetProbTvJ',
-            # 'OS1FatJetProbWvJ',
-            # 'OS1FatJetTag',
-            # 'nT',
-            # 'nW',
-            # 'Wmass',
-            # 'Wpt',
-            # 'Weta',
-            # 'Wphi',
-            # 'WMt',
-            # 'Wdrlep',
-            # 'minMlj',
-            # 'tmassMLJ',
-            # 'tptMLJ',
-            # 'tetaMLJ',
-            # 'tphiMLJ',
-            # 'tmassSSB',
-            # 'tptSSB',
-            # 'tetaSSB',
-            # 'tphiSSB',
-            # 'tdrWbMLJ',
-            # 'tdrWbSSB',
-            # 'BpPt',
-            # 'BpEta',
-            # 'BpPhi',
-            # 'BpDeltaR',
-            # 'BpPtBal',
-            # 'BpChi2',
-            # 'BpDecay',
+            'OS1FatJetProbT',
+            'OS1FatJetProbW',
+            'OS1FatJetProbTvJ',
+            'OS1FatJetProbWvJ',
+            'OS1FatJetTag',
+            'nT',
+            'nW',
+            'Wmass',
+            'Wpt',
+            'Weta',
+            'Wphi',
+            'WMt',
+            'Wdrlep',
+            'minMlj',
+            'tmassMLJ',
+            'tptMLJ',
+            'tetaMLJ',
+            'tphiMLJ',
+            'tmassSSB',
+            'tptSSB',
+            'tetaSSB',
+            'tphiSSB',
+            'tdrWbMLJ',
+            'tdrWbSSB',
+            'BpPt',
+            'BpEta',
+            'BpPhi',
+            'BpDeltaR',
+            'BpPtBal',
+            'BpChi2',
+            'BpDecay',
             # 'BpMass_ABCDnn',
             # 'ST_ABCDnn'
 ]
@@ -171,6 +174,7 @@ if groupHists:
                 for proc in bkgProcs:
                         # DID NOT IMPLEMENT REMOVETHRESHOLD
                         bkgHistFile = TFile.Open(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root', "READ")
+
                         #print(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root')
                         bkgGrp = bkgProcs[proc]
                         systHists = {}
@@ -183,13 +187,16 @@ if groupHists:
 
                         for bkg in bkgGrp:
                                 if 'QCDHT300' in bkg:
+
                                         #print("Plotting without QCDHT300.")
+
                                         continue
                                 if isFirstHist:
                                         hists = bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix).Clone(histoPrefix+'__'+proc)
                                         isFirstHist = False
                                         if doAllSys:
                                                 for syst in systematicList:
+
                                                         #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
                                                         try:
                                                                 systHists[f'{histoPrefix}__{proc}__{syst}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Up')
@@ -201,6 +208,7 @@ if groupHists:
                                         hists.Add(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         if doAllSys:
                                                 for syst in systematicList:
+
                                                         #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
                                                         try:
                                                                 systHists[f'{histoPrefix}__{proc}__{syst}Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Up'))
@@ -215,6 +223,7 @@ if groupHists:
                         bkgHistFile.Close()
 
                 sigHistFile = TFile.Open(f'{outDir}{cat[2:]}/sighists_{iPlot}.root', "READ")
+
                 systematicList = systListFull                                
                 for mass in massList:
                         systHists = {}
@@ -261,3 +270,4 @@ if groupHists:
 #                 for syst in systematicList:
 #                         for ud in ['Up','Dn']:
 #                                 yieldTable[histoPrefix+syst+ud]={}
+

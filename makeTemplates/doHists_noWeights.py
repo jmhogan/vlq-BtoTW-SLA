@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# python3 -u doHists.py . BpMass_ABCDnn all 1 L
+# python3 -u doHists_rdf.py . BpMass_ABCDnn all 1 L
 # optional arguments:
 #    argv1: outDir (default cwd)
 #    argv2: iPlot (discriminant from plotList. default 'HT')
@@ -12,37 +12,33 @@
 # Outputs .p files containing a dictionary of histograms
 
 import os,sys,time,math,datetime,pickle,itertools,getopt
-from ROOT import TH1D,gROOT,TFile,TTree
+from ROOT import TH1D,gROOT,TFile,TTree,gDirectory
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
 from numpy import linspace
 
-from analyze import *
-from samples import samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal
+from analyze_noWeights import *
+from samples import samples_electroweak, samples_wjets, samples_ttbar, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal
 from utils import *
 
 gROOT.SetBatch(1)
 start_time = time.time()
 
 # ------------- File location and total lumi ---------------
-
-#step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Oct2023_fullRun2/'
-step1Dir = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnnMar2024/'
+step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Oct2023_fullRun2/'
+#step1Dir = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnn/'
 
 # ------------- Arguments and default values ------------
-iPlot = 'HT' #choose a discriminant from plotList below!
+iPlot = 'BpMass' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
-region = 'all'
+region = 'A'
 if len(sys.argv)>3: region=sys.argv[3]
-isCategorized = False
+isCategorized = True
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 
 doABCDnn = False
 if 'ABCDnn' in iPlot:
         doABCDnn = True
-        import samples_ttbar_abcdnn
-else:
-        import samples_ttbar
 
 doJetRwt= 1
 doAllSys= False
@@ -56,7 +52,12 @@ print('Set pfix to '+pfix)
 # -------------- Groups of background samples to use --------------
 
 # this is a list of group dictionaries. "wjets" has entries like "WJetsHT2002018":WJetsHT2002018, where the 2nd is the class
-bkgList = [samples_electroweak,samples_wjets,samples_ttbar,samples_singletop,samples_ttbarx,samples_qcd]
+bkgList = {"ewk"      : samples_electroweak,
+           "wjets"    : samples_wjets,
+           "ttbar"    : samples_ttbar,
+           "singletop": samples_singletop,
+           "ttx"      : samples_ttbarx,
+           "qcd"      : samples_qcd}
 
 ### TO-DO: in samples.py, make up an entry for each year for ABCDnn with dummy information where needed.
 ### When iPlot == a transform variable, bkgList = [samples_electroweak,samples_ttbarx,samples_abcdnn] (singletop?)
@@ -66,11 +67,12 @@ bkgList = [samples_electroweak,samples_wjets,samples_ttbar,samples_singletop,sam
 # ------------- Parameters to divide up the histograms --------------
 
 if len(sys.argv)>5: isEMlist=[str(sys.argv[5])]
-else: isEMlist = ['E']
+else: isEMlist = ['L']
 if len(sys.argv)>6: taglist=[str(sys.argv[6])]
 else: 
 	taglist = ['all']
-	if isCategorized: taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+	if isCategorized: #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+                taglist=['allWlep','allTlep']
 
 # ------------- Definition of plots to make ------------------
 ### TO-DO: add ABCDnn branches
@@ -176,6 +178,7 @@ catList = list(itertools.product(isEMlist,taglist))
 print('Cat list: '+str(catList))
 nCats  = len(catList)
 catInd = 1
+
 for cat in catList:
         print('==================== Category: '+str(cat)+' ======================')
         catDir = cat[0]+'_'+cat[1]
@@ -183,37 +186,33 @@ for cat in catList:
         if len(sys.argv)>1:
                 outDir=sys.argv[1]
                 sys.path.append(outDir)
-        else: 
+        else:
                 outDir = os.getcwd()+'/'+pfix+'/'+catDir
-                if not os.path.exists(outDir): os.system('mkdir -p '+outDir)                
+                if not os.path.exists(outDir): os.system('mkdir -p '+outDir)
+
         category = {'isEM':cat[0],'tag':cat[1]} # THINK: is this necessary?
 
-        print('Running analyze! Storing in outDir = '+outDir)
-        datahists = {}
+        print(f'Running analyze! Storing in outDir = {outDir}')
+        dataHistFile = TFile.Open(f'{outDir}/datahists_{iPlot}.root', "RECREATE")
         for data in samples_data.keys(): # "data" is the class 
                 print('------------ '+data+' -------------')
                 fileprefix = (samples_data[data].samplename).split('/')[1]+((samples_data[data].samplename).split('/')[2])[7]
                 tTreeData[data]=readTreeNominal(fileprefix,samples_data[data].year,step1Dir) ## located in utils.py
 
                 ### For analyze_RDF make the switch here (and similar regions below)
-                ### Could "datahists" now be "updated" with more histptrs instead of hists? 
-                datahists.update(analyze(tTreeData,samples_data[data],False,iPlot,plotList[iPlot],category,region,isCategorized))
+                dataHistFile.cd()
+                analyze(tTreeData,samples_data[data],False,iPlot,plotList[iPlot],category,region,isCategorized,dataHistFile)
                 if catInd==nCats: 
                         print('deleting '+data)
                         del tTreeData[data]
+        dataHistFile.Close()
 
-        ### this function puts overflow into the last column -- in utils? Works on histptrs? If not, do this later?
-        for data in datahists.keys(): overflow(datahists[data]) 
 
-        ### store the dictionary of hists in a pickle file. Change this to open output ROOT, loop and .Write histptrs?
-        pickle.dump(datahists,open(outDir+'/datahists_'+iPlot+'.p','wb'))
-        del datahists
-
-        ### Now we begin the same general process but for simulated backgrounds
-        igrp = 0
-        for bkgGrp in bkgList:
-                bkghists  = {}
-                for bkg in bkgGrp.keys():
+        # ### Now we begin the same general process but for simulated backgrounds
+        for proc in bkgList:
+                bkgHistFile = TFile.Open(f'{outDir}/bkghists_{proc}_{iPlot}.root', "RECREATE")
+                bkgGrp = bkgList[proc]
+                for bkg in bkgGrp:
                         print('------------ '+bkg+' -------------')
                         fileprefix = (bkgGrp[bkg].samplename).split('/')[1]
                         tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir)
@@ -222,21 +221,18 @@ for cat in catList:
                                         for ud in ['Up','Dn']:
                                                 print("        "+syst+ud)
                                                 tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,syst.upper()+ud.lower(),step1Dir) ## located in utils.py
-                        bkghists.update(analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized))
+                        bkgHistFile.cd()
+                        analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, bkgHistFile)
                         if catInd==nCats:
                                 print('deleting '+bkg)
                                 del tTreeBkg[bkg]
                                 if doAllSys:
                                         for syst in shapesFiles:
                                                 for ud in ['Up','Dn']: del tTreeBkg[bkg+syst+ud]
+                bkgHistFile.Close()
+        
 
-                for bkg in bkghists.keys(): negBinCorrection(bkghists[bkg])
-                for bkg in bkghists.keys():   overflow(bkghists[bkg])
-                pickle.dump(bkghists,open(outDir+'/bkghists'+str(igrp)+'_'+iPlot+'.p','wb'))
-                igrp += 1
-        del bkghists
-
-        sighists  = {}
+        sigHistFile = TFile.Open(f'{outDir}/sighists_{iPlot}.root', "RECREATE")
         for sig in samples_signal.keys(): 
                 print('------------- '+sig+' ------------')
                 fileprefix = (samples_signal[sig].samplename).split('/')[1]
@@ -246,19 +242,54 @@ for cat in catList:
                                 for ud in ['Up','Dn']:
                                         print("        "+syst+ud)
                                         tTreeSig[sig+syst+ud]=readTreeShift(fileprefix,samples_signal[sig].year,syst.upper()+ud.lower(),step1Dir)
-                sighists.update(analyze(tTreeSig,samples_signal[sig],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized))
+                sigHistFile.cd()
+                analyze(tTreeSig,samples_signal[sig],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, sigHistFile)
                 if catInd==nCats: 
                         print('deleting '+sig)
                         del tTreeSig[sig]
                         if doAllSys:
                                 for syst in shapesFiles:
                                         for ud in ['Up','Dn']: del tTreeSig[sig+syst+ud]
-
-        for sig in sighists.keys(): negBinCorrection(sighists[sig])
-        for sig in sighists.keys(): overflow(sighists[sig])	
-        pickle.dump(sighists,open(outDir+'/sighists_'+iPlot+'.p','wb'))
-        del sighists
+        sigHistFile.Close()
 
         catInd+=1
+
+### Deals with overflow and negBinCorrection
+for cat in catList:
+        catDir = cat[0]+'_'+cat[1]
+        if len(sys.argv)>1:
+                outDir=sys.argv[1]
+                sys.path.append(outDir)
+        else:   
+                outDir = os.getcwd()+'/'+pfix+'/'+catDir
+        print(f'Formatting histograms in {outDir}')
+
+        dataHistFile = TFile.Open(f'{outDir}/datahists_{iPlot}.root', "UPDATE")
+        for key in gDirectory.GetListOfKeys():
+                hist = key.ReadObj()
+                try:
+                        overflow(hist) # this function puts overflow into the last column
+                        hist.Write()
+                except:
+                        hist.Print()
+        dataHistFile.Close()
+        
+        for bkgGrp in bkgList:
+                bkgHistFile = TFile.Open(f'{outDir}/bkghists_{bkgGrp}_{iPlot}.root', "UPDATE")
+                for key in gDirectory.GetListOfKeys():
+                        hist = key.ReadObj()
+                        negBinCorrection(hist)
+                        overflow(hist)
+                        hist.Write()
+                bkgHistFile.Close()
+
+        sigHistFile = TFile.Open(f'{outDir}/sighists_{iPlot}.root', "UPDATE")
+        for key in gDirectory.GetListOfKeys():
+                hist = key.ReadObj()
+                negBinCorrection(hist)
+                overflow(hist)
+                hist.Write()
+        sigHistFile.Close()
+        
 
 print("--- %s minutes ---" % (round((time.time() - start_time)/60,2)))
