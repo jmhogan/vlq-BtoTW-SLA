@@ -221,10 +221,10 @@ totBkgTemp2 = {}
 totBkgTemp3 = {}
 #histrange = {} # from plotTemplates
 for tag in taglist:
-        perNGeV = 0.01
-        if 'wjet' in tag or 'ttbar' in tag:
-                perNGeV = 100
-        elif 'dnnLarge' in tag: perNGeV = 1
+        perNGeV = 100 # 0.01 in plotTemplates was for DNN
+        #if 'wjet' in tag or 'ttbar' in tag:
+        #        perNGeV = 100
+        #elif 'dnnLarge' in tag: perNGeV = 1
         print('------------------ ',tag,' with perNGeV = ',perNGeV,' -----------------------')
 
         tagStr=tag
