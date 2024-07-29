@@ -149,6 +149,8 @@ def formatUpperHist(histogram,th1hist):
                 histogram.GetXaxis().SetLabelSize(0.25)
                 histogram.GetXaxis().SetTitleOffset(1.0)
                 histogram.GetXaxis().SetTitle('B quark decay mode')
+        #if 'BpMass' in histogram.GetName():
+        #        histogram.GetYaxis().SetTitleOffset(1.0)
 
         if blind == True:
                 histogram.GetXaxis().SetLabelSize(0.045)
@@ -160,7 +162,7 @@ def formatUpperHist(histogram,th1hist):
         else:
                 histogram.GetYaxis().SetLabelSize(0.05)
                 histogram.GetYaxis().SetTitleSize(0.06)
-                histogram.GetYaxis().SetTitleOffset(.82)
+                histogram.GetYaxis().SetTitleOffset(1.1) #used to be 0.82. overlaps with label
 
         histogram.GetYaxis().CenterTitle()
         if plotNorm:
@@ -191,7 +193,7 @@ def formatLowerHist(histogram):
 
         histogram.GetYaxis().SetLabelSize(0.15)
         histogram.GetYaxis().SetTitleSize(0.145)
-        histogram.GetYaxis().SetTitleOffset(.3)
+        histogram.GetYaxis().SetTitleOffset(0.3)
         if not doRealPull: 
                 histogram.GetYaxis().SetTitle('Data/Bkg')
         else: 
@@ -475,7 +477,7 @@ for tag in taglist:
                 bkgHTgerr.SetFillColor(kBlack)
 
                 gStyle.SetOptStat(0)
-                c1 = TCanvas("c1","c1",1200,1000)
+                c1 = TCanvas("c1","c1",1200,1000) # used to be 1200 and 1000, but the y-axis labels might overlap
                 gStyle.SetErrorX(0.5)
                 yDiv=0.25
                 if blind == True: yDiv=0.01
@@ -492,14 +494,14 @@ for tag in taglist:
                 uPad.SetTopMargin(0.08)
                 uPad.SetBottomMargin(uMargin)
                 uPad.SetRightMargin(rMargin)
-                uPad.SetLeftMargin(.105)
+                uPad.SetLeftMargin(0.15) #used to be 0.105. y axis label overlaps with title
                 uPad.Draw()
                 if blind == False:
                         lPad=TPad("lPad","",0,0,1,yDiv) #for sigma runner
                         lPad.SetTopMargin(0)
                         lPad.SetBottomMargin(.4)
                         lPad.SetRightMargin(rMargin)
-                        lPad.SetLeftMargin(.105)
+                        lPad.SetLeftMargin(0.15) #used to be 0.105. y axis label overlaps with title
                         lPad.SetGridy()
                         lPad.Draw()
                 if not doNormByBinWidth: hData.SetMaximum(1.4*max(hData.GetMaximum(),bkgHT.GetMaximum()))
