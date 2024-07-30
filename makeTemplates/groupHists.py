@@ -10,16 +10,16 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-region='A' # BAX, DCY, individuals, or all
+region='D' # BAX, DCY, individuals, or all
 if len(sys.argv)>1: region = str(sys.argv[1])
 
-isCategorized=True
+isCategorized=True # TEMP
 year='all' # all
 
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
-pfix+='_Apr2024SysAll' #TEMP
-#pfix+='_Oct2023SysAll'
+pfix+='_Apr2024SysAll'
+#pfix+='_Apr2024SysAll_validation' #TEMP. validation only
 outDir = os.getcwd()+'/'+pfix+'/'
 
 removeThreshold = 0.0005 # TODO: add if necessary
@@ -28,10 +28,13 @@ scaleSignalXsecTo1pb = False # Set to True if analyze.py ever uses a non-1 cross
 doAllSys = True # TEMP
 doPDF = False
 if isCategorized: doPDF=False # FIXME later
+skipQCD300 = Flase # we have enough number of events per bin in control plots for BpM, so it's okay to include it. actually provides better data/MC agreement
 
-#iPlot = "BpMass"
+#iPlot = "BpMass" # TEMP
 #iPlot = "OS1FatJetProbJ"
 iPlot = "BpMass_ABCDnn"
+
+if len(sys.argv)>2: iPlot = str(sys.argv[2])
 
 if 'ABCDnn' in iPlot:
         doABCDnn = True
@@ -49,8 +52,8 @@ if '2D' in outDir:
         isEMlist =['L']
 taglist = ['all']
 if isCategorized: 
-        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
-        taglist=['allWlep','allTlep']
+        taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        #taglist=['allWlep','allTlep']
         #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
         
 catList = ['is'+item[0]+'_'+item[1] for item in list(itertools.product(isEMlist,taglist))]
@@ -155,7 +158,10 @@ if groupHists:
         outHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "RECREATE")
         for cat in catList:
                 print("PROGRESS: "+cat)
-                histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+                if region=="all":
+                        histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
+                else:
+                        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
 
                 dataHistFile = TFile.Open(f'{outDir}{cat[2:]}/datahists_{iPlot}.root', "READ")
                 isFirstHist = True
@@ -172,7 +178,6 @@ if groupHists:
                 for proc in bkgProcs:
                         # DID NOT IMPLEMENT REMOVETHRESHOLD
                         bkgHistFile = TFile.Open(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root', "READ")
-                        #print(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root')
                         bkgGrp = bkgProcs[proc]
                         systHists = {}
                         isFirstHist = True
@@ -183,9 +188,14 @@ if groupHists:
                                 systematicList = systListFull
 
                         for bkg in bkgGrp:
-                                if not doABCDnn and 'QCDHT300' in bkg:
-                                        print("Plotting without QCDHT300.")
-                                        continue
+                                if doABCDnn:
+                                        if 'QCDHT200' in bkg:
+                                                print("Plotting without QCDHT200.") # abcdnn trained without having qcd200 as input (only has two unweighted evets)
+                                                continue
+                                else:
+                                        if 'QCDHT300' in bkg and skipQCD300:
+                                                print("Plotting without QCDHT300.") # some QCD300 has anomalously large genweights. visible when not having enough events per bin
+                                                continue
                                 if isFirstHist:
                                         hists = bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix).Clone(histoPrefix+'__'+proc)
                                         isFirstHist = False
@@ -251,6 +261,9 @@ if groupHists:
 ###################
 # Does not record data yield. Update if needed. Sample code in doTemplates_RDF.py
 
+if not getYields:
+        exit()
+        
 yieldTable = {}
 yieldStatErrTable = {}
 
@@ -258,7 +271,10 @@ combinedHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "READ
 
 # Initialize empty yields dictionaries for table printing
 for cat in catList:
-        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+        if region=="all":
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
+        else:
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'        
         yieldTable[histoPrefix]={}
         yieldStatErrTable[histoPrefix]={}
 
@@ -283,9 +299,12 @@ for cat in catList:
 
         yieldTable[histoPrefix]['dataOverBkg'] = yieldTable[histoPrefix]['data']/yieldTable[histoPrefix]['totBkg']
         yieldStatErrTable[histoPrefix]['dataOverBkg'] = yieldStatErrTable[histoPrefix]['data']/yieldStatErrTable[histoPrefix]['totBkg']
-
-        yieldTable[histoPrefix]['ABCDnn'] = yieldTable[histoPrefix]['ttbar'] + yieldTable[histoPrefix]['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[histoPrefix]['singletop']
-        yieldStatErrTable[histoPrefix]['ABCDnn'] = math.sqrt(yieldStatErrTable[histoPrefix]['ttbar']**2 + yieldStatErrTable[histoPrefix]['wjets']**2 + yieldStatErrTable[histoPrefix]['qcd']**2 + yieldStatErrTable[histoPrefix]['singletop']**2)
+        if doABCDnn:
+                yieldTable[histoPrefix]['ABCDnn'] = yieldTable[histoPrefix]['ttbar'] + yieldTable[histoPrefix]['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[histoPrefix]['singletop']
+                yieldStatErrTable[histoPrefix]['ABCDnn'] = math.sqrt(yieldStatErrTable[histoPrefix]['ttbar']**2 + yieldStatErrTable[histoPrefix]['wjets']**2 + yieldStatErrTable[histoPrefix]['qcd']**2 + yieldStatErrTable[histoPrefix]['singletop']**2)
+        else:
+                yieldTable[histoPrefix]['ABCDnn'] = 0
+                yieldStatErrTable[histoPrefix]['ABCDnn'] = 0
 
         if doAllSys:
                 for syst in systListFull+systListABCDnn:
@@ -304,8 +323,10 @@ for cat in catList:
                         for syst in dummyList:
                                 for ud in ['Up', 'Down']:
                                         yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=0
+                #for ud in ['Up', 'Down']:
+                        #yieldTable[f'{histoPrefix}{syst}{ud}']['ABCDnn']=yieldTable[f'{histoPrefix}{syst}{ud}']['ttbar'] + yieldTable[f'{histoPrefix}{syst}{ud}']['wjets'] + yieldTable[f'{histoPrefix}{syst}{ud}']['qcd'] + yieldTable[f'{histoPrefix}{syst}{ud}']['singletop']
+                        #yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['ABCDnn']=math.sqrt(yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['ttbar']**2 + yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['wjets']**2 + yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['qcd']**2 + yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['singletop']**2)
 
-        
 table = []
 table.append(['break'])
 table.append(['break'])
@@ -314,7 +335,10 @@ table.append(['YIELDS']+[proc for proc in list(bkgProcs.keys())+['ABCDnn', 'data
 # yields for bkg and data
 for cat in catList:
         row = [cat]
-        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+        if region=="all":
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
+        else:
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
         for proc in list(bkgProcs.keys())+['ABCDnn', 'data']:
                 row.append(str(round(yieldTable[histoPrefix][proc],3))+' $\pm$ '+str(round(yieldStatErrTable[histoPrefix][proc],3)))
         table.append(row)
@@ -325,7 +349,10 @@ table.append(['YIELDS']+sigList)
 # yields for signals
 for cat in catList:
         row = [cat]
-        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+        if region == "all":
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
+        else:
+                histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
         for proc in sigList:
                 row.append(str(round(yieldTable[histoPrefix][proc],3))+' $\pm$ '+str(round(yieldStatErrTable[histoPrefix][proc],3)))
         table.append(row)
@@ -342,7 +369,10 @@ for isEM in isEMlist:
                 row = [proc]
                 for cat in catList:
                         if not ('is'+isEM in cat): continue
-                        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+                        if region=="all":
+                                histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
+                        else:
+                                histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
                         if proc=='data': 
                                 row.append(' & '+str(int(yieldTable[histoPrefix][proc])))
                         else:
@@ -359,13 +389,16 @@ if doAllSys:
         table.append(['break'])
         table.append(['','Systematics'])
         table.append(['break'])
-        for proc in list(bkgProcs.keys())+sigList:
+        for proc in list(bkgProcs.keys())+sigList+['ABCDnn']:
                 table.append([proc]+[cat for cat in catList]+['\\\\'])
                 for syst in systListFull+systListABCDnn:
                         for ud in ['Up', 'Down']:
                                 row = [syst+ud]
                                 for cat in catList:
-                                        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+                                        if region=="all":
+                                                histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
+                                        else:
+                                                histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
                                         nomHist = histoPrefix
                                         shpHist = f'{histoPrefix}{syst}{ud}'
                                         try:
