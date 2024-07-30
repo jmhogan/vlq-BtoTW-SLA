@@ -61,36 +61,45 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 if doABCDnn:
                         weightStr += f' * {factorABCDnn[tag]}'
                 else:
-                        weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
+                        weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * L1PreFiringWeight_Nom * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
 
-                        weightPrefireUpStr   = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
-                        weightPrefireDnStr   = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')
+                        weightPrefireUpStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
+                        weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')
+
+                        # Reco has the main value in [0], up in [1], down in [2]. Up/Down are not additive on [0]
                         weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
-                        weightelRecoSFDnStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
+                        weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
                         weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
-                        weightmuRecoSFDnStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
-                        weightelIdSFUpStr    = weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
-                        weightelIdSFDnStr    = weightStr.replace('leptonIDSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
-                        weightmuIdSFUpStr    = weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[1])')
-                        weightmuIdSFDnStr    = weightStr.replace('leptonIDSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[2])')
-                        weightelIsoSFUpStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isEl*leptonIsoSF[1])')
-                        weightelIsoSFDnStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isEl*leptonIsoSF[1])')
-                        weightmuIsoSFUpStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isMu*leptonIsoSF[1])')
-                        weightmuIsoSFDnStr   = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isMu*leptonIsoSF[1])')
-                        weightTrigEffElUpStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
-                        weightTrigEffElDnStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isEl*leptonIDSF[1])')
-                        weightTrigEffMuUpStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]+isMu*leptonIDSF[1])')
-                        weightTrigEffMuDnStr = weightStr.replace('leptonHLTSF[0]','(leptonIDSF[0]-isMu*leptonIDSF[1])')
-                        weightPileupUpStr    = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
-                        weightPileupDnStr    = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
-                        weightBtagHFCOUpStr  = weightStr.replace('btagWeights[17]','btagWeights[18]')
-                        weightBtagHFCODnStr  = weightStr.replace('btagWeights[17]','btagWeights[19]')
-                        weightBtagHFUCUpStr  = weightStr.replace('btagWeights[17]','btagWeights[20]')
-                        weightBtagHFUCDnStr  = weightStr.replace('btagWeights[17]','btagWeights[21]')
-                        weightBtagLFCOUpStr  = weightStr.replace('btagWeights[17]','btagWeights[22]')
-                        weightBtagLFCODnStr  = weightStr.replace('btagWeights[17]','btagWeights[23]')
-                        weightBtagLFUCUpStr  = weightStr.replace('btagWeights[17]','btagWeights[24]')
-                        weightBtagLFUCDnStr  = weightStr.replace('btagWeights[17]','btagWeights[25]')
+                        weightmuRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
+
+                        # FIXED 7/24/24 (HLT --> ID). Muon has independent [0] nominal, [1] up, [2] down. Electron has the shift stored in [1]
+                        weightelIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
+                        weightelIdSFDnStr= weightStr.replace('leptonIDSF[0]','(leptonIDSF[0]-isEl*leptonIDSF[1])')
+                        weightmuIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(isEl*leptonIDSF[0]+isMu*leptonIDSF[1])')
+                        weightmuIdSFDnStr= weightStr.replace('leptonIDSF[0]','(isEl*leptonIDSF[0]+isMu*leptonIDSF[2])') # plus symbol is correct
+
+                        # ISOs are not from correctionlib, [0] nominal, [1] is additive shift
+                        weightelIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isEl*leptonIsoSF[1])')
+                        weightelIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isEl*leptonIsoSF[1])')
+                        weightmuIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isMu*leptonIsoSF[1])')
+                        weightmuIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isMu*leptonIsoSF[1])')
+
+                        # FIXED 7/24/24 (ID --> HLT). Muon has indpependent [0] nominal, [1] up, [2] down. Electron has the shift stored in [1]
+                        weightTrigEffElUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
+                        weightTrigEffElDnStr= weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
+                        weightTrigEffMuUpStr  = weightStr.replace('leptonHLTSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[1])')
+                        weightTrigEffMuDnStr= weightStr.replace('leptonHLTSF[0]','(isEl*leptonHLTSF[0]+isMu*leptonHLTSF[2])') # plus symbol is correct
+                        
+                        weightPileupUpStr   = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
+                        weightPileupDnStr   = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
+                        weightBtagHFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[18]')
+                        weightBtagHFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[19]')
+                        weightBtagHFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[20]')
+                        weightBtagHFUCDnStr   = weightStr.replace('btagWeights[17]','btagWeights[21]')
+                        weightBtagLFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[22]')
+                        weightBtagLFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[23]')
+                        weightBtagLFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[24]')
+                        weightBtagLFUCDnStr   = weightStr.replace('btagWeights[17]','btagWeights[25]')
                         ### These weights are here in case we ever switch back to btag shape-reweighting scale factors
                         # weightBtagHFUpStr   = weightStr.replace('btagWeights[0]','btagWeights[1]')
                         # weightBtagHFDnStr   = weightStr.replace('btagWeights[0]','btagWeights[2]')
@@ -119,6 +128,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                         weightmuRFcorrdUpStr = 'LHEScaleWeight[7] * '+weightStr
                                         weightmuRUpStr       = 'LHEScaleWeight[6] * '+weightStr
                                         weightmuFUpStr       = 'LHEScaleWeight[4] * '+weightStr
+                                        
                         else:
                                 weightmuRFcorrdUpStr = '1.15 * '+weightStr
                                 weightmuRFcorrdDnStr = '0.85 * '+weightStr
@@ -149,9 +159,15 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 isEMCut+=' && isEl==1'
 
 	# Define cuts by region. Use region "all" for all selected events
-        cut  = ' && W_MT < 200'
+        cut  = ' && W_MT < 200' #TEMP. TODO: Comment out once it got implemented in the analyzer
+        # if doABCDnn: # TEMP. validation only
+        #         cut  = ' && W_MT < 200 && OS1FatJetProbJ_ABCDnn>0.9'
+        # else:
+        #         cut  = ' && W_MT < 200 && gcOSFatJet_pNetJ[0]>0.9'
+                
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
+        
         if region == 'isoVT':
                 cut += ' && lepton_miniIso < 0.05'
         if '1pb' in region: 
@@ -240,6 +256,10 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         # Declare histograms --- COMMENTS FOR UNCERTAINTIES NOT BEING RUN YET
         process = sample.prefix
 
+        
+        # TEMP: jet veto. TODO: Remove it once it got implemented in the analyzer
+        #dfjetVeto = df.Define("NJets_forward_new", "(int) Sum(gcforwJet_eta < 3.0 || gcforwJet_eta > 2.5 || gcforwJet_phi < -1.57 || gcforwJet_phi > -0.87)")
+        
         if '[0]' in plotTreeName:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
                                                .Define('weight',weightStr)\
@@ -370,7 +390,17 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 hist_jecDn = seljecDn.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jecDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
 
                         ### TO-DO: check how many PDF variations live in NanoAOD, find branch names and get this segment set up correctly
-                        # for i in range(100): histptrs[iPlot+'pdf'+str(i)+'_'+lumicatproc] = sel.Define('weightpdf'+str(i),weightStr+'*pdfWeights['+str(i)+']').Histo1D((iPlot+'pdf'+str(i)+'_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpdf'+str(i))
+                        if doMuRF: # doMuRF happens to be False only for WW, WZ, ZZ, which do not have pdf branches
+                                if 'Bprime' in sample.prefix or 'STs' in sample.prefix:
+                                        pdfVariations = 101
+                                else:
+                                        pdfVariations =	103
+                                for i in range(pdfVariations):
+                                        hist_pdf = sel.Define(f'weightpdf{i}',f'{weightStr}*LHEPdfWeight[{i}]')\
+                                                      .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pdf{i}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,f'weightpdf{i}')
+                                        hist_pdf.Write()
+                        else:
+                                print(f'{process} does not have pdf branches.')
 
         # WRITE all the histograms (hopefully no event loop gets triggered until here?)
         hist.Write()
