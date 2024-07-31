@@ -257,17 +257,24 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         process = sample.prefix
 
         
-        # TEMP: jet veto. TODO: Remove it once it got implemented in the analyzer
         if '[0]' in plotTreeName:
-                df = RDataFrame(tTree[process]).Filter(fullcut)\
+                df_original = RDataFrame(tTree[process]).Filter(fullcut)\
                                                .Define('weight',weightStr)\
-                                               .Define(iPlot, plotTreeName)\
-                                               .Define("NJets_forward_new", "(int) Sum(gcforwJet_eta < 3.0 || gcforwJet_eta > 2.5 || gcforwJet_phi < -1.57 || gcforwJet_phi > -0.87)") # TEMP
+                                               .Define(iPlot, plotTreeName)
                 plotTreeName = iPlot
         else:
-                df = RDataFrame(tTree[process]).Filter(fullcut)\
-                                               .Define('weight',weightStr)\
-                                               .Define("NJets_forward_new", "(int) Sum(gcforwJet_eta < 3.0 || gcforwJet_eta > 2.5 || gcforwJet_phi < -1.57 || gcforwJet_phi > -0.87)") # TEMP
+                df_original = RDataFrame(tTree[process]).Filter(fullcut)\
+                                               .Define('weight',weightStr)
+
+        # TEMP: jet veto. TODO: Remove it once it got implemented in the analyzer and change df_original to df
+        # 0 for run<319077. num of forwJets in the veto zone for run>=319077
+        if "NJets_forward" in plotTreeName and sample.year=="2018":
+                        df = df_original.Define("NJets_forward_subtract", "(int) Sum(run>=319077 && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
+                                        .Define("NJets_forward_new", "NJets_forward-NJets_forward_subtract")
+        else: # not needed for other variables. can be improved
+                df = df_original.Define("NJets_forward_subtract", "(int) 0")\
+                                .Define("NJets_forward_new", "NJets_forward - NJets_forward_subtract")
+                                        
 
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
         
