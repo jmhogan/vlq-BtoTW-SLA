@@ -268,13 +268,18 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
         # TEMP: jet veto. TODO: Remove it once it got implemented in the analyzer and change df_original to df
         # 0 for run<319077. num of forwJets in the veto zone for run>=319077
-        if "NJets_forward" in plotTreeName and sample.year=="2018":
-                        df = df_original.Define("NJets_forward_subtract", "(int) Sum(run>=319077 && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
-                                        .Define("NJets_forward_new", "NJets_forward-NJets_forward_subtract")
-        else: # not needed for other variables. can be improved
-                df = df_original.Define("NJets_forward_subtract", "(int) 0")\
-                                .Define("NJets_forward_new", "NJets_forward - NJets_forward_subtract")
-                                        
+        if sample.year=="2018":
+                df = df_original.Define("NJets_forward_subtract", "(int) Sum(run>=319077 && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
+                                .Redefine("NJets_forward", "NJets_forward-NJets_forward_subtract")
+                if 'Single' in process:
+                        NEvents = df.Count().GetValue()
+                        NEvents_adjusted = df.Filter("NJets_forward_subtract>0").Count().GetValue()
+                        print(f'Number of events affected in {process}: {NEvents_adjusted}')
+                        print(f'Number of events in {process}: {NEvents}')
+                        print(f'Percentage of events affected in {process}: {NEvents_adjusted/NEvents}')
+        else:
+                df = df_original.Define("NJets_forward_subtract", "(int) 0")
+                                           
 
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
         

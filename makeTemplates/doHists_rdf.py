@@ -108,7 +108,8 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
          'OS1FatJetPhi':('gcOSFatJet_phi[0]',linspace(-3.2,3.2, 65).tolist(),';B decay AK8 phi'),
          'OS1FatJetSD' :('gcOSFatJet_sdmass[0]',linspace(0, 500, 51).tolist(),';B decay AK8 soft drop mass [GeV]'),
          'NJetsCentral' :('NJets_central',linspace(0, 10, 11).tolist(),';central AK4 jet multiplicity'),
-         'NJetsForward' :('NJets_forward_new',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity'), # TEMP: change back to NJets_forward once veto map got applied in the main analyzer
+         'NJetsForward' :('NJets_forward',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity'),
+         'NJetsForwardSubtract':('NJets_forward_subtract',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity adjustment'),
          'NBJets':('NJets_DeepFlavL',linspace(0, 10, 11).tolist(),';DeepJet loose multiplicity'),
          'NOSJets':('NOS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 opp-side jets'),
          'NSSJets':('NSS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 same-side jets'),
@@ -213,6 +214,7 @@ for cat in catList:
                         print('deleting '+data)
                         del tTreeData[data]
         dataHistFile.Close()
+        exit()
 
 
         # ### Now we begin the same general process but for simulated backgrounds
