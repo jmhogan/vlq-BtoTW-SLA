@@ -62,6 +62,16 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         weightStr += f' * {factorABCDnn[tag]}'
                 else:
                         weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * L1PreFiringWeight_Nom * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
+                        
+                        if isCategorized:
+                                if tag=='allWlep' or tag=="tagTjet" or tag=="untagWlep":
+                                        weightStr += f' * gcFatJet_pnetweights[6]'
+                                        weightpNetTtagUpStr = weightStr.replace('gcFatJet_pnetweights[6]', 'gcFatJet_pnetweights[7]')
+                                        weightpNetTtagDnStr = weightStr.replace('gcFatJet_pnetweights[6]', 'gcFatJet_pnetweights[8]')
+                                elif tag=="allTlep" or tag=="tagWjet" or tag=="untagTlep":
+                                        weightStr += f' * gcFatJet_pnetweights[9]'
+                                        weightpNetWtagUpStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[10]')
+                                        weightpNetWtagDnStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[11]')
 
                         weightPrefireUpStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
                         weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')
@@ -256,29 +266,39 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         # Declare histograms --- COMMENTS FOR UNCERTAINTIES NOT BEING RUN YET
         process = sample.prefix
 
-        
-        if '[0]' in plotTreeName:
-                df_original = RDataFrame(tTree[process]).Filter(fullcut)\
-                                               .Define('weight',weightStr)\
-                                               .Define(iPlot, plotTreeName)
-                plotTreeName = iPlot
-        else:
-                df_original = RDataFrame(tTree[process]).Filter(fullcut)\
-                                               .Define('weight',weightStr)
+        # TODO: Switch back to this piece of code once jet veto got implemented in the analyzer
+        # if '[0]' in plotTreeName:
+        #         df = RDataFrame(tTree[process]).Filter(fullcut)\
+        #                                        .Define('weight',weightStr)\
+        #                                        .Define(iPlot, plotTreeName)
+        #         plotTreeName = iPlot
+        # else:
+        #         df = RDataFrame(tTree[process]).Filter(fullcut)\
+        #                                        .Define('weight',weightStr)
 
-        # TEMP: jet veto. TODO: Remove it once it got implemented in the analyzer and change df_original to df
+        # TEMP: jet veto
         # 0 for run<319077. num of forwJets in the veto zone for run>=319077
         if sample.year=="2018":
-                df = df_original.Define("NJets_forward_subtract", "(int) Sum(run>=319077 && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
-                                .Redefine("NJets_forward", "NJets_forward-NJets_forward_subtract")
+                df_original = RDataFrame(tTree[process]).Define("NJets_forward_subtract", "(int) Sum(run>=319077 && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
+                                                        .Redefine("NJets_forward", "NJets_forward-NJets_forward_subtract")
                 if 'Single' in process:
-                        NEvents = df.Count().GetValue()
-                        NEvents_adjusted = df.Filter("NJets_forward_subtract>0").Count().GetValue()
+                        NEvents = df_original.Count().GetValue()
+                        NEvents_adjusted = df_original.Filter("NJets_forward_subtract>0").Count().GetValue()
                         print(f'Number of events affected in {process}: {NEvents_adjusted}')
                         print(f'Number of events in {process}: {NEvents}')
                         print(f'Percentage of events affected in {process}: {NEvents_adjusted/NEvents}')
         else:
-                df = df_original.Define("NJets_forward_subtract", "(int) 0")
+                df_original = RDataFrame(tTree[process])
+
+
+        if '[0]' in plotTreeName:
+                df = df_original.Filter(fullcut)\
+                                .Define('weight',weightStr)\
+                                .Define(iPlot, plotTreeName)
+                plotTreeName = iPlot                                                                                              
+        else:                                                       
+                df = df_original.Filter(fullcut)\
+                                .Define('weight',weightStr)
                                            
 
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
@@ -376,6 +396,17 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_btagLFUCUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFUCUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFUCUp' )
                         hist_btagLFUCDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_btagLFUCDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightbtagLFUCDn' )
 
+                        if isCategorized:
+                                if tag=='allWlep' or tag=="tagTjet" or tag=="untagWlep":
+                                        hist_pNetTtagUp = sel.Define('weightpNetTtagUp', weightpNetTtagUpStr)\
+                                                             .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetTtagUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetTtagUp' )
+                                        hist_pNetTtagDn = sel.Define('weightpNetTtagDn', weightpNetTtagDnStr)\
+                                                             .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetTtagDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetTtagDn' )
+                                elif tag=='allTlep' or tag=="tagWjet" or tag=="untagTlep":
+                                        hist_pNetWtagUp = sel.Define('weightpNetWtagUp', weightpNetWtagUpStr)\
+                                                             .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetWtagUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetWtagUp' )
+                                        hist_pNetWtagDn = sel.Define('weightpNetWtagDn', weightpNetWtagDnStr)\
+			                                     .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetWtagDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetWtagDn' )
         
                         if process+'JERup' in tTree:
                                 dfjerUp    = RDataFrame(tTree[process+'JERup'])
@@ -473,9 +504,14 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         if process+'JECup' in tTree:
                                 hist_jecUp.Write()
                                 hist_jecDn.Write()
-                        
-                        ### TO-DO: check how many PDF variations live in NanoAOD, find branch names and get this segment set up correctly
-                        # for i in range(100): histptrs[iPlot+'pdf'+str(i)+'_'+lumicatproc] = sel.Define('weightpdf'+str(i),weightStr+'*pdfWeights['+str(i)+']').Histo1D((iPlot+'pdf'+str(i)+'_'+lumicatproc,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpdf'+str(i))
+
+                        if isCategorized:
+                                if tag=='allWlep' or tag=="tagTjet" or tag=="untagWlep":
+                                        hist_pNetTtagUp.Write()
+                                        hist_pNetTtagDn.Write()
+                                elif tag=="allTlep" or tag=="tagWjet" or tag=="untagTlep":
+                                        hist_pNetWtagUp.Write()
+                                        hist_pNetWtagDn.Write()
 
         # del df
         # if 'Single' not in process and doAllSys and not doABCDnn:
