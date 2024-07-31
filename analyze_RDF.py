@@ -258,17 +258,17 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
         
         # TEMP: jet veto. TODO: Remove it once it got implemented in the analyzer
-        #dfjetVeto = df.Define("NJets_forward_new", "(int) Sum(gcforwJet_eta < 3.0 || gcforwJet_eta > 2.5 || gcforwJet_phi < -1.57 || gcforwJet_phi > -0.87)")
-        
         if '[0]' in plotTreeName:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
                                                .Define('weight',weightStr)\
-                                               .Define(iPlot, plotTreeName)
+                                               .Define(iPlot, plotTreeName)\
+                                               .Define("NJets_forward_new", "(int) Sum(gcforwJet_eta < 3.0 || gcforwJet_eta > 2.5 || gcforwJet_phi < -1.57 || gcforwJet_phi > -0.87)") # TEMP
                 plotTreeName = iPlot
         else:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
-                                               .Define('weight',weightStr)
-                
+                                               .Define('weight',weightStr)\
+                                               .Define("NJets_forward_new", "(int) Sum(gcforwJet_eta < 3.0 || gcforwJet_eta > 2.5 || gcforwJet_phi < -1.57 || gcforwJet_phi > -0.87)") # TEMP
+
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')
         
         if 'Single' not in process and doAllSys:

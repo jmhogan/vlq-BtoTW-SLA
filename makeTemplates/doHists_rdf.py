@@ -108,7 +108,7 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
          'OS1FatJetPhi':('gcOSFatJet_phi[0]',linspace(-3.2,3.2, 65).tolist(),';B decay AK8 phi'),
          'OS1FatJetSD' :('gcOSFatJet_sdmass[0]',linspace(0, 500, 51).tolist(),';B decay AK8 soft drop mass [GeV]'),
          'NJetsCentral' :('NJets_central',linspace(0, 10, 11).tolist(),';central AK4 jet multiplicity'),
-         'NJetsForward' :('NJets_forward',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity'),
+         'NJetsForward' :('NJets_forward_new',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity'), # TEMP: change back to NJets_forward once veto map got applied in the main analyzer
          'NBJets':('NJets_DeepFlavL',linspace(0, 10, 11).tolist(),';DeepJet loose multiplicity'),
          'NOSJets':('NOS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 opp-side jets'),
          'NSSJets':('NSS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 same-side jets'),
