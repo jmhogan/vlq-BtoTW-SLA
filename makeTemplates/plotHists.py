@@ -21,22 +21,26 @@ region='lowMT2pb'
 if len(sys.argv)>2: region=str(sys.argv[2])
 isCategorized=True
 if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
-pfix='templates'+region
-if not isCategorized: pfix='kinematics'+region
-pfix+='_Apr2024SysAll'
-#pfix+='_Apr2024SysAll_validation' # TEMP. validation only
-if len(sys.argv)>4: pfix=str(sys.argv[4])
-templateDir=os.getcwd()+'/'+pfix+'/'
+if isCategorized:
+        pfix=f'templates{region}'
+else:
+        pfix=f'kinematics{region}'
+if len(sys.argv)>4:
+        pfix+=str(sys.argv[4])
+else:
+        pfix+='_Apr2024SysAll'
+        #pfix+='_Apr2024SysAll_validation' # TEMP. validation only
+templateDir = f'{os.getcwd()}/{pfix}/'
 
 year = 'all'
 if len(sys.argv)>8: year=sys.argv[8]
 
 print('Plotting',region,'is categorized?',isCategorized,' for year',year)
 
-isRebinned=''#_rebinned_stat0p3' #post for ROOT file names
 if len(sys.argv)>7:
-        isRebinned='_rebinned_stat'+str(sys.argv[7])
-isRebinned = '_rebinned_stat0p2' #TEMP
+        isRebinned=str(sys.argv[7])
+else:
+        isRebinned=''
         
 saveKey = '' # tag for plot names
 
@@ -112,7 +116,7 @@ if isCategorized == True:
         #taglist = ['allWlep','allTlep']
         if ('D' in region or 'C' in region or region=='all') and 'BpMass' in iPlot and 'validation' not in pfix:
                 partialBlind = True
-                print("Partial blind {iPlot} for {region}.")
+                print(f'Partial blind {iPlot} for {region}.')
 
 lumiSys = 0.018 # lumi uncertainty
 
@@ -211,6 +215,7 @@ def formatLowerHist(histogram):
                 highside = histogram.GetBinLowEdge(histogram.GetNbinsX()+1) #TEMP
                 histogram.GetXaxis().SetRangeUser(lowside,highside) #TEMP
 
+                
 print(templateDir+tempsig)
 RFile1 = TFile(templateDir+tempsig)
 print(templateDir+tempsig)
@@ -250,7 +255,7 @@ for tag in taglist:
                                 print("There is no "+proc+"!!!!!!!!")
                                 print("tried to open "+histPrefix+'__'+proc)
                                 pass
-                        
+
                 if plotNorm:
                         for proc in bkgProcList:
                                 bkghists[proc+catStr].Scale(1/totBkg)
@@ -421,7 +426,7 @@ for tag in taglist:
                         drawQCD = False
                 else:
                         drawQCD = True
-                        
+
                 try: 
                         drawQCD = bkghists['qcd'+catStr].Integral()/bkgHT.Integral()>.005 #don't plot QCD if it is less than 0.5%
                 except: pass
@@ -556,7 +561,7 @@ for tag in taglist:
                 tagString = ''
                 if isEM=='E': flvString+='e+jets'
                 if isEM=='M': flvString+='#mu+jets'
-		#if isEM=='L': flvString+='region '+region # TEMP
+                #if isEM=='L': flvString+='region '+region # TEMP
                 tagString = ''
                 if isCategorized: tagString = tag
                 if tagString.endswith(', '): tagString = tagString[:-2]		

@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# python3 groupHists.py $iPlot $region $isCategorized $pfix
+# python3 groupHists.py BpMass D True _Apr2024SysAll
 import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F, TH2D
 parent = os.path.dirname(os.getcwd())
@@ -10,17 +12,30 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-region='D' # BAX, DCY, individuals, or all
-if len(sys.argv)>1: region = str(sys.argv[1])
+if len(sys.argv)>1:
+	iPlot = str(sys.argv[1])
+else:   
+        iPlot = 'BpMass'
+if len(sys.argv)>2:
+        region = str(sys.argv[2])
+else:
+        region='D' # BAX, DCY, individuals, or all
+if len(sys.argv)>3:
+        isCategorized = bool(eval(sys.argv[3]))
+else:
+        isCategorized=True
 
-isCategorized=True # TEMP
-year='all' # all
+if isCategorized:
+        pfix='templates'+region
+else:
+        pfix='kinematics'+region
+if len(sys.argv)>4:
+        pfix+=str(sys.argv[4])
+else:
+        pfix+='_Apr2024SysAll'
+outDir=f'{os.getcwd()}/{pfix}/'
 
-pfix='templates'+region
-if not isCategorized: pfix='kinematics'+region
-pfix+='_Apr2024SysAll'
-#pfix+='_Apr2024SysAll_validation' #TEMP. validation only
-outDir = os.getcwd()+'/'+pfix+'/'
+year='all'
 
 removeThreshold = 0.0005 # TODO: add if necessary
 
@@ -28,13 +43,7 @@ scaleSignalXsecTo1pb = False # Set to True if analyze.py ever uses a non-1 cross
 doAllSys = True # TEMP
 doPDF = False
 if isCategorized: doPDF=False # FIXME later
-skipQCD300 = Flase # we have enough number of events per bin in control plots for BpM, so it's okay to include it. actually provides better data/MC agreement
-
-#iPlot = "BpMass" # TEMP
-#iPlot = "OS1FatJetProbJ"
-iPlot = "BpMass_ABCDnn"
-
-if len(sys.argv)>2: iPlot = str(sys.argv[2])
+skipQCD300 = False # we have enough number of events per bin in control plots for BpM, so it's okay to include it. actually provides better data/MC agreement
 
 if 'ABCDnn' in iPlot:
         doABCDnn = True
@@ -196,6 +205,10 @@ if groupHists:
                                         if 'QCDHT300' in bkg and skipQCD300:
                                                 print("Plotting without QCDHT300.") # some QCD300 has anomalously large genweights. visible when not having enough events per bin
                                                 continue
+                                        # uncomment this if QCD200 not in rdf outputs
+                                        #if 'QCDHT200' in bkg:
+                                        #        print("Plotting without QCDHT200.")
+                                        #        continue
                                 if isFirstHist:
                                         hists = bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix).Clone(histoPrefix+'__'+proc)
                                         isFirstHist = False
