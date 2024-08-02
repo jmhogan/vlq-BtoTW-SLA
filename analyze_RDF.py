@@ -281,12 +281,12 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         if sample.year=="2018":
                 df_original = RDataFrame(tTree[process]).Define("NJets_forward_subtract", "(int) Sum((run>=319077 || (run==1 && event%100 >= 35) ) && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
                                                         .Redefine("NJets_forward", "NJets_forward-NJets_forward_subtract")
-                if 'Single' in process:
-                        NEvents = df_original.Count().GetValue()
-                        NEvents_adjusted = df_original.Filter("NJets_forward_subtract>0").Count().GetValue()
-                        print(f'Number of events affected in {process}: {NEvents_adjusted}')
-                        print(f'Number of events in {process}: {NEvents}')
-                        print(f'Percentage of events affected in {process}: {NEvents_adjusted/NEvents}')
+                # if 'Single' in process:
+                #         NEvents = df_original.Count().GetValue()
+                #         NEvents_adjusted = df_original.Filter("NJets_forward_subtract>0").Count().GetValue()
+                #         print(f'Number of events affected in {process}: {NEvents_adjusted}')
+                #         print(f'Number of events in {process}: {NEvents}')
+                #         print(f'Percentage of events affected in {process}: {NEvents_adjusted/NEvents}')
         else:
                 df_original = RDataFrame(tTree[process])
 
