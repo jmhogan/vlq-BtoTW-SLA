@@ -279,7 +279,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         # TEMP: jet veto
         # 0 for run<319077. num of forwJets in the veto zone for run>=319077
         if sample.year=="2018":
-                df_original = RDataFrame(tTree[process]).Define("NJets_forward_subtract", "(int) Sum(run>=319077 && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
+                df_original = RDataFrame(tTree[process]).Define("NJets_forward_subtract", "(int) Sum((run>=319077 || (run==1 && event%100 >= 35) ) && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
                                                         .Redefine("NJets_forward", "NJets_forward-NJets_forward_subtract")
                 if 'Single' in process:
                         NEvents = df_original.Count().GetValue()
