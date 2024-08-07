@@ -357,6 +357,9 @@ for tag in taglist:
                                                         systematicList.append('muRFcorrdNewWJT')
                                                 except:
                                                         "Unable to remove muR, muF, muRFcorrd and append New"
+                                        else: # proxy rebinned by plotting only muRFcorrd
+                                                systematicList.remove('muR')
+		                                systematicList.remove('muF')
                                 for syst in systematicList:
                                         for ud in shiftlist:
                                                 try:
