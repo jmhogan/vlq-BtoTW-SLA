@@ -72,10 +72,10 @@ lumiSys = 0.018 #lumi uncertainty
 groupHists = True # TEMP: turn this on to group histograms
 getYields = True # TEMP: turn this on to get yield tables
 
-uncorrList = ['TrigEffEl', 'TrigEffMu', 'jer', 'jec', 'btagHFUC', 'btagLFUC']
-corrList = systListFull.copy()
-for syst in uncorrList:
-        corrList.remove(syst)        
+uncorrList_sf = ['TrigEffEl', 'TrigEffMu', 'jer', 'jec', 'btagHFUC', 'btagLFUC']
+corrList_sf = systListFull.copy()
+for syst in uncorrList_sf:
+        corrList_sf.remove(syst)        
 #specialList = ['muRFcorrd', 'muR', 'muF'] # TODO: not sure if this is needed
 
 ### Group histograms
@@ -111,9 +111,13 @@ if groupHists:
 
                         if doABCDnn and (proc=="ttbar" or proc=="qcd" or proc=="wjets" or proc=="singletop"):
                                 systematicList = systListABCDnn
+                                corrList = systListABCDnn
+                                uncorrList = []
                         else:
                                 systematicList = systListFull
-
+                                corrList = corrList_sf
+                                uncorrList = uncorrList_sf
+                
                         for bkg in bkgGrp:
                                 if doABCDnn:
                                         if 'QCDHT200' in bkg:
@@ -148,11 +152,13 @@ if groupHists:
                                                                 systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgPrefix}'))
                                                         except:
                                                                 print('could not process '+syst+' for '+bkg)
-                        # add years
+
+                        # add years for corr uncertainties
                         nomHistAllYears = nomHists[f'{histoPrefix}__{proc}2016APV'].Clone(f'{histoPrefix}__{proc}')
                         for syst in corrList:
                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}2016APVUp'].Clone(f'{histoPrefix}__{proc}__{syst}Up')
                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}2016APVDown'].Clone(f'{histoPrefix}__{proc}__{syst}Down')
+                        
                         for year in yearList:
                                 if year!="2016APV":
                                         nomHistAllYears.Add(nomHists[f'{histoPrefix}__{proc}{year}'])
@@ -161,15 +167,14 @@ if groupHists:
                                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'])
 
                         # uncorr years
-                        if not doABCDnn or (proc=="ewk" or proc=="ttx"):
-                                for syst in uncorrList:
-                                        for shiftyear in yearList:
-                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Clone()
-                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Clone()
-                                                for nomyear in yearList:
-                                                        if nomyear!=shiftyear:
-                                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
-                                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
+                        for syst in uncorrList:
+                                for shiftyear in yearList:
+                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Clone()
+                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Clone()
+                                        for nomyear in yearList:
+                                                if nomyear!=shiftyear:
+                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
+                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
 
                         outHistFile.cd()
                         nomHistAllYears.Write()
@@ -184,7 +189,7 @@ if groupHists:
                         # add nominal and correlated systs
                         nomHistsAllYears = sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_2016').Clone(histoPrefix+'__BpM'+str(mass)) # no 2016APV for signal MCs
                         if doAllSys:
-                                for syst in corrList:
+                                for syst in systematicList:
                                         try:
                                                 systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_Bprime_M{mass}_2016').Clone(f'{histoPrefix}__BpM{mass}__{syst}Up')
                                                 systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_Bprime_M{mass}_2016').Clone(f'{histoPrefix}__BpM{mass}__{syst}Down')
@@ -194,7 +199,7 @@ if groupHists:
                         for year in ['2017', '2018']:
                                 nomHistsAllYears.Add(sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_{year}'))
                                 if doAllSys:
-                                        for syst in corrList:
+                                        for syst in corrList_sf:
                                                 try:
                                                         systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'].Add(sigHistFile.Get(f'{histoPrefix}_{syst}Up_Bprime_M{mass}_{year}'))
                                                         systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'].Add(sigHistFile.Get(f'{histoPrefix}_{syst}Dn_Bprime_M{mass}_{year}'))
@@ -202,7 +207,7 @@ if groupHists:
                                                         print('could not process '+syst+' for '+str(mass))
 
                         # make hists for uncorrleated systs
-                        for syst in uncorrList:
+                        for syst in uncorrList_sf:
                                 for shiftyear in ['2016', '2017', '2018']:
                                         systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_Bprime_M{mass}_{shiftyear}').Clone(f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up')
                                         systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_Bprime_M{mass}_{shiftyear}').Clone(f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down')
@@ -230,12 +235,10 @@ yieldTable = {}
 yieldStatErrTable = {}
 
 systListFullUCOC = systListFull.copy()
-for syst in uncorrList:
+for syst in uncorrList_sf:
         systListFullUCOC.remove(syst)
-        for year in ['2016APV', '2016', '2017', '2018']:
-                systListFullUCOC.add(f'{syst}{year}')
-print(systListFull)
-exit()
+        for year in yearList:
+                systListFullUCOC.append(f'{syst}{year}')
 
 combinedHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "READ")
 
@@ -277,35 +280,26 @@ for cat in catList:
                 yieldStatErrTable[histoPrefix]['ABCDnn'] = 0
 
         if doAllSys:
-                for syst in systListFull+systListABCDnn:
+                for syst in systListFullUCOC+systListABCDnn:
                         for ud in ['Up', 'Down']:
-                                if (not doABCDnn) and (proc=='ewk' or proc=='ttx') and syst in uncorrList:
-                                        yieldTable[f'{histoPrefix}{syst}2016APV{ud}']={}
-                                        yieldTable[f'{histoPrefix}{syst}2016{ud}']={}
-                                        yieldTable[f'{histoPrefix}{syst}2017{ud}']={}
-                                        yieldTable[f'{histoPrefix}{syst}2018{ud}']={}
-                                else:
-                                        yieldTable[f'{histoPrefix}{syst}{ud}']={}
+                                yieldTable[f'{histoPrefix}{syst}{ud}']={}
                 for proc in list(bkgProcs.keys())+sigList:
-                        if doABCDnn:
-                                if proc=='ewk' or proc=='ttx':
-                                        systematicList = systListFull
-                                else:
-                                        systematicList = systListABCDnn
-                                        dummyList = systListFull
-                                        
+                        if doABCDnn and (proc=='ttbar' or proc=='qcd' or proc=='wjets' or proc=='singletop'):
+                                systematicList = systListABCDnn
                         else:
-                                systematicList = systListFull
-                                dummyList = systListABCDnn
+                                systematicList = systListFullUCOC
+                                
                         for syst in systematicList:
                                 for ud in ['Up', 'Down']:
-                                        yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=combinedHistFile.Get(f'{histoPrefix}__{proc}__{syst}{ud}').Integral()
-                        for syst in dummyList:
-                                for ud in ['Up', 'Down']:
-                                        yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=0
-                #for ud in ['Up', 'Down']:
-                        #yieldTable[f'{histoPrefix}{syst}{ud}']['ABCDnn']=yieldTable[f'{histoPrefix}{syst}{ud}']['ttbar'] + yieldTable[f'{histoPrefix}{syst}{ud}']['wjets'] + yieldTable[f'{histoPrefix}{syst}{ud}']['qcd'] + yieldTable[f'{histoPrefix}{syst}{ud}']['singletop']
-                        #yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['ABCDnn']=math.sqrt(yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['ttbar']**2 + yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['wjets']**2 + yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['qcd']**2 + yieldStatErrTable[f'{histoPrefix}{syst}{ud}']['singletop']**2)
+                                        if 'BpM' in proc and 'APV' in syst:
+                                                yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=0
+                                        else:
+                                                yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=combinedHistFile.Get(f'{histoPrefix}__{proc}__{syst}{ud}').Integral()
+
+                if doABCDnn:
+                        for syst in systListABCDnn:
+                                yieldTable[f'{histoPrefix}{syst}Up']['ABCDnn'] = yieldTable[f'{histoPrefix}{syst}Up']['ttbar'] + yieldTable[f'{histoPrefix}{syst}Up']['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[f'{histoPrefix}{syst}Up']['singletop']
+                                yieldTable[f'{histoPrefix}{syst}Down']['ABCDnn'] = yieldTable[f'{histoPrefix}{syst}Down']['ttbar'] + yieldTable[f'{histoPrefix}{syst}Down']['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[f'{histoPrefix}{syst}Down']['singletop']
 
 table = []
 table.append(['break'])
@@ -371,7 +365,7 @@ if doAllSys:
         table.append(['break'])
         for proc in list(bkgProcs.keys())+sigList+['ABCDnn']:
                 table.append([proc]+[cat for cat in catList]+['\\\\'])
-                for syst in systListFull+systListABCDnn:
+                for syst in systListFullUCOC+systListABCDnn:
                         for ud in ['Up', 'Down']:
                                 row = [syst+ud]
                                 for cat in catList:
@@ -384,7 +378,7 @@ if doAllSys:
                                         try:
                                                 row.append(' & '+str(round(yieldTable[shpHist][proc]/(yieldTable[nomHist][proc]+1e-20),2)))
                                         except:
-                                                print(f'Missing {proc} for systematic: {syst}')
+                                                pass
                                 row.append('\\\\')
                                 table.append(row)
                 table.append(['break'])
