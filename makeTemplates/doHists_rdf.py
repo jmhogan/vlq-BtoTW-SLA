@@ -32,6 +32,7 @@ step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Apr2024_fullRu
 iPlot = 'BpMass_ABCDnn' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
 region = 'D'
+
 if len(sys.argv)>3: region=sys.argv[3]
 isCategorized = True
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
@@ -214,8 +215,6 @@ for cat in catList:
                         print('deleting '+data)
                         del tTreeData[data]
         dataHistFile.Close()
-        exit()
-
 
         # ### Now we begin the same general process but for simulated backgrounds
         for proc in bkgList:

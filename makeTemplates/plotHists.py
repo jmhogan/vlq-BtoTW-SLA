@@ -51,6 +51,7 @@ sig1leg='B (1.0 TeV, 1 pb)'
 sig2='BpM1800' #  choose the 2nd signal to plot
 sig2leg='B (1.8 TeV, 1 pb)'
 
+
 scaleSignals = False
 if not isCategorized: scaleSignals = True
 sigScaleFact = 100
@@ -77,6 +78,7 @@ else:
                        ]
         ABCDnnProcList = ['qcd','wjets','singletop','ttbar']
 minorProcList = ['ewk', 'ttx']
+
 
 if plotABCDnn:
         bkgHistColors = {'ABCDnn': kRed-7,'ewk':kMagenta-6,'ttx':kAzure+2}
@@ -178,6 +180,7 @@ def formatUpperHist(histogram,th1hist):
                                 histogram.SetMinimum(0.000101);
                         else: 
                                 histogram.SetMinimum(0.25)		
+
                 if yLog:
                         uPad.SetLogy()
                         if not doNormByBinWidth:
@@ -571,6 +574,7 @@ for tag in taglist:
                 chLatex.DrawLatex(0.7, 0.54, flvString)
                 chLatex.DrawLatex(0.7, 0.48, tagString)
 
+
                 if drawQCD: 
                         leg = TLegend(0.5,0.62,0.95,0.89)
                 if not drawQCD or blind: 
@@ -699,12 +703,15 @@ for tag in taglist:
                 prelimTex2.SetTextFont(61)
                 prelimTex2.SetLineWidth(2)
                 prelimTex2.SetTextSize(0.08)
+
                 #if blind: prelimTex2.SetTextSize(0.08)
                 #prelimTex2.DrawLatex(0.12,0.93,"CMS")
+
 
                 prelimTex3=TLatex()
                 prelimTex3.SetNDC()
                 prelimTex3.SetTextAlign(12)
+
                 #prelimTex3.SetTextFont(52)
                 prelimTex3.SetTextFont(42)
                 prelimTex3.SetTextSize(0.05)
@@ -715,6 +722,7 @@ for tag in taglist:
                 # if blind: 
                 #         prelimTex3.DrawLatex(0.26,0.945,"Private work (CMS data & simulation)") #"Preliminary")
                 prelimTex3.DrawLatex(0.12,0.94,"Private work (CMS data & simulation)") #"Preliminary")
+
 
                 if blind == False and not doRealPull:
                         lPad.cd()
@@ -753,6 +761,7 @@ for tag in taglist:
                                 if bkgHT.GetBinContent(binNo)!=0:
                                         pullUncBandNorm.SetPointEYhigh(binNo-1,totBkgTemp2[catStr].GetErrorYhigh(binNo-1)/bkgHT.GetBinContent(binNo))
                                         pullUncBandNorm.SetPointEYlow(binNo-1,totBkgTemp2[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))			
+
                         pullUncBandNorm.SetFillStyle(3001)
                         pullUncBandNorm.SetFillColor(2)
                         pullUncBandNorm.SetLineColor(2)
@@ -765,6 +774,7 @@ for tag in taglist:
                                 if bkgHT.GetBinContent(binNo)!=0:
                                         pullUncBandStat.SetPointEYhigh(binNo-1,totBkgTemp1[catStr].GetErrorYhigh(binNo-1)/bkgHT.GetBinContent(binNo))
                                         pullUncBandStat.SetPointEYlow(binNo-1,totBkgTemp1[catStr].GetErrorYlow(binNo-1)/bkgHT.GetBinContent(binNo))			
+
                         pullUncBandStat.SetFillStyle(3001)
                         pullUncBandStat.SetFillColor(3)
                         pullUncBandStat.SetLineColor(3)
@@ -871,6 +881,7 @@ for tag in taglist:
 	# hDatamerged = RFile1.Get(histPrefixE+'__'+datalabel).Clone()
 	# hsig1merged = RFile1.Get(histPrefixE+'__'+siglabel).Clone(histPrefixE+'__sig1merged')
 	# hsig1merged.Add(RFile1.Get(histPrefixM+'__'+siglabel).Clone())
+
         # if isCategorized:
         #         hsig2merged = RFile1.Get(histPrefixE+'__'+siglabel.replace(sig1,sig2)).Clone(histPrefixE+'__sig2merged')
         #         hsig2merged.Add(RFile1.Get(histPrefixM+'__'+siglabel.replace(sig1,sig2)).Clone())
@@ -880,6 +891,7 @@ for tag in taglist:
 	# hDatamerged.Add(RFile1.Get(histPrefixM+'__'+datalabel).Clone())
 	# hsig1merged.Scale(xsec[sig1])
 	# hsig2merged.Scale(xsec[sig2])
+
         # if len(isRebinned) > 0: 
         #         hsig1merged.Scale(10) # 100fb input -> typical 1pb
         #         hsig2merged.Scale(10)                
@@ -1168,6 +1180,7 @@ for tag in taglist:
         #         #print('SCALING TOTAL BACKGOUND FOR RATIO: data =',hDatamerged.Integral(),', mc =',bkgHTmerged.Integral())
         #         #pullmerged.Scale(hDatamerged.Integral()/bkgHTmerged.Integral())
 	# 	pullmerged.Divide(hDatamerged, pullmerged)                
+
         #         # if 'probj' in iPlot:
         #         #         print('probjratio = {')
         #         #         for binNo in range(0,hDatamerged.GetNbinsX()+2):
@@ -1232,6 +1245,7 @@ for tag in taglist:
 	# 	pullLegendmerged.SetLineStyle(0)
 	# 	pullLegendmerged.SetBorderSize(0)
 	# 	pullLegendmerged.SetTextFont(42)
+
         #         #pullLegendmerged.AddEntry(pullmerged,"Data/(MC*"+scale+")","pl")
         #         pullLegendmerged.AddEntry(pullmerged,"Data/MC","pl")
 	# 	if not doOneBand: pullLegendmerged.AddEntry(pullUncBandStat , "Bkg. uncert. (shape syst.)" , "f")

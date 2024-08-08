@@ -31,11 +31,9 @@ lumiInTemplates= lumiStr
 # -- Use "removalKeys" to remove specific systematics from the output file.
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-#iPlot='BpMass_ABCDnn'
-iPlot='BpMass' #TEMP
+iPlot='BpMass_ABCDnn'
 if len(sys.argv)>1: iPlot=str(sys.argv[1])
-#folder = 'templatesD_Apr2024SysAll_correctQCD300'
-folder = 'templatesD_Oct2023SysAll' #TEMP
+folder = 'templatesD_Apr2024SysAll_correctQCD300'
 
 if len(sys.argv)>2: folder=str(sys.argv[2])
 cutString = ''

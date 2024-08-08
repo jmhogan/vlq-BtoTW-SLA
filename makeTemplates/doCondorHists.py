@@ -6,8 +6,8 @@ else: runDir = thisDir
 if os.getcwd()[-17:] == 'singleLepAnalyzer': os.chdir(os.getcwd()+'/makeTemplates/')
 outputDir = thisDir+'/'
 
-region='D' #all, BAX, DCY, individuals
-categorize=1 #1==categorize into 6 tags
+region='all' #all, BAX, DCY, individuals
+categorize=0 #1==categorize into 6 tags
 
 cTime=datetime.datetime.now()
 date='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
@@ -18,8 +18,11 @@ if not categorize: pfix='kinematics'+region
 pfix+='_Apr2024SysAll'
 
 plotList = [#distribution name as defined in "doHists.py"
-        # 'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
         'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
+        'BpMass_ABCDnn', #:('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]')
+        # 'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
+        #'ST_ABCDnn', #:('gcJet_ST_ABCDnn',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)')
+  
         # 'HT', #:('gcJet_HT',linspace(0, 5000, 51).tolist(),';H_{T} (GeV)'), 
         # 'lepPt' , #:('lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
         # 'lepEta', #:('lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
@@ -101,10 +104,7 @@ plotList = [#distribution name as defined in "doHists.py"
         # 'BpPtBal', #:('Bprime_ptbal',linspace(0,3,51).tolist(),';B quark t/W p_{T} ratio'),
         # 'BpChi2', #:('Bprime_chi2',linspace(0,1000,51).tolist(),';B quark reconstruction #chi^{2}'), # CHECK ME, what range?
         # 'BpDecay', #:('Bdecay_obs',linspace(0,5,6).tolist(),';B quark mode (1: Tjet+lepW, 2: Wjet+lepT, 3: AK8+lepW, 4: AK8+lepT')
-        #'BpMass_ABCDnn', #:('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]')
-        #'OS1FatJetProbJ_ABCDnn',
-        #'ST_ABCDnn', #:('gcJet_ST_ABCDnn',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)')
-	]
+]
 
 isEMlist = ['L'] #['E','M']
 if '2D' in pfix: isEMlist = ['L']
