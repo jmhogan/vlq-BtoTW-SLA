@@ -7,9 +7,25 @@ import os
 targetlumi = {'2016APV':19500, '2016':16800, '2017':41480, '2018':59830}
 lumiStr = '138fbfb' #str(targetlumi/1000).replace('.','p') # 1/fb
 systListShort = ['toppt','muRFcorrd','jec','btagHFCO']
-systListFull = ['elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', 'Pileup', 'Prefire', 'jsf', 'toppt', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] 
+systListFull = ['elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', 'Pileup', 'Prefire', 'jsf', 'toppt', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec']
+systListABCDnn = ['peak', 'tail', 'closure', 'factor']
 
-systListABCDnn = ['peak', 'tail', 'closure']
+factorABCDnn = {'allWlep':'0.124847454', # '0.126057291', # without QCD300
+                'allTlep':'0.041517725', # '0.04249157',
+                'tagTjet':'0.027807176', # '0.027892638',
+                'tagWjet':'0.028433406', # '0.028440602',
+                'untagTlep':'0.04653169', # '0.047838701',
+                'untagWlep':'0.134246172', # '0.135501722'
+}
+
+yieldUncertABCDnn = {'allWlep':'0.010399256', #'0.020091821',
+                     'allTlep':'0.052419753', #'0.077063257',
+                     'tagTjet':'0.075338469', #'0.078577386',
+                     'tagWjet':'0.061669828', #'0.061932256',
+                     'untagTlep':'0.051108876', #'0.080574995',
+                     'untagWlep':'0.00909292', #'0.018414285'
+}
+# all with direct alpha-ratio. sqrt(sys^2+stat^2+closure^2)
 
 class sample:
     def __init__(self, prefix, xsec, year, textlist, samplename): #, color
@@ -798,7 +814,7 @@ samples_qcd = {
     "QCDHT20002016":QCDHT20002016,
     "QCDHT20002017":QCDHT20002017,
     "QCDHT20002018":QCDHT20002018,
-    #"QCDHT2002016APV":QCDHT2002016APV,
+    "QCDHT2002016APV":QCDHT2002016APV,
     #"QCDHT2002016":QCDHT2002016,
     #"QCDHT2002017":QCDHT2002017,
     #"QCDHT2002018":QCDHT2002018,

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os,sys,time,math,datetime,itertools
+import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F, TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
@@ -10,7 +10,7 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-region='D' # BAX, DCY, individuals, or all
+region='A' # BAX, DCY, individuals, or all
 if len(sys.argv)>1: region = str(sys.argv[1])
 
 isCategorized=True
@@ -19,9 +19,7 @@ year='all' # all
 pfix='templates'+region
 if not isCategorized: pfix='kinematics'+region
 
-pfix+='_Oct2023SysAll'
-
-#pfix = 'templatesTestA' # TEMP
+pfix+='_Apr2024SysAll' 
 outDir = os.getcwd()+'/'+pfix+'/'
 
 removeThreshold = 0.0005 # TODO: add if necessary
@@ -52,16 +50,16 @@ if '2D' in outDir:
         isEMlist =['L']
 taglist = ['all']
 if isCategorized: 
-        taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
-        #taglist=['allWlep','allTlep']
-        #taglist=['allWlep']
+        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
+        taglist=['allWlep','allTlep']
         #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
         
 catList = ['is'+item[0]+'_'+item[1] for item in list(itertools.product(isEMlist,taglist))]
 
 lumiSys = 0.018 #lumi uncertainty
 
-groupHists = True
+groupHists = True # TEMP
+getYields = True # TEMP
 
 plotList = ['ST',
             'BpMass',
@@ -146,7 +144,8 @@ plotList = ['ST',
             'BpPtBal',
             'BpChi2',
             'BpDecay',
-            # 'BpMass_ABCDnn',
+            'BpMass_ABCDnn',
+            'OS1FatJetProbJ_ABCDnn',
             # 'ST_ABCDnn'
 ]
 
@@ -158,11 +157,12 @@ if groupHists:
         for cat in catList:
                 print("PROGRESS: "+cat)
                 histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+
                 dataHistFile = TFile.Open(f'{outDir}{cat[2:]}/datahists_{iPlot}.root', "READ")
                 isFirstHist = True
                 for dat in samples_data:
                         if isFirstHist:
-                                hists = dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix).Clone(histoPrefix+'__data_obs')
+                                hists = dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix).Clone(f'{histoPrefix}__data_obs')
                                 isFirstHist = False
                         else:
                                 hists.Add(dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix))
@@ -170,7 +170,6 @@ if groupHists:
                 hists.Write()
                 dataHistFile.Close()
 
-                #systHists = {}
                 for proc in bkgProcs:
                         # DID NOT IMPLEMENT REMOVETHRESHOLD
                         bkgHistFile = TFile.Open(f'{outDir}{cat[2:]}/bkghists_{proc}_{iPlot}.root', "READ")
@@ -186,10 +185,8 @@ if groupHists:
                                 systematicList = systListFull
 
                         for bkg in bkgGrp:
-                                if 'QCDHT300' in bkg:
-
-                                        #print("Plotting without QCDHT300.")
-
+                                if not doABCDnn and 'QCDHT300' in bkg:
+                                        print("Plotting without QCDHT300.")
                                         continue
                                 if isFirstHist:
                                         hists = bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix).Clone(histoPrefix+'__'+proc)
@@ -198,11 +195,8 @@ if groupHists:
                                                 for syst in systematicList:
 
                                                         #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
-                                                        try:
-                                                                systHists[f'{histoPrefix}__{proc}__{syst}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Up')
-                                                                systHists[f'{histoPrefix}__{proc}__{syst}Down'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Down')
-                                                        except: 
-                                                                print('could not process '+syst+' for '+bkg)
+                                                        systHists[f'{histoPrefix}__{proc}__{syst}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Up')
+                                                        systHists[f'{histoPrefix}__{proc}__{syst}Down'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgGrp[bkg].prefix}').Clone(f'{histoPrefix}__{proc}__{syst}Down')
                                 else:
                                         #print(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
                                         hists.Add(bkgHistFile.Get(histoPrefix+'_'+bkgGrp[bkg].prefix))
@@ -223,8 +217,8 @@ if groupHists:
                         bkgHistFile.Close()
 
                 sigHistFile = TFile.Open(f'{outDir}{cat[2:]}/sighists_{iPlot}.root', "READ")
+                systematicList = systListFull
 
-                systematicList = systListFull                                
                 for mass in massList:
                         systHists = {}
                         isFirstHist = True
@@ -235,10 +229,9 @@ if groupHists:
                                                 isFirstHist = False
                                                 if doAllSys:
                                                         for syst in systematicList:
-                                                                #print(f'{histoPrefix}_{syst}Up_{bkgGrp[bkg].prefix}')
                                                                 try:
-                                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Up')
-                                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Down')
+                                                                	systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Up')
+                                                                	systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_{samples_signal[signal].prefix}').Clone(f'{histoPrefix}__BpM{mass}__{syst}Down')
                                                                 except:
                                                                         print('could not process '+syst+' for '+str(mass))
                                         else:
@@ -257,17 +250,137 @@ if groupHists:
                                 systHists[systHist].Write()
                 sigHistFile.Close()
 
-# ### Get yields
-# Yieldtable = {}
-# yieldStatErrTable = {}
 
-# # Initialize empty yields dictionaries for table printing
-# for cat in catList:
-#         histoPrefix=discriminant+'_'+lumiStr+'_'+cat
-#         yieldTable[histoPrefix]={}
-#         yieldStatErrTable[histoPrefix]={}
-#         if doAllSys:
-#                 for syst in systematicList:
-#                         for ud in ['Up','Dn']:
-#                                 yieldTable[histoPrefix+syst+ud]={}
+###################
+### Yield Table ###
+###################
+# Does not record data yield. Update if needed. Sample code in doTemplates_RDF.py
 
+yieldTable = {}
+yieldStatErrTable = {}
+
+combinedHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "READ")
+
+# Initialize empty yields dictionaries for table printing
+for cat in catList:
+        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+        yieldTable[histoPrefix]={}
+        yieldStatErrTable[histoPrefix]={}
+
+        lastBin = combinedHistFile.Get(f'{histoPrefix}__ewk').GetXaxis().GetNbins()+1
+        binerr = ctypes.c_double()
+        
+        yieldTable[histoPrefix]['data'] = combinedHistFile.Get(f'{histoPrefix}__data_obs').IntegralAndError(1,lastBin,binerr,"")
+        yieldStatErrTable[histoPrefix]['data'] = binerr.value
+        
+        for sig in sigList:
+                yieldTable[histoPrefix][sig] = combinedHistFile.Get(f'{histoPrefix}__{sig}').IntegralAndError(1,lastBin,binerr,"")
+                yieldStatErrTable[histoPrefix][sig] = binerr.value
+        
+        yieldTable[histoPrefix]['totBkg'] = 0.
+        yieldStatErrTable[histoPrefix]['totBkg'] = 0.
+        for proc in bkgProcs:
+                yieldTable[histoPrefix][proc] = combinedHistFile.Get(f'{histoPrefix}__{proc}').IntegralAndError(1,lastBin,binerr,"")
+                yieldStatErrTable[histoPrefix][proc] = binerr.value
+                yieldTable[histoPrefix]['totBkg'] += yieldTable[histoPrefix][proc]
+                yieldStatErrTable[histoPrefix]['totBkg'] += binerr.value**2
+        yieldStatErrTable[histoPrefix]['totBkg'] = math.sqrt(yieldStatErrTable[histoPrefix]['totBkg'])
+
+        yieldTable[histoPrefix]['dataOverBkg'] = yieldTable[histoPrefix]['data']/yieldTable[histoPrefix]['totBkg']
+        yieldStatErrTable[histoPrefix]['dataOverBkg'] = yieldStatErrTable[histoPrefix]['data']/yieldStatErrTable[histoPrefix]['totBkg']
+
+        if doAllSys:
+                for syst in systListFull+systListABCDnn:
+                        for ud in ['Up', 'Down']:
+                                yieldTable[f'{histoPrefix}{syst}{ud}']={}
+                for proc in list(bkgProcs.keys())+sigList:
+                        if doABCDnn and (proc=="ttbar" or proc=="qcd" or proc=="wjets" or proc=="singletop"):
+                                systematicList = systListABCDnn
+                                dummyList = systListFull
+                        else:
+                                systematicList = systListFull
+                                dummyList = systListABCDnn
+                        for syst in systematicList:
+                                for ud in ['Up', 'Down']:
+                                        yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=combinedHistFile.Get(f'{histoPrefix}__{proc}__{syst}{ud}').Integral()
+                        for syst in dummyList:
+                                for ud in ['Up', 'Down']:
+                                        yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=0
+
+        
+table = []
+table.append(['break'])
+table.append(['break'])
+table.append(['YIELDS']+[proc for proc in list(bkgProcs.keys())+['data']])
+
+# yields for bkg and data
+for cat in catList:
+        row = [cat]
+        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+        for proc in list(bkgProcs.keys())+['data']:
+                row.append(str(round(yieldTable[histoPrefix][proc],3))+' $\pm$ '+str(round(yieldStatErrTable[histoPrefix][proc],3)))
+        table.append(row)
+table.append(['break'])
+table.append(['break'])
+
+table.append(['YIELDS']+sigList)
+# yields for signals
+for cat in catList:
+        row = [cat]
+        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+        for proc in sigList:
+                row.append(str(round(yieldTable[histoPrefix][proc],3))+' $\pm$ '+str(round(yieldStatErrTable[histoPrefix][proc],3)))
+        table.append(row)
+
+# yields for AN tables
+for isEM in isEMlist:
+        corrdSys = lumiSys  # maybe additional later?
+        table.append(['break'])
+        table.append(['','is'+isEM+'_yields'])
+        table.append(['break'])
+        #table.append(['YIELDS']+[cat for cat in catList if 'is'+isEM in cat]+['\\\\'])
+        table.append(['YIELDS']+catList+['\\\\'])
+        for proc in list(bkgProcs.keys())+['totBkg','data','dataOverBkg']+sigList:
+                row = [proc]
+                for cat in catList:
+                        if not ('is'+isEM in cat): continue
+                        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+                        if proc=='data': 
+                                row.append(' & '+str(int(yieldTable[histoPrefix][proc])))
+                        else:
+                                #row.append(' & '+str(round_sig(yieldTable[histoPrefix][proc],5))+' $\pm$ '+str(round_sig(yieldStatErrTable[histoPrefix][proc],2)))
+                                row.append(' & '+str(round(yieldTable[histoPrefix][proc],2))+' $\pm$ '+str(round(yieldStatErrTable[histoPrefix][proc],2)))
+                row.append('\\\\')
+                table.append(row)
+
+# TODO: yields for PAS tables (yields in e/m channels combined)
+# skip for now
+
+# systematics
+if doAllSys:
+        table.append(['break'])
+        table.append(['','Systematics'])
+        table.append(['break'])
+        for proc in list(bkgProcs.keys())+sigList:
+                table.append([proc]+[cat for cat in catList]+['\\\\'])
+                for syst in systListFull+systListABCDnn:
+                        for ud in ['Up', 'Down']:
+                                row = [syst+ud]
+                                for cat in catList:
+                                        histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
+                                        nomHist = histoPrefix
+                                        shpHist = f'{histoPrefix}{syst}{ud}'
+                                        try:
+                                                row.append(' & '+str(round(yieldTable[shpHist][proc]/(yieldTable[nomHist][proc]+1e-20),2)))
+                                        except:
+                                                print(f'Missing {proc} for systematic: {syst}')
+                                row.append('\\\\')
+                                table.append(row)
+                table.append(['break'])
+#print(table)
+#exit()       
+
+tabFile = f'{outDir}yields_{iPlot}_{lumiStr}.txt'
+#if year != 'all': tabFile = outDir+'/yields_'+discriminant+'_'+year+'.txt'
+out=open(tabFile,'w')
+printTable(table,out)

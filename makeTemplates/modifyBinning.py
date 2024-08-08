@@ -33,7 +33,7 @@ lumiInTemplates= lumiStr
 
 iPlot='BpMass_ABCDnn'
 if len(sys.argv)>1: iPlot=str(sys.argv[1])
-folder = 'templatesD_Oct2023Xiaohe'
+folder = 'templatesD_Apr2024SysAll_correctQCD300'
 
 if len(sys.argv)>2: folder=str(sys.argv[2])
 cutString = ''
@@ -51,6 +51,7 @@ if 'kinematics' in folder:
 massList = [800,1000,1200,1300,1400,1500,1600,1700,1800,2000,2200]
 sigProcList = ['BpM'+str(mass) for mass in massList]
 bkgProcList = ['ttbar','singletop','wjets','ttx','ewk','qcd'] #put the most dominant process first
+#ABCDProcList = ['',]
 
 stat_saved = 0.2 #statistical uncertainty requirement (enter >1.0 for no rebinning; i.g., "1.1")
 if len(sys.argv)>3: stat_saved=float(sys.argv[3])
@@ -378,7 +379,7 @@ for chn in channels:
 	if chn.split('_')[0] not in isEMlist: isEMlist.append(chn.split('_')[0])
 	if chn.split('_')[1] not in taglist: taglist.append(chn.split('_')[1])
 
-if 'ABCDnn' in iPlot: 
+if 'ABCDnn' in iPlot:
         bkgProcList = ['major','ttx','ewk'] #put the most dominant process first
 print("List of systematics for "+bkgProcList[0]+" process and "+channels[0]+" channel:")
 print("        "+str(sorted([hist[hist.find(bkgProcList[0])+len(bkgProcList[0])+2:hist.find(upTag)] for hist in yieldsAll.keys() if channels[0] in hist and '__'+bkgProcList[0]+'__' in hist and upTag in hist])))

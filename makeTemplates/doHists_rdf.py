@@ -26,12 +26,13 @@ start_time = time.time()
 
 # ------------- File location and total lumi ---------------
 step1Dir = 'root://cmseos.fnal.gov//store/user/jmanagan/BtoTW_Apr2024_fullRun2/'
-step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2023_fullRun2_ABCDnnBestApr2024/'
+step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Apr2024_fullRun2_ABCDnnBestApr2024/'
 
 # ------------- Arguments and default values ------------
 iPlot = 'BpMass_ABCDnn' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
-region = 'A'
+region = 'D'
+
 if len(sys.argv)>3: region=sys.argv[3]
 isCategorized = True
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
@@ -109,6 +110,7 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
          'OS1FatJetSD' :('gcOSFatJet_sdmass[0]',linspace(0, 500, 51).tolist(),';B decay AK8 soft drop mass [GeV]'),
          'NJetsCentral' :('NJets_central',linspace(0, 10, 11).tolist(),';central AK4 jet multiplicity'),
          'NJetsForward' :('NJets_forward',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity'),
+         'NJetsForwardSubtract':('NJets_forward_subtract',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity adjustment'),
          'NBJets':('NJets_DeepFlavL',linspace(0, 10, 11).tolist(),';DeepJet loose multiplicity'),
          'NOSJets':('NOS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 opp-side jets'),
          'NSSJets':('NSS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 same-side jets'),
@@ -213,7 +215,6 @@ for cat in catList:
                         print('deleting '+data)
                         del tTreeData[data]
         dataHistFile.Close()
-
 
         # ### Now we begin the same general process but for simulated backgrounds
         for proc in bkgList:
