@@ -10,8 +10,8 @@ isEM=$5
 tag=$6
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-scramv1 project CMSSW CMSSW_12_4_8
-cd CMSSW_12_4_8
+scramv1 project CMSSW CMSSW_13_0_18
+cd CMSSW_13_0_18
 eval `scramv1 runtime -sh`
 cd -
 
