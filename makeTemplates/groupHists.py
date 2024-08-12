@@ -5,7 +5,7 @@ import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F, TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from samples import targetlumi, lumiStr, systListFull, systListABCDnn, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd
+from samples import targetlumi, lumiStr, systListShort, systListFull, systListABCDnn, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd
 from utils import *
 
 gROOT.SetBatch(1)
@@ -33,6 +33,8 @@ if len(sys.argv)>4:
 else:
         pfix+='_Apr2024SysAll'
 outDir=f'{os.getcwd()}/{pfix}/'
+
+print('Grouping hists for iPlot',iPlot,', region',region,', isCategorized',isCategorized,', and folder',pfix)
 
 #year='all'
 
@@ -74,10 +76,14 @@ getYields = True # TEMP: turn this on to get yield tables
 
 uncorrList_sf = ['TrigEffEl', 'TrigEffMu', 'jer', 'jec', 'btagHFUC', 'btagLFUC']
 corrList_sf = systListFull.copy()
+if not isCategorized:
+        corrList_sf = systListShort.copy()
+else:
+        for i in range(101):
+                corrList_sf.append('pdf'+str(i))
 for syst in uncorrList_sf:
         corrList_sf.remove(syst)        
-#specialList = ['muRFcorrd', 'muR', 'muF'] # TODO: not sure if this is needed
-
+        
 ### Group histograms
 if groupHists:                                                  
         outHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "RECREATE")
@@ -114,7 +120,10 @@ if groupHists:
                                 corrList = systListABCDnn
                                 uncorrList = []
                         else:
-                                systematicList = systListFull
+                                if isCategorized:
+                                        systematicList = systListFull
+                                else:
+                                        systematicList = systListShort
                                 corrList = corrList_sf
                                 uncorrList = uncorrList_sf
                 
@@ -141,8 +150,11 @@ if groupHists:
                                         isFirstHistDir[year] = False
                                         if doAllSys:
                                                 for syst in systematicList:
-                                                        systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}Up')
-                                                        systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}Down')
+                                                        try:
+                                                                systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}Up')
+                                                                systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}Down')
+                                                        except:
+                                                                print('could not process '+syst+' for '+bkg)
                                 else:
                                         nomHists[f'{histoPrefix}__{proc}{year}'].Add(bkgHistFile.Get(f'{histoPrefix}_{bkgPrefix}'))
                                         if doAllSys:
