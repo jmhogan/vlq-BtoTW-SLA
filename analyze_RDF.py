@@ -419,8 +419,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                         for i in range(pdfVariations):
                                                 hist_pdf.append(sel.Define(f'weightpdf{i}',f'{weightStr}*LHEPdfWeight[{i}]')\
                                                               .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pdf{i}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,f'weightpdf{i}'))
-                        else:
-                                print(f'{process} does not have pdf branches.')
+                                else:
+                                        print(f'{process} does not have pdf branches.')
         
                         if process+'JERup' in tTree:
                                 dfjerUp    = RDataFrame(tTree[process+'JERup'])
