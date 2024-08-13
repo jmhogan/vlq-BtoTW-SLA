@@ -5,7 +5,7 @@ import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F, TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from samples import targetlumi, lumiStr, systListShort, systListFull, systListABCDnn, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd
+from samples import targetlumi, lumiStr, systListShort, systListFull, systListABCDnn, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, uncorrList_sf, yearList
 from utils import *
 
 gROOT.SetBatch(1)
@@ -66,7 +66,6 @@ if isCategorized:
         taglist=['allWlep','allTlep'] # TEMP: for code developing only
         #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
 
-yearList = ["2016APV", "2016", "2017", "2018"]        
 catList = ['is'+item[0]+'_'+item[1] for item in list(itertools.product(isEMlist,taglist))]
 
 lumiSys = 0.018 #lumi uncertainty
@@ -74,7 +73,6 @@ lumiSys = 0.018 #lumi uncertainty
 groupHists = True # TEMP: turn this on to group histograms
 getYields = True # TEMP: turn this on to get yield tables
 
-uncorrList_sf = ['TrigEffEl', 'TrigEffMu', 'jer', 'jec', 'btagHFUC', 'btagLFUC']
 corrList_sf = systListFull.copy()
 if not isCategorized:
         corrList_sf = systListShort.copy()
@@ -195,7 +193,10 @@ if groupHists:
                         bkgHistFile.Close()
 
                 sigHistFile = TFile.Open(f'{outDir}{cat[2:]}/sighists_{iPlot}.root', "READ")
-                systematicList = systListFull
+                if isCategorized:
+                        systematicList = systListFull
+                else:
+                        systematicList = systListShort
                 for mass in massList:
                         systHists = {}
                         # add nominal and correlated systs
@@ -246,9 +247,8 @@ if not getYields:
 yieldTable = {}
 yieldStatErrTable = {}
 
-systListFullUCOC = systListFull.copy()
+systListFullUCOC = corrList_sf.copy()
 for syst in uncorrList_sf:
-        systListFullUCOC.remove(syst)
         for year in yearList:
                 systListFullUCOC.append(f'{syst}{year}')
 
