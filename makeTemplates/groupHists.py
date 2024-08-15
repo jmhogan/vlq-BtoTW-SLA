@@ -335,6 +335,7 @@ for cat in catList:
 
         if doAllSys:
                 for syst in systListFullUCOC+systListABCDnn:
+                        if 'pdf' in syst or syst == 'muR' or syst == 'muF': continue
                         for ud in ['Up', 'Down']:
                                 yieldTable[f'{histoPrefix}{syst}{ud}']={}
                 for proc in list(bkgProcs.keys())+sigList:
@@ -344,11 +345,15 @@ for cat in catList:
                                 systematicList = systListFullUCOC
                                 
                         for syst in systematicList:
+                                if 'pdf' in syst or syst == 'muR' or syst == 'muF': continue
                                 for ud in ['Up', 'Down']:
-                                        if 'BpM' in proc and 'APV' in syst:
-                                                yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=0
-                                        else:
+                                        try:
                                                 yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=combinedHistFile.Get(f'{histoPrefix}__{proc}__{syst}{ud}').Integral()
+                                        except:
+                                                if ('pNet' in syst and 'tag' in cat):
+                                                        yieldTable[f'{histoPrefix}{syst}{ud}'][proc] = 0
+                                                else:
+                                                        print('could not store integral of '+syst+' for '+proc)
 
                 if doABCDnn:
                         for syst in systListABCDnn:
@@ -420,6 +425,7 @@ if doAllSys:
         for proc in list(bkgProcs.keys())+sigList+['ABCDnn']:
                 table.append([proc]+[cat for cat in catList]+['\\\\'])
                 for syst in systListFullUCOC+systListABCDnn:
+                        if 'pdf' in syst or syst == 'muR' or syst == 'muF': continue
                         for ud in ['Up', 'Down']:
                                 row = [syst+ud]
                                 for cat in catList:
