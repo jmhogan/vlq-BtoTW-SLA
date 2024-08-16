@@ -556,9 +556,9 @@ for proc in bkgProcList+sigProcList:
                                 try:
                                         row.append(' & '+str(round(yieldsAll[shpHist]/(yieldsAll[nomHist]+1e-20),2)))
                                 except:
-                                        if 'Wtag' in syst and ('Tjet' in chn or 'Wlep' in chn): continue
-                                        if 'Ttag' in syst and ('Wjet' in chn or 'Tlep' in chn): continue
-                                        if proc != 'qcd': print("Missing "+proc+" for channel: "+chn+" and systematic: "+syst)
+                                        if 'Wtag' in syst and ('Tjet' in chn or 'Wlep' in chn): row.append(' & \\NA')
+                                        elif 'Ttag' in syst and ('Wjet' in chn or 'Tlep' in chn): row.append(' & \\NA')
+                                        elif proc != 'qcd': print("Missing "+proc+" for channel: "+chn+" and systematic: "+syst)
                                         pass
                         row.append('\\\\')
                         table.append(row)

@@ -152,7 +152,10 @@ if groupHists:
                                         if doAllSys:
                                                 for syst in systematicList:
                                                         if 'pdf' in syst:
-                                                                if doMuRF: systHists[f'{histoPrefix}__{proc}__{syst}{year}'] = bkgHistFile.Get(f'{histoPrefix}_{syst}_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}')
+                                                                if doMuRF:
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}{year}'] = bkgHistFile.Get(f'{histoPrefix}_{syst}_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}')
+                                                                else: # let's add nominal for WW, etc, rather than have nothing...
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}{year}'] = bkgHistFile.Get(f'{histoPrefix}_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}')
                                                         else:
                                                                 try:
                                                                         systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}Up')
@@ -167,7 +170,10 @@ if groupHists:
                                         if doAllSys:
                                                 for syst in systematicList:
                                                         if 'pdf' in syst:
-                                                                if doMuRF: systHists[f'{histoPrefix}__{proc}__{syst}{year}'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}_{bkgPrefix}'))
+                                                                if doMuRF:
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}{year}'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}_{bkgPrefix}'))
+                                                                else:
+                                                                        systHists[f'{histoPrefix}__{proc}__{syst}{year}'].Add(bkgHistFile.Get(f'{histoPrefix}_{bkgPrefix}'))
                                                         else:
                                                                 try:
                                                                         systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgPrefix}'))
@@ -181,8 +187,8 @@ if groupHists:
                         # add years for corr uncertainties
                         nomHistAllYears = nomHists[f'{histoPrefix}__{proc}2016APV'].Clone(f'{histoPrefix}__{proc}')
                         for syst in corrList:
-                                if 'pdf' in syst:
-                                        if doMuRF: systHistsWrite[f'{histoPrefix}__{proc}__{syst}'] = systHists[f'{histoPrefix}__{proc}__{syst}2016APV'].Clone(f'{histoPrefix}__{proc}__{syst}')
+                                if 'pdf' in syst: # now even VV will have pdf hists in the list (even though fake)
+                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}'] = systHists[f'{histoPrefix}__{proc}__{syst}2016APV'].Clone(f'{histoPrefix}__{proc}__{syst}')
                                 else:
                                         try:
                                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}2016APVUp'].Clone(f'{histoPrefix}__{proc}__{syst}Up')
@@ -198,7 +204,7 @@ if groupHists:
                                         nomHistAllYears.Add(nomHists[f'{histoPrefix}__{proc}{year}'])
                                         for syst in corrList:
                                                 if 'pdf' in syst:
-                                                        if doMuRF: systHistsWrite[f'{histoPrefix}__{proc}__{syst}'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}'])
+                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}'])
                                                 else:
                                                         try:
                                                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'])
