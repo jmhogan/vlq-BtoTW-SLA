@@ -22,21 +22,22 @@ for syst in uncorrList_sf:
 
 systListABCDnn = ['peak', 'tail', 'closure', 'factor']
 
-factorABCDnn = {'allWlep':'0.124847454', # '0.126057291', # without QCD300
-                'allTlep':'0.041517725', # '0.04249157',
-                'tagTjet':'0.027807176', # '0.027892638',
-                'tagWjet':'0.028433406', # '0.028440602',
-                'untagTlep':'0.04653169', # '0.047838701',
-                'untagWlep':'0.134246172', # '0.135501722'
+factorABCDnn = {'allWlep':'0.034045477',
+                'allTlep':'0.08270128', 
+                'tagTjet':'0.024456696', # '0.027892638',
+                'tagWjet':'0.025098598', # '0.028440602',
+                'untagWlep':'0.097960876', # '0.047838701',
+                'untagTlep':'0.035287068', # '0.135501722'
 }
 
-yieldUncertABCDnn = {'allWlep':'0.010399256', #'0.020091821',
-                     'allTlep':'0.052419753', #'0.077063257',
-                     'tagTjet':'0.075338469', #'0.078577386',
-                     'tagWjet':'0.061669828', #'0.061932256',
-                     'untagTlep':'0.051108876', #'0.080574995',
-                     'untagWlep':'0.00909292', #'0.018414285'
+yieldUncertABCDnn = {'allWlep':0.056370156, #'0.020091821',
+                     'allTlep':0.010990787, #'0.077063257',
+                     'tagTjet':0.040886962, #'0.078577386',
+                     'tagWjet':0.045300831, #'0.061932256',
+                     'untagWlep':0.020008949, #'0.080574995',
+                     'untagTlep':0.055798559, #'0.018414285'
 }
+
 # all with direct alpha-ratio. sqrt(sys^2+stat^2+closure^2)
 
 class sample:
@@ -356,13 +357,13 @@ DYMHT25002016APV.nrun = 721404.0 # from integral 721404, file DYMHT25002016APV
 DYMHT4002016APV.nrun = 2716892.0 # from integral 2716892, file DYMHT4002016APV
 DYMHT6002016APV.nrun = 2681650.0 # from integral 2681650, file DYMHT6002016APV
 DYMHT8002016APV.nrun = 2411091.0 # from integral 2411091, file DYMHT8002016APV
-QCDHT10002016APV.nrun = 4107071.0 # from integral 4107071, file QCDHT10002016APV
+QCDHT10002016APV.nrun = 4773503.0 # from integral 4773503, file QCDHT10002016APV
 QCDHT15002016APV.nrun = 3503675.0 # from integral 3503675, file QCDHT15002016APV
 QCDHT20002016APV.nrun = 1629000.0 # from integral 1629000, file QCDHT20002016APV
 QCDHT2002016APV.nrun = 16524587.0 # from integral 16524587, file QCDHT2002016APV
-QCDHT3002016APV.nrun = 13052699.0 # from integral 13052699, file QCDHT3002016APV
+QCDHT3002016APV.nrun = 15341307.0 # from integral 15341307, file QCDHT3002016APV
 QCDHT5002016APV.nrun = 15775001.0 # from integral 15775001, file QCDHT5002016APV
-QCDHT7002016APV.nrun = 15097224.0 # from integral 15097224, file QCDHT7002016APV
+QCDHT7002016APV.nrun = 15808790.0 # from integral 15808790, file QCDHT7002016APV
 STs2016APV.nrun = 3592771.999926734 # from integral 5518000, file STs2016APV
 STt2016APV.nrun = 52437431.99999999 # from integral 55961000, file STt2016APV
 STtb2016APV.nrun = 29205918.0 # from integral 31024000, file STtb2016APV
@@ -370,9 +371,9 @@ STtW2016APV.nrun = 2299880.0 # from integral 2300000, file STtW2016APV
 STtWb2016APV.nrun = 2299866.000000002 # from integral 2300000, file STtWb2016APV
 TTHB2016APV.nrun = 4525710.0 # from integral 4622000, file TTHB2016APV
 TTHnonB2016APV.nrun = 1936276.0 # from integral 1977996, file TTHnonB2016APV
-TTTo2L2Nu2016APV.nrun = 35820364.00000001 # from integral 36112000, file TTTo2L2Nu2016APV
-TTToHadronic2016APV.nrun = 95125048.0 # from integral 95900000, file TTToHadronic2016APV
-TTToSemiLeptonic2016APV.nrun = 128948470.0 # from integral 130002000, file TTToSemiLeptonic2016APV
+TTTo2L2Nu2016APV.nrun = 37202074.0 # from integral 37505000, file TTTo2L2Nu2016APV
+TTToHadronic2016APV.nrun = 96474574.0 # from integral 97260000, file TTToHadronic2016APV
+TTToSemiLeptonic2016APV.nrun = 131106830.0 # from integral 132178000, file TTToSemiLeptonic2016APV
 TTMT10002016APV.nrun = 22004252.0 + 0.02474*(TTToHadronic2016APV.nrun+TTToSemiLeptonic2016APV.nrun+TTTo2L2Nu2016APV.nrun)# from integral 23208356, file TTMT10002016APV
 TTMT7002016APV.nrun = 23342259.0 + 0.0921*(TTToHadronic2016APV.nrun+TTToSemiLeptonic2016APV.nrun+TTTo2L2Nu2016APV.nrun)# from integral 23785283, file TTMT7002016APV
 TTTo2L2Nu2016APV0.nrun = TTTo2L2Nu2016APV.nrun*0.8832
@@ -397,8 +398,9 @@ WJetsHT8002016APV.nrun = 2510487.0 # from integral 2510487, file WJetsHT8002016A
 WW2016APV.nrun = 15858980.29168732 # from integral 15859000, file WW2016APV
 WZ2016APV.nrun = 7934000.0 # from integral 7934000, file WZ2016APV
 ZZ2016APV.nrun = 1282000.0 # from integral 1282000, file ZZ2016APV
+
 Bprime_M1000_2016.nrun = 500000.0 # from integral 500000, file Bprime_M1000_2016
-Bprime_M1200_2016.nrun = 499069.0 # from integral 499069, file Bprime_M1200_2016
+Bprime_M1200_2016.nrun = 500000.0 # from integral 500000, file Bprime_M1200_2016
 Bprime_M1300_2016.nrun = 500000.0 # from integral 500000, file Bprime_M1300_2016
 Bprime_M1400_2016.nrun = 500000.0 # from integral 500000, file Bprime_M1400_2016
 Bprime_M1500_2016.nrun = 500000.0 # from integral 500000, file Bprime_M1500_2016
@@ -411,7 +413,7 @@ Bprime_M800_2016.nrun = 499071.0 # from integral 499071, file Bprime_M800_2016
 DYMHT12002016.nrun = 1970857.0 # from integral 1970857, file DYMHT12002016
 DYMHT2002016.nrun = 5653782.0 # from integral 5653782, file DYMHT2002016
 DYMHT25002016.nrun = 696811.0 # from integral 696811, file DYMHT25002016
-DYMHT4002016.nrun = 2456217.0 # from integral 2456217, file DYMHT4002016
+DYMHT4002016.nrun = 2491416.0 # from integral 2491416, file DYMHT4002016
 DYMHT6002016.nrun = 2299853.0 # from integral 2299853, file DYMHT6002016
 DYMHT8002016.nrun = 2393976.0 # from integral 2393976, file DYMHT8002016
 QCDHT10002016.nrun = 4365993.0 # from integral 4365993, file QCDHT10002016
@@ -419,18 +421,18 @@ QCDHT15002016.nrun = 3003707.0 # from integral 3003707, file QCDHT15002016
 QCDHT20002016.nrun = 1847781.0 # from integral 1847781, file QCDHT20002016
 QCDHT2002016.nrun = 17569141.0 # from integral 17569141, file QCDHT2002016
 QCDHT3002016.nrun = 16747056.0 # from integral 16747056, file QCDHT3002016
-QCDHT5002016.nrun = 12413279.0 # from integral 12413279, file QCDHT5002016
-QCDHT7002016.nrun = 13016745.0 # from integral 13016745, file QCDHT7002016
+QCDHT5002016.nrun = 14212819.0 # from integral 14212819, file QCDHT5002016
+QCDHT7002016.nrun = 13750537.0 # from integral 13750537, file QCDHT7002016
 STs2016.nrun = 3562865.999989305 # from integral 5471000, file STs2016
-STt2016.nrun = 58941029.99999999 # from integral 62904000, file STt2016
+STt2016.nrun = 59099221.99999999 # from integral 63073000, file STt2016
 STtb2016.nrun = 28814596.0 # from integral 30609000, file STtb2016
 STtW2016.nrun = 2490860.000000001 # from integral 2491000, file STtW2016
 STtWb2016.nrun = 2553882.0000000005 # from integral 2554000, file STtWb2016
 TTHB2016.nrun = 4834712.0 # from integral 4937000, file TTHB2016
 TTHnonB2016.nrun = 2194702.0 # from integral 2240994, file TTHnonB2016
-TTTo2L2Nu2016.nrun = 43193956.00000001 # from integral 43546000, file TTTo2L2Nu2016
-TTToHadronic2016.nrun = 105445518.0 # from integral 106306000, file TTToHadronic2016
-TTToSemiLeptonic2016.nrun = 132484904.00000001 # from integral 133563000, file TTToSemiLeptonic2016
+TTTo2L2Nu2016.nrun = 42110750.00000001 # from integral 42454000, file TTTo2L2Nu2016
+TTToHadronic2016.nrun = 106200414.0 # from integral 107067000, file TTToHadronic2016
+TTToSemiLeptonic2016.nrun = 143553998.00000003 # from integral 144722000, file TTToSemiLeptonic2016
 TTMT10002016.nrun = 22444321.999999996 + 0.02474*(TTToHadronic2016.nrun+TTToSemiLeptonic2016.nrun+TTTo2L2Nu2016.nrun)# from integral 23673116, file TTMT10002016
 TTMT7002016.nrun = 32878794.999999996 + 0.0921*(TTToHadronic2016.nrun+TTToSemiLeptonic2016.nrun+TTTo2L2Nu2016.nrun) # from integral 33502717, file TTMT7002016
 TTTo2L2Nu20160.nrun = TTTo2L2Nu2016.nrun*0.8832
@@ -450,12 +452,13 @@ WJetsHT12002016.nrun = 2090561.0 # from integral 2090561, file WJetsHT12002016
 WJetsHT2002016.nrun = 15067621.0 # from integral 15067621, file WJetsHT2002016
 WJetsHT25002016.nrun = 709514.0 # from integral 709514, file WJetsHT25002016
 WJetsHT4002016.nrun = 2115509.0 # from integral 2115509, file WJetsHT4002016
-WJetsHT6002016.nrun = 1995122.0 # from integral 1995122, file WJetsHT6002016
+WJetsHT6002016.nrun = 2251807.0 # from integral 2251807, file WJetsHT6002016
 WJetsHT8002016.nrun = 2132228.0 # from integral 2132228, file WJetsHT8002016
-WW2016.nrun = 15534978.90584121 # from integral 15535000, file WW2016
+WW2016.nrun = 15820978.251753712 # from integral 15821000, file WW2016
 WZ2016.nrun = 7584000.0 # from integral 7584000, file WZ2016
 ZZ2016.nrun = 1151000.0 # from integral 1151000, file ZZ2016
-Bprime_M1000_2017.nrun = 978000.0 # from integral 978000, file Bprime_M1000_2017
+
+Bprime_M1000_2017.nrun = 1000000.0 # from integral 1000000, file Bprime_M1000_2017
 Bprime_M1200_2017.nrun = 1000000.0 # from integral 1000000, file Bprime_M1200_2017
 Bprime_M1300_2017.nrun = 1000000.0 # from integral 1000000, file Bprime_M1300_2017
 Bprime_M1400_2017.nrun = 1000000.0 # from integral 1000000, file Bprime_M1400_2017
@@ -473,22 +476,22 @@ DYMHT4002017.nrun = 5384252.0 # from integral 5384252, file DYMHT4002017
 DYMHT6002017.nrun = 5118706.0 # from integral 5118706, file DYMHT6002017
 DYMHT8002017.nrun = 4347168.0 # from integral 4347168, file DYMHT8002017
 QCDHT10002017.nrun = 10186734.0 # from integral 10186734, file QCDHT10002017
-QCDHT15002017.nrun = 6749894.0 # from integral 6749894, file QCDHT15002017
+QCDHT15002017.nrun = 7701876.0 # from integral 7701876, file QCDHT15002017
 QCDHT20002017.nrun = 4112573.0 # from integral 4112573, file QCDHT20002017
-QCDHT2002017.nrun = 40100569.0 # from integral 40100569, file QCDHT2002017
+QCDHT2002017.nrun = 42714435.0 # from integral 42714435, file QCDHT2002017
 QCDHT3002017.nrun = 43429979.0 # from integral 43429979, file QCDHT3002017
-QCDHT5002017.nrun = 34782722.0 # from integral 34782722, file QCDHT5002017
+QCDHT5002017.nrun = 36194860.0 # from integral 36194860, file QCDHT5002017
 QCDHT7002017.nrun = 32934816.0 # from integral 32934816, file QCDHT7002017
 STs2017.nrun = 8866569.999971403 # from integral 13620000, file STs2017
 STt2017.nrun = 121728252.0 # from integral 129903000, file STt2017
 STtb2017.nrun = 65701154.0 # from integral 69793000, file STtb2017
-STtW2017.nrun = 5587714.0 # from integral 5588000, file STtW2017
+STtW2017.nrun = 5648712.0 # from integral 5649000, file STtW2017
 STtWb2017.nrun = 5673700.000000001 # from integral 5674000, file STtWb2017
-TTHB2017.nrun = 7660800.0 # from integral 7824000, file TTHB2017
+TTHB2017.nrun = 7661778.0 # from integral 7825000, file TTHB2017
 TTHnonB2017.nrun = 4965389.0 # from integral 5070989, file TTHnonB2017
 TTTo2L2Nu2017.nrun = 105859990.0 # from integral 106724000, file TTTo2L2Nu2017
-TTToHadronic2017.nrun = 230045761.00000003 # from integral 231919999, file TTToHadronic2017
-TTToSemiLeptonic2017.nrun = 341194664.0 # from integral 343972000, file TTToSemiLeptonic2017
+TTToHadronic2017.nrun = 231117295.00000003 # from integral 232999999, file TTToHadronic2017
+TTToSemiLeptonic2017.nrun = 343257666.0 # from integral 346052000, file TTToSemiLeptonic2017
 TTMT10002017.nrun = 21545730.0 + 0.02474*(TTToHadronic2017.nrun+TTToSemiLeptonic2017.nrun+TTTo2L2Nu2017.nrun) # from integral 22724532, file TTMT10002017
 TTMT7002017.nrun = 35196862.0 + 0.0921*(TTToHadronic2017.nrun+TTToSemiLeptonic2017.nrun+TTTo2L2Nu2017.nrun) # from integral 35862238, file TTMT7002017
 TTTo2L2Nu20170.nrun = TTTo2L2Nu2017.nrun*0.8832
@@ -505,20 +508,21 @@ TTWq2017.nrun = 359006.00000000006 # from integral 655018, file TTWq2017
 TTZM102017.nrun = 6911466.000000001 # from integral 14036000, file TTZM102017
 TTZM1to102017.nrun = 390602.00000000006 # from integral 707000, file TTZM1to102017
 WJetsHT12002017.nrun = 4752118.0 # from integral 4752118, file WJetsHT12002017
-WJetsHT2002017.nrun = 39083896.0 # from integral 39083896, file WJetsHT2002017
-WJetsHT25002017.nrun = 1165574.0 # from integral 1165574, file WJetsHT25002017
+WJetsHT2002017.nrun = 42281979.0 # from integral 42281979, file WJetsHT2002017
+WJetsHT25002017.nrun = 1185699.0 # from integral 1185699, file WJetsHT25002017
 WJetsHT4002017.nrun = 5468473.0 # from integral 5468473, file WJetsHT4002017
 WJetsHT6002017.nrun = 5545298.0 # from integral 5545298, file WJetsHT6002017
 WJetsHT8002017.nrun = 5088483.0 # from integral 5088483, file WJetsHT8002017
-WW2017.nrun = 15633982.548347736 # from integral 15634000, file WW2017
+WW2017.nrun = 15633982.548347734 # from integral 15634000, file WW2017
 WZ2017.nrun = 7889000.0 # from integral 7889000, file WZ2017
 ZZ2017.nrun = 2706000.0 # from integral 2706000, file ZZ2017
+
 Bprime_M1000_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1000_2018
 Bprime_M1200_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1200_2018
 Bprime_M1300_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1300_2018
 Bprime_M1400_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1400_2018
 Bprime_M1500_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1500_2018
-Bprime_M1600_2018.nrun = 999000.0 # from integral 999000, file Bprime_M1600_2018
+Bprime_M1600_2018.nrun = 934000.0 # from integral 934000, file Bprime_M1600_2018
 Bprime_M1700_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1700_2018
 Bprime_M1800_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1800_2018
 Bprime_M2000_2018.nrun = 998000.0 # from integral 998000, file Bprime_M2000_2018
@@ -534,9 +538,9 @@ QCDHT10002018.nrun = 14394786.0 # from integral 14394786, file QCDHT10002018
 QCDHT15002018.nrun = 10411831.0 # from integral 10411831, file QCDHT15002018
 QCDHT20002018.nrun = 5374711.0 # from integral 5374711, file QCDHT20002018
 QCDHT2002018.nrun = 57336623.0 # from integral 57336623, file QCDHT2002018
-QCDHT3002018.nrun = 61555577.0 # from integral 61555577, file QCDHT3002018
+QCDHT3002018.nrun = 61609663.0 # from integral 61609663, file QCDHT3002018
 QCDHT5002018.nrun = 49184771.0 # from integral 49184771, file QCDHT5002018
-QCDHT7002018.nrun = 45844822.0 # from integral 45844822, file QCDHT7002018
+QCDHT7002018.nrun = 48506751.0 # from integral 48506751, file QCDHT7002018
 STs2018.nrun = 12607740.99998877 # from integral 19365999, file STs2018
 STt2018.nrun = 167111717.99999997 # from integral 178336000, file STt2018
 STtb2018.nrun = 90022642.0 # from integral 95627000, file STtb2018
@@ -544,9 +548,9 @@ STtW2018.nrun = 7955614.0 # from integral 7956000, file STtW2018
 STtWb2018.nrun = 7748690.000000002 # from integral 7749000, file STtWb2018
 TTHB2018.nrun = 9467226.0 # from integral 9668000, file TTHB2018
 TTHnonB2018.nrun = 7176599.0 # from integral 7328993, file TTHnonB2018
-TTTo2L2Nu2018.nrun = 142801416.00000003 # from integral 143964000, file TTTo2L2Nu2018
-TTToHadronic2018.nrun = 325582189.99999994 # from integral 328234000, file TTToHadronic2018
-TTToSemiLeptonic2018.nrun = 471248376.0 # from integral 475088000, file TTToSemiLeptonic2018
+TTTo2L2Nu2018.nrun = 143848848.00000003 # from integral 145020000, file TTTo2L2Nu2018
+TTToHadronic2018.nrun = 331506194.0 # from integral 334206000, file TTToHadronic2018
+TTToSemiLeptonic2018.nrun = 472557630.0 # from integral 476408000, file TTToSemiLeptonic2018
 TTMT10002018.nrun = 22396890.0 + 0.02474*(TTToHadronic2018.nrun+TTToSemiLeptonic2018.nrun+TTTo2L2Nu2018.nrun) # from integral 23624506, file TTMT10002018
 TTMT7002018.nrun = 30084128.0 + 0.0921*(TTToHadronic2018.nrun+TTToSemiLeptonic2018.nrun+TTTo2L2Nu2018.nrun) # from integral 30653714, file TTMT7002018
 TTTo2L2Nu20180.nrun = TTTo2L2Nu2018.nrun*0.8832
@@ -563,7 +567,7 @@ TTWq2018.nrun = 530327.0000000001 # from integral 970179, file TTWq2018
 TTZM102018.nrun = 9651834.000000002 # from integral 19608000, file TTZM102018
 TTZM1to102018.nrun = 550706.0 # from integral 994000, file TTZM1to102018
 WJetsHT12002018.nrun = 6481518.0 # from integral 6481518, file WJetsHT12002018
-WJetsHT2002018.nrun = 43235071.0 # from integral 43235071, file WJetsHT2002018
+WJetsHT2002018.nrun = 58225632.0 # from integral 58225632, file WJetsHT2002018
 WJetsHT25002018.nrun = 2097648.0 # from integral 2097648, file WJetsHT25002018
 WJetsHT4002018.nrun = 7444030.0 # from integral 7444030, file WJetsHT4002018
 WJetsHT6002018.nrun = 7718765.0 # from integral 7718765, file WJetsHT6002018
