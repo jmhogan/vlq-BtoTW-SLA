@@ -65,11 +65,11 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * L1PreFiringWeight_Nom * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
                         
                         if isCategorized:
-                                if tag=='allWlep' or tag=="tagTjet" or tag=="untagWlep":
+                                if tag=="tagTjet" or tag=="allWlep":
                                         weightStr += f' * gcFatJet_pnetweights[6]'
                                         weightpNetTtagUpStr = weightStr.replace('gcFatJet_pnetweights[6]', 'gcFatJet_pnetweights[7]')
                                         weightpNetTtagDnStr = weightStr.replace('gcFatJet_pnetweights[6]', 'gcFatJet_pnetweights[8]')
-                                elif tag=="allTlep" or tag=="tagWjet" or tag=="untagTlep":
+                                elif tag=="tagWjet" or tag=="allTlep":
                                         weightStr += f' * gcFatJet_pnetweights[9]'
                                         weightpNetWtagUpStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[10]')
                                         weightpNetWtagDnStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[11]')
@@ -171,11 +171,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 isEMCut+=' && isEl==1'
 
 	# Define cuts by region. Use region "all" for all selected events
-        cut  = ' && W_MT < 200' #TEMP. TODO: Comment out once it got implemented in the analyzer
-        # if doABCDnn: # TEMP. validation only
-        #         cut  = ' && W_MT < 200 && OS1FatJetProbJ_ABCDnn>0.9'
-        # else:
-        #         cut  = ' && W_MT < 200 && gcOSFatJet_pNetJ[0]>0.9'
+        cut  = ' && W_MT < 200' #TEMP. TODO: Comment out once it got implemented in the analyer
                 
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
@@ -204,6 +200,11 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 cut += ' && NJets_forward > 0 && NJets_DeepFlavL == 3'
         elif region == 'Y': 
                 cut += ' && NJets_forward > 0 && NJets_DeepFlavL > 3'
+        elif region == 'V':
+                if doABCDnn:
+                        cut  = ' && NJets_forward > 0 && NJets_DeepFlavL < 3 && OS1FatJetProbJ_ABCDnn>0.9'
+                else:
+                        cut  = ' && NJets_forward > 0 && NJets_DeepFlavL < 3 && gcOSFatJet_pNetJ[0]>0.9'
 
         # Separate ttbar into mass bins for proper normalization 
         if not doABCDnn:
@@ -312,8 +313,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         
                         hist_PEAKUP    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKUP','weight')
                         hist_PEAKDN    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_peakDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_PEAKDN','weight')
-                        hist_TAILUP    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILUP','weight')
-                        hist_TAILDN    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILDN','weight')
+                        hist_TAILUP    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILsigmoidUP','weight') #TEMP
+                        hist_TAILDN    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tailDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_TAILsigmoidDN','weight') #TEMP
                         hist_CLOSUREUP = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREUP','weight')
                         hist_CLOSUREDN = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_closureDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}_CLOSUREDN','weight')
                         hist_FACTORUP  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_factorUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}','weightfactorUp')
@@ -399,12 +400,12 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 hist_muFUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFUp'      )
                                 hist_muFDn       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFDn'      )
 
-                                if tag=='allWlep' or tag=="tagTjet" or tag=="untagWlep":
+                                if tag=='allWlep' or tag=="tagTjet":
                                         hist_pNetTtagUp = sel.Define('weightpNetTtagUp', weightpNetTtagUpStr)\
                                                              .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetTtagUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetTtagUp' )
                                         hist_pNetTtagDn = sel.Define('weightpNetTtagDn', weightpNetTtagDnStr)\
                                                              .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetTtagDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetTtagDn' )
-                                elif tag=='allTlep' or tag=="tagWjet" or tag=="untagTlep":
+                                elif tag=='allTlep' or tag=="tagWjet":
                                         hist_pNetWtagUp = sel.Define('weightpNetWtagUp', weightpNetWtagUpStr)\
                                                              .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetWtagUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetWtagUp' )
                                         hist_pNetWtagDn = sel.Define('weightpNetWtagDn', weightpNetWtagDnStr)\
@@ -508,10 +509,10 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 hist_muRDn.Write()
                                 hist_muFUp.Write()
                                 hist_muFDn.Write()
-                                if tag=='allWlep' or tag=="tagTjet" or tag=="untagWlep":
+                                if tag=='allWlep' or tag=="tagTjet":
                                         hist_pNetTtagUp.Write()
                                         hist_pNetTtagDn.Write()
-                                elif tag=="allTlep" or tag=="tagWjet" or tag=="untagTlep":
+                                elif tag=="allTlep" or tag=="tagWjet":
                                         hist_pNetWtagUp.Write()
                                         hist_pNetWtagDn.Write()
                                 if doMuRF:
