@@ -62,7 +62,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 if doABCDnn:
                         weightStr += f' * {factorABCDnn[tag]}'
                 else:
-                        weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * L1PreFiringWeight_Nom * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
+                        weightStr += ' * '+jetSFstr+' * '+topCorr+' * PileupWeights[0] * L1PreFiringWeight_Nom * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * puJetSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
                         
                         if isCategorized:
                                 if tag=="tagTjet" or tag=="allWlep":
@@ -75,8 +75,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                         weightpNetWtagDnStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[11]')
 
                         weightPrefireUpStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
-                        weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')
-
+                        weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')                        
+                        
                         # Reco has the main value in [0], up in [1], down in [2]. Up/Down are not additive on [0]
                         weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
                         weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
@@ -103,6 +103,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         
                         weightPileupUpStr   = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
                         weightPileupDnStr   = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
+                        weightPuJetSFUpStr    = weightStr.replace('puJetSF[0]','puJetSF[1]')
+                        weightPuJetSFDnStr    = weightStr.replace('puJetSF[0]','puJetSF[2]')
                         weightBtagHFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[18]')
                         weightBtagHFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[19]')
                         weightBtagHFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[20]')
@@ -338,6 +340,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 .Define('weightTrigEffMuDn',weightTrigEffMuDnStr)\
                                 .Define('weightPileupUp'   ,weightPileupUpStr)\
                                 .Define('weightPileupDn'   ,weightPileupDnStr)\
+                                .Define('weightPuJetSFUp'  ,weightPuJetSFUpStr)\
+                                .Define('weightPuJetSFDn'  ,weightPuJetSFDnStr)\
                                 .Define('weightPrefireUp'  ,weightPrefireUpStr)\
                                 .Define('weightPrefireDn'  ,weightPrefireDnStr)\
                                 .Define('weightjsfUp'      ,weightjsfUpStr)\
@@ -377,6 +381,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_TrigEffMuDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuDn')
                         hist_PileupUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupUp'   )
                         hist_PileupDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupDn'   )
+                        hist_PuJetSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFUp'  )
+                        hist_PuJetSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFDn'  )
                         hist_PrefireUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PrefireUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPrefireUp'  )
                         hist_PrefireDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PrefireDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPrefireDn'  )
                         hist_jsfUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfUp'      )
@@ -410,7 +416,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                                              .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetWtagUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetWtagUp' )
                                         hist_pNetWtagDn = sel.Define('weightpNetWtagDn', weightpNetWtagDnStr)\
 			                                     .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetWtagDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetWtagDn' )
-                                ### TO-DO: check how many PDF variations live in NanoAOD, find branch names and get this segment set up correctly
+
                                 if doMuRF: # doMuRF happens to be False only for WW, WZ, ZZ, which do not have pdf branches
                                         if 'Bprime' in sample.prefix or 'STs' in sample.prefix:
                                                 pdfVariations = 101
@@ -479,6 +485,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_TrigEffMuDn.Write()
                         hist_PileupUp.Write()
                         hist_PileupDn.Write()
+                        hist_PuJetSFUp.Write()
+                        hist_PuJetSFDn.Write()
                         hist_PrefireUp.Write()
                         hist_PrefireDn.Write()
                         hist_jsfUp.Write()
