@@ -102,6 +102,10 @@ print (tfile)
 datahists = [k.GetName() for k in tfile.GetListOfKeys() if '__'+dataName in k.GetName()]
 #print datahists
 channels = [hist[hist.find('fb_')+3:hist.find('__')] for hist in datahists]
+if 'validation' in folder:
+        channels.remove('isL_tagTjet_D')
+        channels.remove('isL_tagWjet_D')
+        
 allhists = {chn:[hist.GetName() for hist in tfile.GetListOfKeys() if chn in hist.GetName()] for chn in channels}
 
 DataHists = {}
@@ -244,6 +248,8 @@ for rfile in rfiles:
                 for hist in allhists[chn]:
                         rebinnedHists[hist] = tfiles[iRfile].Get(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
                         rebinnedHists[hist].SetDirectory(0)
+                        if sigName in hist:
+                                rebinnedHists[hist].Scale(1.0/0.5) # already did lumi*1pb/Ngen, need lumi*1pb/(Ngen*BRsinglet)
                         if rebinnedHists[hist].Integral() < 1e-12: 
                                 print("Empty hist found, skipping: "+hist)
                                 continue
@@ -274,6 +280,13 @@ for rfile in rfiles:
                                 majorhist.Add(rebinnedHists[hist.replace('__ttbar','__singletop')])
                                 majorhist.Add(rebinnedHists[hist.replace('__ttbar','__qcd')])
                                 print('\t Writing majorhist: '+majorhist.GetName())
+                                # if 'untagTlep' in majorhist.GetName():
+                                #         print('\t\t flipping untagTlep --> untagWlep')
+                                #         majorhist.Scale(0.035287068/0.097960876)
+                                # if 'untagWlep' in majorhist.GetName():
+                                #         print('\t\t flipping untagTlep --> untagWlep')
+                                #         majorhist.Scale(0.097960876/0.035287068)
+
                                 majorhist.Write()
                                 yieldsAll[majorhist.GetName()] = majorhist.Integral()
                                 yieldsErrsAll[majorhist.GetName()] = 0.
@@ -329,9 +342,7 @@ for rfile in rfiles:
                                 muRFcorrdNewUpHist.Scale(renormNomHist.Integral()/muRFcorrdNewUpHist.Integral())
                                 muRFcorrdNewDnHist.Scale(renormNomHist.Integral()/muRFcorrdNewDnHist.Integral())
                         muRFcorrdNewUpHist.Write()
-                        #print('Writing histogram: '+muRFcorrdNewUpHist.GetName())
                         muRFcorrdNewDnHist.Write()
-                        #print('Writing histogram: '+muRFcorrdNewDnHist.GetName())
 
                         yieldsAll[muRFcorrdNewUpHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewUpHist.Integral()
                         yieldsAll[muRFcorrdNewDnHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewDnHist.Integral()
@@ -340,17 +351,32 @@ for rfile in rfiles:
                 pdfUphists = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if 'pdf0' in k.GetName() and chn in k.GetName()]
                 newPDFName = 'pdfNew'
                 for hist in pdfUphists:
-                        pdfNomHist = rebinnedHists[hist[:hist.find('__pdf')]]
+                        pdfNomHist = rebinnedHists[hist.replace('__pdf0','')]
                         pdfNewUpHist = rebinnedHists[hist].Clone(hist.replace('pdf0',newPDFName+upTag))
                         pdfNewDnHist = rebinnedHists[hist].Clone(hist.replace('pdf0',newPDFName+downTag))
+
                         for ibin in range(1,pdfNewUpHist.GetNbinsX()+1):
                                 weightList = [rebinnedHists[hist.replace('pdf0','pdf'+str(pdfInd))].GetBinContent(ibin) for pdfInd in range(101)]
-                                indPDFUp = sorted(range(len(weightList)), key=lambda k: weightList[k])[83]
-                                indPDFDn = sorted(range(len(weightList)), key=lambda k: weightList[k])[15]
-                                pdfNewUpHist.SetBinContent(ibin,rebinnedHists[hist.replace('pdf0','pdf'+str(indPDFUp))].GetBinContent(ibin))
-                                pdfNewDnHist.SetBinContent(ibin,rebinnedHists[hist.replace('pdf0','pdf'+str(indPDFDn))].GetBinContent(ibin))
-                                pdfNewUpHist.SetBinError(ibin,rebinnedHists[hist.replace('pdf0','pdf'+str(indPDFUp))].GetBinError(ibin))
-                                pdfNewDnHist.SetBinError(ibin,rebinnedHists[hist.replace('pdf0','pdf'+str(indPDFDn))].GetBinError(ibin))
+
+                                errsq = 0
+                                for weight in weightList:
+                                        ## sum up squares of differences to the central value
+                                        errsq += (weight - pdfNomHist.GetBinContent(ibin))**2
+
+                                        
+                                ## find the percentage of the shift w.r.t the central value
+                                if pdfNomHist.GetBinContent(ibin) != 0: shiftpct = math.sqrt(errsq)/pdfNomHist.GetBinContent(ibin)
+                                else:
+                                        if errsq > 0.0001:
+                                                print('Weird: central is 0 but not PDF unc has errsq',errsq,'in bin',ibin,'of hist',hist)
+                                        shiftpct = 0
+                
+                                if abs(shiftpct) > 1 and pdfNomHist.GetBinContent(ibin) > 0.008:
+                                        print('WARNING: pdf shift is',shiftpct,', flooring down at 0 in bin',ibin,'of hist',hist,'on bin content of',pdfNomHist.GetBinContent(ibin))
+                                ## multiply the central value by 1 +/- the shift
+                                pdfNewUpHist.SetBinContent(ibin, max(0,pdfNomHist.GetBinContent(ibin)*(1 + shiftpct)))
+                                pdfNewDnHist.SetBinContent(ibin, max(0,pdfNomHist.GetBinContent(ibin)*(1 - shiftpct)))                                
+
                         if ('__'+sigName in hist and '__pdf' in hist and normalizePDF): #normalize the renorm/fact shapes to nominal
                                 signame = hist.split('__')[1]
                                 if sigName not in signame: print("DIDNT GET SIGNAME "+signame)
@@ -361,11 +387,11 @@ for rfile in rfiles:
                                 pdfNewUpHist.Scale(pdfNomHist.Integral()/pdfNewUpHist.Integral())
                                 pdfNewDnHist.Scale(pdfNomHist.Integral()/pdfNewDnHist.Integral())
                         pdfNewUpHist.Write()
-                        # print 'Writing histogram: ',pdfNewUpHist.GetName()
                         pdfNewDnHist.Write()
-                        # print 'Writing histogram: ',pdfNewDnHist.GetName()
+
                         yieldsAll[pdfNewUpHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = pdfNewUpHist.Integral()
                         yieldsAll[pdfNewDnHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = pdfNewDnHist.Integral()
+
 			
         tfiles[iRfile].Close()
         outputRfiles[iRfile].Close()
@@ -556,8 +582,8 @@ for proc in bkgProcList+sigProcList:
                                 try:
                                         row.append(' & '+str(round(yieldsAll[shpHist]/(yieldsAll[nomHist]+1e-20),2)))
                                 except:
-                                        if 'Wtag' in syst and ('Tjet' in chn or 'Wlep' in chn): row.append(' & \\NA')
-                                        elif 'Ttag' in syst and ('Wjet' in chn or 'Tlep' in chn): row.append(' & \\NA')
+                                        if 'Wtag' in syst and ('Tjet' in chn or 'untag' in chn): row.append(' & \\NA')
+                                        elif 'Ttag' in syst and ('Wjet' in chn or 'untag' in chn): row.append(' & \\NA')
                                         elif proc != 'qcd': print("Missing "+proc+" for channel: "+chn+" and systematic: "+syst)
                                         pass
                         row.append('\\\\')

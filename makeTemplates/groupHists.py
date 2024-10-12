@@ -161,7 +161,7 @@ if groupHists:
                                                                         systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}Up')
                                                                         systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'] = bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}__{syst}{year}Down')
                                                                 except:                                                                
-                                                                        if ('pNet' in syst and 'tag' in cat):
+                                                                        if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
                                                                                 pass
                                                                         else:
                                                                                 print('could not process '+syst+' for '+bkg)
@@ -179,7 +179,7 @@ if groupHists:
                                                                         systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Up_{bkgPrefix}'))
                                                                         systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'].Add(bkgHistFile.Get(f'{histoPrefix}_{syst}Dn_{bkgPrefix}'))
                                                                 except:
-                                                                        if ('pNet' in syst and 'tag' in cat):
+                                                                        if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
                                                                                 pass
                                                                         else:
                                                                                 print('could not process '+syst+' for '+bkg)
@@ -194,7 +194,7 @@ if groupHists:
                                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}2016APVUp'].Clone(f'{histoPrefix}__{proc}__{syst}Up')
                                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}2016APVDown'].Clone(f'{histoPrefix}__{proc}__{syst}Down')
                                         except:
-                                                if ('pNet' in syst and 'tag' in cat):
+                                                if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
                                                         pass
                                                 else:
                                                         print('could not process '+syst+' for '+bkg)
@@ -210,7 +210,7 @@ if groupHists:
                                                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'])
                                                                 systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'])
                                                         except:
-                                                                if ('pNet' in syst and 'tag' in cat):
+                                                                if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
                                                                         pass
                                                                 else:
                                                                         print('could not process '+syst+' for '+bkg)
@@ -238,7 +238,7 @@ if groupHists:
                         # add nominal and correlated systs
                         nomHistsAllYears = sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_2016APV').Clone(histoPrefix+'__BpM'+str(mass)) # no 2016APV for signal MCs ?????
                         if doAllSys:
-                                for syst in systematicList:
+                                for syst in corrList_sf:
                                         if 'pdf' in syst:
                                                 systHists[f'{histoPrefix}__BpM{mass}__{syst}'] = sigHistFile.Get(f'{histoPrefix}_{syst}_Bprime_M{mass}_2016APV').Clone(f'{histoPrefix}__BpM{mass}__{syst}')
                                         else:
@@ -246,7 +246,7 @@ if groupHists:
                                                         systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_Bprime_M{mass}_2016APV').Clone(f'{histoPrefix}__BpM{mass}__{syst}Up')
                                                         systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_Bprime_M{mass}_2016APV').Clone(f'{histoPrefix}__BpM{mass}__{syst}Down')
                                                 except:
-                                                        if ('pNet' in syst and 'tag' in cat):
+                                                        if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
                                                                 pass
                                                         else:
                                                                 print('could not process '+syst+' for '+bkg)
@@ -262,7 +262,7 @@ if groupHists:
                                                                 systHists[f'{histoPrefix}__BpM{mass}__{syst}Up'].Add(sigHistFile.Get(f'{histoPrefix}_{syst}Up_Bprime_M{mass}_{year}'))
                                                                 systHists[f'{histoPrefix}__BpM{mass}__{syst}Down'].Add(sigHistFile.Get(f'{histoPrefix}_{syst}Dn_Bprime_M{mass}_{year}'))
                                                         except:
-                                                                if ('pNet' in syst and 'tag' in cat):
+                                                                if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
                                                                         pass
                                                                 else:
                                                                         print('could not process '+syst+' for '+bkg)
@@ -356,7 +356,7 @@ for cat in catList:
                                         try:
                                                 yieldTable[f'{histoPrefix}{syst}{ud}'][proc]=combinedHistFile.Get(f'{histoPrefix}__{proc}__{syst}{ud}').Integral()
                                         except:
-                                                if ('pNet' in syst and 'tag' in cat):
+                                                if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
                                                         yieldTable[f'{histoPrefix}{syst}{ud}'][proc] = 0
                                                 else:
                                                         print('could not store integral of '+syst+' for '+proc)
