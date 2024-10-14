@@ -21,6 +21,9 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         plotTreeNameTemp = plotDetails[0] #TEMP
         xbins=array('d', plotDetails[1])
         xAxisLabel=plotDetails[2]
+
+        if iPlot == 'NPV' and 'Single' in sample.prefix:
+                plotTreeName = 'PV_npvs'
         
         # Define categories
         isEM  = category['isEM']
@@ -204,9 +207,9 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 cut += ' && NJets_forward > 0 && NJets_DeepFlavL > 3'
         elif region == 'V':
                 if doABCDnn:
-                        cut  = ' && NJets_forward > 0 && NJets_DeepFlavL < 3 && OS1FatJetProbJ_ABCDnn>0.9'
+                        cut  = ' && NJets_forward > 0 && NJets_DeepFlavL < 3 && gcJet_ST < 850' #fake
                 else:
-                        cut  = ' && NJets_forward > 0 && NJets_DeepFlavL < 3 && gcOSFatJet_pNetJ[0]>0.9'
+                        cut  = ' && NJets_forward > 0 && NJets_DeepFlavL < 3 && gcJet_ST < 850'
 
         # Separate ttbar into mass bins for proper normalization 
         if not doABCDnn:
