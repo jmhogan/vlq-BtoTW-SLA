@@ -6,8 +6,9 @@ else: runDir = thisDir
 if os.getcwd()[-17:] == 'singleLepAnalyzer': os.chdir(os.getcwd()+'/makeTemplates/')
 outputDir = thisDir+'/'
 
-region='all' #all, BAX, DCY, individuals
-categorize=0 #1==categorize into 6 tags
+region = sys.argv[1] #all, BAX, DCY, individuals
+procs = sys.argv[2] #datsig, top, other, all
+categorize = 1 #1==categorize into 6 tags
 
 cTime=datetime.datetime.now()
 date='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
@@ -15,14 +16,15 @@ time='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
 pfix = 'templates'+region
 if not categorize: pfix='kinematics'+region
 
-pfix+='_Apr2024SysAll'
+pfix+='_Oct2024_42bins'
 
 plotList = [#distribution name as defined in "doHists.py"
-        'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
+        #'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
         'BpMass_ABCDnn', #:('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]')
-        # 'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
+        #'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
         #'ST_ABCDnn', #:('gcJet_ST_ABCDnn',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)')
   
+        # 'NPV',
         # 'HT', #:('gcJet_HT',linspace(0, 5000, 51).tolist(),';H_{T} (GeV)'), 
         # 'lepPt' , #:('lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
         # 'lepEta', #:('lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
@@ -41,7 +43,6 @@ plotList = [#distribution name as defined in "doHists.py"
         # 'FatJetPt' , #:('gcFatJet_pt',linspace(0, 1500, 51).tolist(),';AK8 jet p_{T} [GeV]'),
         # 'FatJetPhi', #:('gcFatJet_phi',linspace(-3.2,3.2, 65).tolist(),';AK8 jet phi'),
         # 'FatJetSD' , #:('gcFatJet_sdmass',linspace(0, 500, 51).tolist(),';AK8 soft drop mass [GeV]'),
-        # 'FatJetMatch', #:('gcFatJet_genmatch',linspace(-24,24,49).tolist(),';AK8 gen match ID'),
         # 'OS1FatJetEta', #:('gcOSFatJet_eta[0]',linspace(-3, 3, 41).tolist(),';B decay AK8 #eta'),
         # 'OS1FatJetPt' , #:('gcOSFatJet_pt[0]',linspace(0, 1500, 51).tolist(),';B decay AK8 p_{T} [GeV]'),
         # 'OS1FatJetPhi', #:('gcOSFatJet_phi[0]',linspace(-3.2,3.2, 65).tolist(),';B decay AK8 phi'),
@@ -62,19 +63,11 @@ plotList = [#distribution name as defined in "doHists.py"
         # 'PtRelAK8', #:('ptRel_atMinDR_lepFatJets',linspace(0,500,51).tolist(),';p_{T,rel}(l, closest AK8 jet) [GeV]'),
         # 'minDR', #:('minDR_lepJets',linspace(0,5,51).tolist(),';#Delta R(l, closest jet) [GeV]'),
         # 'minDRAK8', #:('minDR_lepFatJets',linspace(0,5,51).tolist(),';#Delta R(l, closest AK8 jet) [GeV]'),
-        # 'FatJetTau21'  , #:('gcFatJet_tau21',linspace(0, 1, 51).tolist(),';AK8 Jet #tau_{2}/#tau_{1}'),
-        # 'FatJetTau32'  , #:('gcFatJet_tau32',linspace(0, 1, 51).tolist(),';AK8 Jet #tau_{3}/#tau_{2}'),
-        # 'OS1FatJetTau21'  , #:('gcOSFatJet_tau21[0]',linspace(0, 1, 51).tolist(),';B decay AK8 #tau_{2}/#tau_{1}'),
-        # 'OS1FatJetTau32'  , #:('gcOSFatJet_tau32[0]',linspace(0, 1, 51).tolist(),';B decay AK8 #tau_{3}/#tau_{2}'),
         # 'FatJetProbJ', #:('gcFatJet_pNetJ',linspace(0,1.2,51).tolist(),';pNet J score'),
-        # 'FatJetProbT', #:('gcFatJet_pNetT',linspace(0,1.2,51).tolist(),';pNet t score'),
-        # 'FatJetProbW', #:('gcFatJet_pNetW',linspace(0,1.2,51).tolist(),';pNet W score'),
         # 'FatJetProbTvJ', #:('gcFatJet_pNetTvsQCD',linspace(0,1.2,51).tolist(),';pNet t-v-QCD score'),
         # 'FatJetProbWvJ', #:('gcFatJet_pNetWvsQCD',linspace(0,1.2,51).tolist(),';pNet W-v-QCD score'),
         # 'FatJetTag', #:('gcFatJet_pNetTag',linspace(0,3,4).tolist(),';pNet tag (0 = J, 1 = t, 2 = W)'),
         # 'OS1FatJetProbJ', #:('gcOSFatJet_pNetJ[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet J score'),
-        # 'OS1FatJetProbT', #:('gcOSFatJet_pNetT[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet t score'),
-        # 'OS1FatJetProbW', #:('gcOSFatJet_pNetW[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet W score'),
         # 'OS1FatJetProbTvJ', #:('gcOSFatJet_pNetTvsQCD[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet t-v-QCD score'),
         # 'OS1FatJetProbWvJ', #:('gcOSFatJet_pNetWvsQCD[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet W-v-QCD score'),
         # 'OS1FatJetTag', #:('gcOSFatJet_pNetTag[0]',linspace(0,3,4).tolist(),';B decay AK8 pNet tag (0 = J, 1 = t, 2 = W)'),
@@ -87,15 +80,10 @@ plotList = [#distribution name as defined in "doHists.py"
         # 'WMt', #:('W_MT',linspace(0,500,51).tolist(),';reco W M_{T} [GeV]'),
         # 'Wdrlep', #:('DR_W_lep',linspace(0,5,51).tolist(),';reco W #DeltaR(W,lepton)'),        
         # 'minMlj', #:('minM_lep_Jet',linspace(0,1000,51).tolist(),';min[M(l,jet)] [GeV]'),
-        # 'tmassMLJ', #:('t_mass_minMlj',linspace(0,500,51).tolist(),';reco t mass (minMlj method) [GeV]'),
-        # 'tptMLJ', #:('t_pt_minMlj',linspace(0,1000,51).tolist(),';reco t pt (minMlj method) [GeV]'),
-        # 'tetaMLJ', #:('t_eta_minMlj',linspace(-4,4,41).tolist(),';reco t eta (minMlj method)'),
-        # 'tphiMLJ', #:('t_phi_minMlj',linspace(-3.2,3.2, 65).tolist(),';reco t phi (minMlj method)'),
         # 'tmassSSB', #:('t_mass_SSb',linspace(0,500,51).tolist(),';reco t mass (SSb method) [GeV]'),
         # 'tptSSB', #:('t_pt_SSb',linspace(0,1000,51).tolist(),';reco t pt (SSb method) [GeV]'),
         # 'tetaSSB', #:('t_eta_SSb',linspace(-4,4,41).tolist(),';reco t eta (SSb method)'),
         # 'tphiSSB', #:('t_phi_SSb',linspace(-3.2,3.2, 65).tolist(),';reco t phi (SSb method)'),
-        # 'tdrWbMLJ', #:('DR_W_b_minMlj',linspace(0,6.3,51).tolist(),';reco t, #DeltaR(W,b) (minMlj method)'),
         # 'tdrWbSSB', #:('DR_W_b_SSb',linspace(0,6.3,51).tolist(),';reco t, #DeltaR(W,b) (SSb method)'),
         # 'BpPt', #:('Bprime_pt',linspace(0,3000,51).tolist(),';B quark p_{T} [GeV]'),
         # 'BpEta', #:('Bprime_eta',linspace(-5,5,51).tolist(),';B quark #eta'),
@@ -111,18 +99,20 @@ if '2D' in pfix: isEMlist = ['L']
 
 taglist = ['all']
 if categorize:
-        taglist=['tagTjet','tagWjet','untagTlep','untagWlep', 'allWlep','allTlep']
+        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep', 'allWlep','allTlep']
         #taglist=['allWlep','allTlep']
-        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
+        taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
         ## later, can determine tag lists for different regions
 
 outDir = outputDir+pfix+'/'
 print(outDir)
 if not os.path.exists(outDir): os.system('mkdir '+outDir)
 if '2D' in outDir:
-        os.system('cp ../analyze2D_RDF.py doHists2D_rdf.py ../utils.py ../samples.py doCondorHists.py doCondorHists2D.sh '+outDir+'/')
+        os.system('cp ../analyze2D_RDF.py ../utils.py ../samples.py doCondorHists2D.sh '+outDir+'/')
+        os.system('cp doHists2D_rdf.py '+outDir+'/doHists2D_rdf_'+procs+'.py')
 else:
-        os.system('cp ../analyze_RDF.py doHists_rdf.py ../utils.py ../samples.py doCondorHists.py doCondorHists.sh '+outDir+'/')
+        os.system('cp ../analyze_RDF.py ../utils.py ../samples.py doCondorHists.sh '+outDir+'/')
+        os.system('cp doHists_rdf.py '+outDir+'/doHists_rdf_'+procs+'.py')
 os.chdir(outDir)
 
 catlist = list(itertools.product(isEMlist,taglist))
@@ -142,6 +132,9 @@ print('Dimensions:',dimstr)
 print('iPlotList:',iPlotList)
 
 count=0
+mem=4000
+if categorize: mem=4000
+
 for iplot in iPlotList:
 	for cat in list(itertools.product(isEMlist,taglist)):
 		catDir = cat[0]+'_'+cat[1]	
@@ -149,23 +142,23 @@ for iplot in iPlotList:
 		if not os.path.exists(outDir): os.system('mkdir '+outDir)
 		os.chdir(outDir)			
 
-		dict={'rundir':runDir, 'dir':'.','iPlot':iplot,'region':region,'isCategorized':categorize,
-			  'isEM':cat[0],'tag':cat[1],'2D':dimstr}
+		dict={'rundir':runDir, 'dir':'.','iPlot':iplot,'region':region,'isCategorized':categorize,'memory':mem,
+			  'isEM':cat[0],'tag':cat[1],'2D':dimstr,'procs':procs}
 		print(dict)
 		jdf=open('condor.job','w')
 		jdf.write(
 			"""use_x509userproxy = true
 universe = vanilla
-Executable = %(rundir)s/makeTemplates/doCondorHists%(2D)s.sh
+Executable = ../doCondorHists%(2D)s.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
-Transfer_Input_Files = ../analyze_RDF%(2D)s.py, ../samples.py, ../utils.py, ../doHists_rdf%(2D)s.py
-Output = condor_%(iPlot)s.out
-Error = condor_%(iPlot)s.err
-Log = condor_%(iPlot)s.log
+Transfer_Input_Files = ../analyze_RDF%(2D)s.py, ../samples.py, ../utils.py, ../doHists_rdf%(2D)s_%(procs)s.py
+Output = condor_%(iPlot)s_%(procs)s.out
+Error = condor_%(iPlot)s_%(procs)s.err
+Log = condor_%(iPlot)s_%(procs)s.log
 Notification = Never
-Arguments = %(dir)s %(iPlot)s %(region)s %(isCategorized)s %(isEM)s %(tag)s
-request_memory = 8000
+Arguments = %(dir)s %(iPlot)s %(region)s %(isCategorized)s %(isEM)s %(tag)s %(procs)s
+request_memory = %(memory)s
 
 Queue 1"""%dict)
 		jdf.close()
