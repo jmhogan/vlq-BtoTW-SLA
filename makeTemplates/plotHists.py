@@ -54,7 +54,7 @@ sig2leg='B (1.8 TeV, 1 fb)'
 
 scaleSignals = True
 #if not isCategorized: scaleSignals = True
-sigScaleFact = 50
+sigScaleFact = 25
 print('Scaling signals?',scaleSignals)
 print('Scale factor = ',sigScaleFact)
 tempsig='templates_'+iPlot+'_'+lumiInTemplates+''+isRebinned+'.root'#+'_Data18.root'

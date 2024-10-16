@@ -50,7 +50,12 @@ class sample:
         self.kfactor = 1 # dummy
         self.xsec = xsec # in pb
         self.color = ROOT.kBlack
-                        
+
+# We will use these for plotting in this "xsec" folder, but keep them as 1 in the actual sample definitions for ROOT files
+# From Xanda, for "singlet" B prod with a b quark, for 1% width, for 50% tW
+xsec = {'800':0.1187124, '900':0.0640113, '1000':0.0362987, '1100':0.0215009, '1200':0.0131348, '1300':0.0082629, '1400':0.0053213, '1500':0.0035078, '1600':0.0022829, '1700':0.0014947, '1800':0.0009898, '1900':0.0006519, '2000':0.0004499}
+# extrapolating from ln(xsec) fit I get 0.000238 for 2200
+
 Bprime_M1000_2016APV = sample("Bprime_M1000_2016APV", 1.0, "2016APV", "Bprime_M1000_2016APVULNanoList.txt", "/BprimeBtoTW_M-1000_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
 Bprime_M1200_2016APV = sample("Bprime_M1200_2016APV", 1.0, "2016APV", "Bprime_M1200_2016APVULNanoList.txt", "/BprimeBtoTW_M-1200_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
 Bprime_M1300_2016APV = sample("Bprime_M1300_2016APV", 1.0, "2016APV", "Bprime_M1300_2016APVULNanoList.txt", "/BprimeBtoTW_M-1300_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
@@ -61,7 +66,7 @@ Bprime_M1700_2016APV = sample("Bprime_M1700_2016APV", 1.0, "2016APV", "Bprime_M1
 Bprime_M1800_2016APV = sample("Bprime_M1800_2016APV", 1.0, "2016APV", "Bprime_M1800_2016APVULNanoList.txt", "/BprimeBtoTW_M-1800_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
 Bprime_M2000_2016APV = sample("Bprime_M2000_2016APV", 1.0, "2016APV", "Bprime_M2000_2016APVULNanoList.txt", "/BprimeBtoTW_M-2000_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
 Bprime_M2200_2016APV = sample("Bprime_M2200_2016APV", 1.0, "2016APV", "Bprime_M2200_2016APVULNanoList.txt", "/BprimeBtoTW_M-2200_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
-Bprime_M800_2016APV = sample("Bprime_M800_2016APV", 1.0, "2016APV", "Bprime_M800_2016APVULNanoList.txt", "/BprimeBtoTW_M-800_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
+Bprime_M800_2016APV = sample("Bprime_M800_2016APV",   1.0, "2016APV", "Bprime_M800_2016APVULNanoList.txt", "/BprimeBtoTW_M-800_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v2/NANOAODSIM")
 Bprime_M1000_2016 = sample("Bprime_M1000_2016", 1.0, "2016", "Bprime_M1000_2016ULNanoList.txt", "/BprimeBtoTW_M-1000_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v2/NANOAODSIM")
 Bprime_M1000_2017 = sample("Bprime_M1000_2017", 1.0, "2017", "Bprime_M1000_2017ULNanoList.txt", "/BprimeBtoTW_M-1000_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM")
 Bprime_M1000_2018 = sample("Bprime_M1000_2018", 1.0, "2018", "Bprime_M1000_2018ULNanoList.txt", "/BprimeBtoTW_M-1000_NWALO_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v2/NANOAODSIM")

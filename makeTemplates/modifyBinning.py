@@ -248,7 +248,7 @@ for rfile in rfiles:
                 for hist in allhists[chn]:
                         rebinnedHists[hist] = tfiles[iRfile].Get(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
                         rebinnedHists[hist].SetDirectory(0)
-                        if sigName in hist:
+                        if '__'+sigName in hist:
                                 rebinnedHists[hist].Scale(1.0/0.5) # already did lumi*1pb/Ngen, need lumi*1pb/(Ngen*BRsinglet)
                         if rebinnedHists[hist].Integral() < 1e-12: 
                                 print("Empty hist found, skipping: "+hist)
