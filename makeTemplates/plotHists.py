@@ -12,7 +12,7 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-lumi=138. #for plots #56.1 #
+lumi=59.8 #for plots #56.1 #
 lumiInTemplates= lumiStr
 
 iPlot='HT'
@@ -58,7 +58,7 @@ sigScaleFact = 25
 print('Scaling signals?',scaleSignals)
 print('Scale factor = ',sigScaleFact)
 tempsig='templates_'+iPlot+'_'+lumiInTemplates+''+isRebinned+'.root'#+'_Data18.root'
-if year != 'all': tempsig='templates_'+iPlot+'_'+year+''+isRebinned+'.root'#+'_Data18.root'
+if year != 'all': tempsig='templates_'+iPlot+'_'+lumiInTemplates+'_'+year+''+isRebinned+'.root'#+'_Data18.root'
 
 plotABCDnn = False
 plotLowSide = True
@@ -69,14 +69,21 @@ if len(isRebinned)>1 and 'ABCDnn' in iPlot:
         bkgProcList = ['ewk', 'ttx', 'major']
         ABCDnnProcList = ['major']
 else:
-        bkgProcList = ['qcd',
-                       'ttx',
-                       'ewk',
-                       'wjets',                       
-                       'singletop',
-                       'ttbar'
-                       ]
-        ABCDnnProcList = ['qcd','wjets','singletop','ttbar']
+        if 'ABCDnn' not in iPlot:
+                bkgProcList = ['qcd',
+                               'ttx',
+                               'ewk',
+                               'wjets',                       
+                               'singletop',
+                               'ttbar'
+                ]
+                ABCDnnProcList = ['major']#'qcd','wjets','singletop','ttbar']
+        else:
+                bkgProcList = ['ttx',
+                               'ewk',
+                               'major'                       
+                ]
+        ABCDnnProcList = ['major']#'qcd','wjets','singletop','ttbar']
 minorProcList = ['ewk', 'ttx']
 
 
@@ -133,7 +140,7 @@ def formatUpperHist(histogram,th1hist):
         if plotLowSide:
                 lowside = th1hist.GetBinLowEdge(1)
         else:
-                lowside =  500 #TEMP: plotting only high BpM for ABCDnn
+                lowside =  400 #TEMP: plotting only high BpM for ABCDnn
         highside = th1hist.GetBinLowEdge(th1hist.GetNbinsX()+1)
         histogram.GetXaxis().SetRangeUser(lowside,highside)
         histogram.GetXaxis().SetNdivisions(506)
@@ -230,7 +237,7 @@ def formatLowerHist(histogram):
                 histogram.GetYaxis().SetRangeUser(0.1,1.9)
         histogram.GetYaxis().CenterTitle()
         if not plotLowSide:
-                lowside =  500 #TEMP
+                lowside =  400 #TEMP
                 highside = histogram.GetBinLowEdge(histogram.GetNbinsX()+1) #TEMP
                 histogram.GetXaxis().SetRangeUser(lowside,highside) #TEMP
 
@@ -278,11 +285,11 @@ for tag in taglist:
 
                 #print(histPrefix+'__'+datalabel)
                 hData = RFile1.Get(histPrefix+'__'+datalabel).Clone()
-                print(hData.Integral())
+                print('Data:',hData.Integral())
                 if plotNorm:
                         hData.Scale(1/hData.Integral())
 
-                if plotABCDnn and not partialBlind and 'validation' not in pfix: # to scale training regions of ABCDnn
+                if plotABCDnn and not partialBlind and 'validation' not in pfix and region != 'V': # to scale training regions of ABCDnn
                         factor = (hData.Integral()-totMinor)/totMajor
                         for proc in ABCDnnProcList:
                                 bkghists[proc+catStr].Scale(factor)
@@ -294,7 +301,7 @@ for tag in taglist:
                                 print('cant add',proc)
                                 pass
 
-                print(totBkg,totMajor,totMinor)
+                print('Total, Major, Minor:',totBkg,totMajor,totMinor)
                 #histrange = [hData.GetBinLowEdge(1),hData.GetBinLowEdge(hData.GetNbinsX()+1)]
 
                 if (partialBlind and (tag!="untagTlep" and tag!="untagWlep")): # Todo: generalize it for other branches
@@ -345,7 +352,7 @@ for tag in taglist:
                                         bkgHT.Add(bkghists[proc+catStr])
                                 except: pass
 
-                        print(bkgHT.Integral())
+                        print('BkgHT:',bkgHT.Integral())
                         gaeBkgHT = TGraphAsymmErrors(bkgHT.Clone("gaeBkgHT"))
                 else:
                         bkgHT = bkghists[bkgProcList[0]+catStr].Clone()
@@ -425,9 +432,12 @@ for tag in taglist:
                                 for syst in systematicList:
                                         for proc in bkgProcList:
                                                 try:
+                                                        #if ibin == 1:
+                                                        #        print('for',syst,'in',proc,'found central bin',bkghists[proc+catStr].GetBinContent(ibin),'and up bin',systHists[proc+catStr+syst+shiftlist[0]].GetBinContent(ibin),'and down bin',systHists[proc+catStr+syst+shiftlist[1]].GetBinContent(ibin))
                                                         errorPlus = systHists[proc+catStr+syst+shiftlist[0]].GetBinContent(ibin)-bkghists[proc+catStr].GetBinContent(ibin)
                                                         errorMinus = bkghists[proc+catStr].GetBinContent(ibin)-systHists[proc+catStr+syst+shiftlist[1]].GetBinContent(ibin)
-                                                        #print('for',syst,'in',proc,'found errorPlus =',errorPlus,'and errorMinus =',errorMinus)
+                                                        #if ibin == 1:
+                                                        #        print('for',syst,'in',proc,'found errorPlus =',errorPlus,'and errorMinus =',errorMinus)
                                                         if errorPlus > 0:
                                                                 errorUp += errorPlus**2
                                                         else: 
