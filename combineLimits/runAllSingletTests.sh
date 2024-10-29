@@ -39,42 +39,42 @@ python -u runInitialFit.py $dir $mass 0 500
 # mass=1200
 
 #echo "Creating initial fit workspace:"
-#python -u runInitialFit.py $dir $mass 0 500 $BR   ## Mask D, unmask V. Then swap later...
+#python -u runInitialFit.py $dir $mass 0 500   ## Mask D, unmask V. Then swap later...
 
 #echo "Running impact test: (Note: might crash waiting for proxy password if piped to a log!)"
-#python -u runImpacts.py $dir $mass crab $BR 
+#python -u runImpacts.py $dir $mass crab
 
 # echo "Submitting toys to condor for 1200 R = 0:"
-# python -u runCondorToys.py inject $dir $mass $BR 0 500 
+# python -u runCondorToys.py inject $dir $mass 0 500 
 
 # echo "---- LIMIT-BASED TOYS (run limits and set values first!) ----"
 
 # echo "Submitting toys to condor for 1200 R = exp0:"
-# python -u runCondorToys.py inject $dir $mass $BR 2.72 500 
+# python -u runCondorToys.py inject $dir $mass 2.72 500 
 
 # mass=1800
 # echo "Submitting toys to condor for 1800 R = 0:"
-# python -u runCondorToys.py inject $dir $mass $BR 0.0 500 
+# python -u runCondorToys.py inject $dir $mass 0.0 500 
 
 # echo "Submitting toys to condor for 1800 R = exp0:"
-# python -u runCondorToys.py inject $dir $mass $BR 2.29 500
+# python -u runCondorToys.py inject $dir $mass 2.29 500
 
 
 ######## STOP HERE! WAIT FOR CRAB/CONDOR TO FINISH! ##########
 
 # echo "Running impact test json-maker:"
-# python -u runImpacts.py $dir $mass json $BR
+# python -u runImpacts.py $dir $mass json
 
-# python -u plotImpacts.py --input $dir/$BR/cmb/1400/impacts.json --output $dir/$BR/cmb/1400/impacts
+# python -u plotImpacts.py --input $dir/cmb/1200/impacts.json --output $dir/cmb/1200/impacts
 
 # echo "Plotting all injection results:"
 # mass=1200
-# python -u signalInjectionPlotter.py $dir $mass $BR 0
-# python -u signalInjectionPlotter.py $dir $mass $BR 2.72
+# python -u signalInjectionPlotter.py $dir $mass 0     
+# python -u signalInjectionPlotter.py $dir $mass 2.72   # r-value of expected limit
 
 # mass=1800
-# python -u signalInjectionPlotter.py $dir $mass $BR 0
-# python -u signalInjectionPlotter.py $dir $mass $BR 2.29
+# python -u signalInjectionPlotter.py $dir $mass 0
+# python -u signalInjectionPlotter.py $dir $mass 2.29   # r-value of expected limit
 
 
 # echo "Done!"

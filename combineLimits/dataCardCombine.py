@@ -3,8 +3,8 @@
 import os,sys,time,math,datetime,itertools
 from ROOT import TFile,TH1F
 
-if 'CMSSW_12_4_8' in os.environ['CMSSW_BASE']:
-        print("Go CMSENV inside CMSSW_11_3_4!")
+if 'CMSSW_13_0_18' in os.environ['CMSSW_BASE']:
+        print("Go CMSENV inside CMSSW_14_1_0!")
         exit(1)
 
 parent = os.path.dirname(os.getcwd())
@@ -15,11 +15,12 @@ import CombineHarvester.CombineTools.ch as ch
 
 #gROOT.SetBatch(1)
 
-fileDir = '/uscms_data/d3/jmanagan/BtoTW/CMSSW_12_4_8/src/vlq-BtoTW-SLA/makeTemplates/'
-template = 'templatesD_Oct2023Xiaohe'
+fileDir = '/uscms_data/d3/jmanagan/BtoTW/CMSSW_13_0_18/src/vlq-BtoTW-SLA/makeTemplates/'
+template = 'templatesD_Oct2024' # or ABCD for MC bkgs
+saveKey = 'ABCDnn_V'  # assumption of full lumi. If doing 36fb test, put that here too
+dateKey = '_Oct2024'
 
-tag = 'Apr2024' ##Tag and saveKey are used for output directory names
-saveKey = '138fb'#tag+'_'+str(sys.argv[3])
+outputdir = 'limits_templates'+saveKey+dateKey
 
 def add_processes_and_observations(cb, prefix='Bp'):
         print('------------------------------------------------------------------------')
@@ -59,8 +60,8 @@ def rename_and_write(cb):
         print('>> Setting standardised bin names...')
         ch.SetStandardBinNames(cb)
 	
-        writer = ch.CardWriter('limits_'+template+saveKey+'/$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_Combine.txt',
-                               'limits_'+template+saveKey+'/$TAG/common/$ANALYSIS_$CHANNEL.input.root')
+        writer = ch.CardWriter(outputdir+'/$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_Combine.txt',
+                               outputdir+'/$TAG/common/$ANALYSIS_$CHANNEL.input.root')
         writer.SetVerbosity(1)
         writer.WriteCards('cmb', cb)
         for chn in chns:
@@ -84,21 +85,21 @@ def add_systematics(cb):
         signal = cb.cp().signals().process_set()
 
 	#### Use these rateParams to make a comparison to 2016-only
-        #cb.cp().process(signal).channel(chns).AddSyst(cb, 'signalScale', 'rateParam', ch.SystMap()(35.9/138.0)) # scale down to 2016
-        #cb.cp().process(allbkgs).channel(chns).AddSyst(cb, 'bkgScale', 'rateParam', ch.SystMap()(35.9/138.0)) # scale down to 2016
-        #cb.GetParameter("signalScale").set_frozen(True)
-        #cb.GetParameter("bkgScale").set_frozen(True)
-        #print (cb.GetParameter("signalScale").frozen())
-        #print (cb.GetParameter("bkgScale").frozen())
+        cb.cp().process(signal).channel(chns).AddSyst(cb, 'signalScale', 'rateParam', ch.SystMap()(35.9/138.0)) # scale down to 2016
+        cb.cp().process(allbkgs).channel(chns).AddSyst(cb, 'bkgScale', 'rateParam', ch.SystMap()(35.9/138.0)) # scale down to 2016
+        cb.GetParameter("signalScale").set_frozen(True)
+        cb.GetParameter("bkgScale").set_frozen(True)
+        print (cb.GetParameter("signalScale").frozen())
+        print (cb.GetParameter("bkgScale").frozen())
 	
         if isABCDnn:
-                cb.cp().process([allbkgs[0]]).channel(chns).AddSyst(cb, 'peak', 'shape', ch.SystMap()(1.0))
+                #cb.cp().process([allbkgs[0]]).channel(chns).AddSyst(cb, 'peak', 'shape', ch.SystMap()(1.0))
                 cb.cp().process([allbkgs[0]]).channel(chns).AddSyst(cb, 'tail', 'shape', ch.SystMap()(1.0))
                 cb.cp().process([allbkgs[0]]).channel(chns).AddSyst(cb, 'closure', 'shape', ch.SystMap()(1.0))
-                cb.cp().process([allbkgs[0]]).channel(chns1).AddSyst(cb, 'abdcyield1', 'lnN', ch.SystMap()(1.079))
-                cb.cp().process([allbkgs[0]]).channel(chns2).AddSyst(cb, 'abdcyield2', 'lnN', ch.SystMap()(1.062))
-                cb.cp().process([allbkgs[0]]).channel(chns3).AddSyst(cb, 'abdcyield3', 'lnN', ch.SystMap()(1.081))
-                cb.cp().process([allbkgs[0]]).channel(chns4).AddSyst(cb, 'abdcyield4', 'lnN', ch.SystMap()(1.018))
+                cb.cp().process([allbkgs[0]]).channel(chns1).AddSyst(cb, 'abdcyield1', 'lnN', ch.SystMap()(1.041))
+                cb.cp().process([allbkgs[0]]).channel(chns2).AddSyst(cb, 'abdcyield2', 'lnN', ch.SystMap()(1.045))
+                cb.cp().process([allbkgs[0]]).channel(chns3).AddSyst(cb, 'abdcyield3', 'lnN', ch.SystMap()(1.056))
+                cb.cp().process([allbkgs[0]]).channel(chns4).AddSyst(cb, 'abdcyield4', 'lnN', ch.SystMap()(1.020))
 
         allmcgrps = signal + allbkgs
         if isABCDnn:
@@ -118,7 +119,7 @@ def add_systematics(cb):
         cb.cp().process(allmcgrps).channel(chns).AddSyst(cb, 'pdfNew', 'shape', ch.SystMap()(1.0))
 
         cb.cp().process(allmcgrps).channel(chns1+chns4).AddSyst(cb, 'pNetTtag', 'shape', ch.SystMap()(1.0))
-        cp.cp().process(allmcgrps).channel(chns2+chns3).AddSyst(cb, 'pNetWtag', 'shape', ch.SystMap()(1.0))
+        cb.cp().process(allmcgrps).channel(chns2+chns3).AddSyst(cb, 'pNetWtag', 'shape', ch.SystMap()(1.0))
         
         for year in ['2016APV','2016','2017','2018']:
                 for syst in ['jec','jer','TrigEffEl','TrigEffMu','btagHFUC','btagLFUC']:
@@ -135,7 +136,7 @@ def add_systematics(cb):
                 cb.cp().process([allbkgs[0]]).channel(chns).AddSyst(cb, 'muRFcorrdNewTT', 'shape', ch.SystMap()(1.0))
                 cb.cp().process([allbkgs[1]]).channel(chns).AddSyst(cb, 'muRFcorrdNewWJT', 'shape', ch.SystMap()(1.0))
                 cb.cp().process([allbkgs[2]]).channel(chns).AddSyst(cb, 'muRFcorrdNewST', 'shape', ch.SystMap()(1.0))
-                cb.cp().process([allbkgs[5]]).channel(chns).AddSyst(cb, 'muRFcorrdNewQCD', 'shape', ch.SystMap()(1.0))
+                cb.cp().process([allbkgs[5]]).channel(qcdchns).AddSyst(cb, 'muRFcorrdNewQCD', 'shape', ch.SystMap()(1.0))
 
         if isABCDnn:
                 ttxgrp = [allbkgs[1]]
@@ -161,7 +162,7 @@ def add_autoMCstat(cb):
         for chn in chns+['cmb']:
                 print('>>>> \t Adding autoMCstats for channel:',chn)
                 for mass in massList:
-                        chnDir = os.getcwd()+'/limits_'+template+saveKey+'/'+chn+'/'+str(mass)+'/'
+                        chnDir = os.getcwd()+'/'+outputdir+'/'+chn+'/'+str(mass)+'/'
                         print('chnDir: ',chnDir)
                         os.chdir(chnDir)
                         files = [x for x in os.listdir(chnDir) if '.txt' in x]
@@ -175,7 +176,7 @@ def create_workspace(cb):
 
         for chn in ['cmb']:
                 print('>>>> \t Creating workspace for channel:',chn)
-                chnDir = os.getcwd()+'/limits_'+template+saveKey+'/'+chn+'/*'
+                chnDir = os.getcwd()+'/'+outputdir+'/'+chn+'/*'
                 cmd = 'combineTool.py -M T2W -i '+chnDir+' -o workspace.root --parallel 4 --channel-masks'
                 os.system(cmd)
 
@@ -195,7 +196,7 @@ if __name__ == '__main__':
         lumiStrDir = '138'
         lumiStr = lumiStrDir+'fbfb'
 
-        if not os.path.exists('./limits_'+template+saveKey): os.system('mkdir -p ./limits_'+template+saveKey+'/')
+        if not os.path.exists('./'+outputdir): os.system('mkdir -p ./'+outputdir+'/')
 
         discrim = 'BpMass_ABCDnn'
         isABCDnn = False
@@ -203,18 +204,20 @@ if __name__ == '__main__':
                 isABCDnn = True
 
         rfile = fileDir+template+'/templates_'+discrim+'_138fbfb_rebinned_stat0p2.root'
-        os.system('cp '+rfile+' ./limits_'+template+saveKey+'/')
+        os.system('cp '+rfile+' ./'+outputdir+'/')
 
         print('File: ',rfile)
         allbkgs = ['ttbar','wjets','singletop','ttx','ewk','qcd']
         if isABCDnn:
                 allbkgs = ['major','ttx','ewk']
 
+        print('Allbkgs = ',allbkgs)
+
         dataName = 'data_obs'
         tfile = TFile(rfile)
         allHistNames = [k.GetName() for k in tfile.GetListOfKeys() if not 'allTlep' in k.GetName() and not 'allWlep' in k.GetName() and not (k.GetName().endswith('Up') or k.GetName().endswith('Down'))]
         upSystNames = [k.GetName() for k in tfile.GetListOfKeys() if (k.GetName().endswith('Up') and not 'allTlep' in k.GetName() and not 'allWlep' in k.GetName())]
-        #qcdsysts = [(k.GetName().split('__')[-1]).replace('Up','') for k in tfile.GetListOfKeys() if '__ttbar__' in k.GetName() and k.GetName().endswith('Up') and '_untagWlep_' in k.GetName()]
+        qcdsysts = [(k.GetName().split('__')[-1]).replace('Up','') for k in tfile.GetListOfKeys() if '__ttbar__' in k.GetName() and k.GetName().endswith('Up') and '_untagWlep_' in k.GetName()]
         tfile.Close()
 
         chns = [hist[hist.find('fb_')+3:hist.find('__')] for hist in allHistNames if '__'+dataName in hist and 'all' not in hist]
@@ -225,8 +228,8 @@ if __name__ == '__main__':
         chns4 = [chn for chn in chns if '_untagWlep_' in chn]
         bkg_procs = {chn:[hist.split('__')[-1] for hist in allHistNames if '_'+chn+'_' in hist and not (hist.endswith('Up') or hist.endswith('Down') or hist.endswith(dataName) or '_BpM' in hist)] for chn in chns}
 
-        #systchannels = {chn:[(hist.split('__')[-1]).replace('Up','') for hist in upSystNames if '__qcd__' in hist and '_'+chn+'_' in hist] for chn in chns}
-        #qcdchns = {syst:[chn for chn in chns if syst in systchannels[chn]] for syst in qcdsysts}
+        systchannels = {chn:[(hist.split('__')[-1]).replace('Up','') for hist in upSystNames if '__qcd__' in hist and '_'+chn+'_' in hist] for chn in chns}
+        qcdchns = {syst:[chn for chn in chns if syst in systchannels[chn]] for syst in qcdsysts}
         #qcdchnsE = {syst:[chn for chn in chns if 'isE' in chn and syst in systchannels[chn]] for syst in qcdsysts}
         #qcdchnsM = {syst:[chn for chn in chns if 'isM' in chn and syst in systchannels[chn]] for syst in qcdsysts}
 

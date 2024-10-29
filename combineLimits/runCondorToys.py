@@ -40,7 +40,7 @@ if isSR:
     toysperjob = 3
     filename = 'morphedWorkspace.root'
     maskstring = '--setParameters mask_Bp_isL_tagTjet_D_0_Combine=0,mask_Bp_isL_tagWjet_D_0_Combine=0,mask_Bp_isL_untagWlep_D_0_Combine=0,mask_Bp_isL_untagTlep_D_0_Combine=0,mask_Bp_isL_tagTjet_V_0_Combine=1,mask_Bp_isL_tagWjet_V_0_Combine=1,mask_Bp_isL_untagWlep_V_0_Combine=1,mask_Bp_isL_untagTlep_V_0_Combine=1' # unmask D, mask V after initial fit
-        maskstring += ',signalScale=0.001' # reset 1fb after CR-only fit
+    maskstring += ',signalScale=0.001' # reset 1fb after CR-only fit
 
 else:
     toysperjob = 5
