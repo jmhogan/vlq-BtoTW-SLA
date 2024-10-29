@@ -25,6 +25,9 @@ if isSR: filename = 'morphedWorkspace.root'
 
 if not isSR and not os.path.exists(filename):
 
+    # no masking is needed here since only V will be in the workspace.
+    # check whether the 1 pb normalization is fine for getting r ~ 1
+    
     print "Running Fit Diagnostics for initial workspace"
     print 'Command = combine -M FitDiagnostics -d workspace.root --saveWorkspace --saveShapes --plots --setParameters signalScale=1'
     os.system('combine -M FitDiagnostics -d workspace.root --saveWorkspace --saveShapes --plots --setParameters signalScale=1')
@@ -42,7 +45,7 @@ if not isSR and not os.path.exists(filename):
 
 print 'looking for',filename,'in',path
 if isSR and not os.path.exists(filename):
-    masks = 'mask_Bp_isL_tagTjet_D_0_Combine=1,mask_Bp_isL_tagWjet_D_0_Combine=1,mask_Bp_isL_untagWlep_D_0_Combine=1,mask_Bp_isL_untagTlep_D_0_Combine=1,mask_Bp_isL_tagTjet_C_0_Combine=1,mask_Bp_isL_tagWjet_C_0_Combine=1,mask_Bp_isL_untagWlep_C_0_Combine=1,mask_Bp_isL_untagTlep_C_0_Combine=1' ## this is for MC, adapt for ABCDnn
+    masks = 'mask_Bp_isL_tagTjet_D_0_Combine=1,mask_Bp_isL_tagWjet_D_0_Combine=1,mask_Bp_isL_untagWlep_D_0_Combine=1' ## this is for MC, adapt for ABCDnn
 
     masks = masks+',signalScale=1' #1pb for V-only fit
 
