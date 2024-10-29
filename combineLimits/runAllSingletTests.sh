@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "MAKE SURE YOU ARE ON EL9!!!"
+
 # echo "--------------- Working on VR for TT -------------------"
 
 dir=limits_templatesABCDnn_V_Oct2024
@@ -8,18 +10,18 @@ mass=1200
 echo "Creating initial fit workspace:" 
 python -u runInitialFit.py $dir $mass 0 500 
 
-echo "Running nuisance plot: CHECK LINES 382 and 411 FOR RANGES"
-python -u diffNuisances.py -g $dir/$BR/cmb/$mass/nuisancepulls.root $dir/$BR/cmb/$mass/fitDiagnostics.root >& $dir/$BR/cmb/$mass/nuisancepulls.txt
+#echo "Running nuisance plot: CHECK LINES 382 and 411 FOR RANGES"
+#python -u diffNuisances.py -g $dir/$BR/cmb/$mass/nuisancepulls.root $dir/$BR/cmb/$mass/fitDiagnostics.root >& $dir/$BR/cmb/$mass/nuisancepulls.txt
 
-echo "Running covariance plot: CHECK LINES 23/24 and 48/49 FOR RANGES"
-python -u covariancePlotter.py $dir $mass
+#echo "Running covariance plot: CHECK LINES 23/24 and 48/49 FOR RANGES"
+#python -u covariancePlotter.py $dir $mass
 
 # Not included in Kuan-Yu's list
 #echo "Submitting toys to condor for R = 0:"
 #python -u runCondorToys.py inject $dir $mass 0 500 
 
-echo "Submitting toys to condor for GOF:"
-python -u runCondorToys.py gof $dir $mass 500
+#echo "Submitting toys to condor for GOF:"
+#python -u runCondorToys.py gof $dir $mass 500
 
 ########### STOP HERE! WAIT FOR CONDOR TO FINISH!! ##############
 
