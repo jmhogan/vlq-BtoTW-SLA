@@ -21,7 +21,7 @@ signal = 'B'
 # if len(sys.argv) > 5: combination = bool(eval(sys.argv[5]))
 
 blind=True
-morphed=True
+morphed=False
 ACLS = False
 saveKey=''
 if ACLS: saveKey+='_ACLS'
@@ -61,10 +61,13 @@ theory_xsec = [0.1187124, 0.0640113, 0.0362987, 0.0215009, 0.0131348, 0.0082629,
 
 theoryDn = [0.0942576, 0.0505049, 0.0284212, 0.0167492, 0.0101664, 0.0063624, 0.0040814, 0.0026765, 0.0017327, 0.0011300, 0.0007453, 0.0004890, 0.0003361]
 theoryUp = [0.1530202, 0.0832147, 0.0475501, 0.0283811, 0.0174562, 0.0110475, 0.0071518, 0.0047426, 0.0031047, 0.0020418, 0.0013590, 0.0008990, 0.0006236]
-theory_xsec_dn = [2*(a-b) for a,b in zip(theory_xsec,theoryDn)]
-theory_xsec_up = [2*(a-b) for a,b in zip(theoryUp,theory_xsec)]
+theory_xsec_dn = [(a-b) for a,b in zip(theory_xsec,theoryDn)]
+theory_xsec_up = [(a-b) for a,b in zip(theoryUp,theory_xsec)]
 
-theory_xsec = [2*a for a in theory_xsec] # multiplying 50% tW by 2 to become 100% tW
+## Not needed as of Oct2024 samples -- we have now divided the BR in the signal histograms
+#theory_xsec_dn = [2*(a-b) for a,b in zip(theory_xsec,theoryDn)]
+#theory_xsec_up = [2*(a-b) for a,b in zip(theoryUp,theory_xsec)]
+#theory_xsec = [2*a for a in theory_xsec] # multiplying 50% tW by 2 to become 100% tW
 
 print('Theory xsec = ',theory_xsec)
 #theory_xsec_up = [item/1000 for item in xsecErrUp]
@@ -82,13 +85,13 @@ theory = TGraph(len(theory_mass))
 for i in range(len(theory_mass)):
 	theory.SetPoint(i, theory_mass[i], theory_xsec[i])
 
-def getSensitivity(index, exp):
+def getSensitivity(index, theory, exp):
 	a1=mass[index]-mass[index-1]
 	b1=mass[index]-mass[index-1]
 	c1=0
 	a2=exp[index]-exp[index-1]
-	b2=theory_xsec[index]-theory_xsec[index-1]
-	c2=theory_xsec[index-1]-exp[index-1]
+	b2=theory_xsec[theory]-theory_xsec[theory-1]
+	c2=theory_xsec[theory-1]-exp[index-1]
 	s = (c1*b2-c2*b1)/(a1*b2-a2*b1)
 	t = (a1*c2-a2*c1)/(a1*b2-a2*b1)
 	return mass[index-1]+s*(mass[index]-mass[index-1]), exp[index-1]+s*(exp[index]-exp[index-1])
@@ -96,7 +99,7 @@ def getSensitivity(index, exp):
 def PlotLimits(limitDir,limitFile,tempKey):
     ljust_i = 10
     print
-    print 'mass'.ljust(ljust_i), 'observed'.ljust(ljust_i), 'expected'.ljust(ljust_i), '-2 Sigma'.ljust(ljust_i), '-1 Sigma'.ljust(ljust_i), '+1 Sigma'.ljust(ljust_i), '+2 Sigma'.ljust(ljust_i)
+    print('mass'.ljust(ljust_i), 'observed'.ljust(ljust_i), 'expected'.ljust(ljust_i), '-2 Sigma'.ljust(ljust_i), '-1 Sigma'.ljust(ljust_i), '+1 Sigma'.ljust(ljust_i), '+2 Sigma'.ljust(ljust_i))
 
     f = open(limitDir+'/'+limitFile)       
     data = json.load(f)
@@ -127,21 +130,24 @@ def PlotLimits(limitDir,limitFile,tempKey):
         exp95L[i] = float(data[key]['exp-2']) * xsec[i]
         lims[.975] = float(data[key]['exp+2'])
         exp95H[i] = float(data[key]['exp+2']) * xsec[i]
-    
-        # if i!=0:
-        # 	if(exp[i]>theory_xsec[i] and exp[i-1]<theory_xsec[i-1]) or (exp[i]<theory_xsec[i] and exp[i-1]>theory_xsec[i-1]):
-        # 		limExpected,ycross = getSensitivity(i,exp)
-        # 	if(obs[i]>theory_xsec[i] and obs[i-1]<theory_xsec[i-1]) or (obs[i]<theory_xsec[i] and obs[i-1]>theory_xsec[i-1]):
-        # 		limObserved,ycross = getSensitivity(i,obs)
-        		
+
+        if i!=0:
+                it = theory_mass.index(mass[i])
+                itm1 = theory_mass.index(mass[i-1])
+                if(exp[i]>theory_xsec[it] and exp[i-1]<theory_xsec[itm1]) or (exp[i]<theory_xsec[it] and exp[i-1]>theory_xsec[itm1]):
+                        print('Calling getSensitivity. At point',i,'got exp of',exp[i],'and theory of',theory_xsec[it],'with previous exp of',exp[i-1],'and theory of',theory_xsec[itm1])
+                        limExpected,ycross = getSensitivity(i,it,exp)
+                if(obs[i]>theory_xsec[it] and obs[i-1]<theory_xsec[itm1]) or (obs[i]<theory_xsec[it] and obs[i-1]>theory_xsec[itm1]):
+                        limObserved,ycross = getSensitivity(i,it,obs)
+        
         exp95L[i]=(exp[i]-exp95L[i])
         exp95H[i]=abs(exp[i]-exp95H[i])
         exp68L[i]=(exp[i]-exp68L[i])
         exp68H[i]=abs(exp[i]-exp68H[i])
 
         round_i = 5
-        print str(mass[i]).ljust(ljust_i), str(round(lims[-1],round_i)).ljust(ljust_i), str(round(lims[.5],round_i)).ljust(ljust_i), str(round(lims[.025],round_i)).ljust(ljust_i), str(round(lims[.16],round_i)).ljust(ljust_i), str(round(lims[.84],round_i)).ljust(ljust_i), str(round(lims[.975],round_i)).ljust(ljust_i)
-    print
+        print(str(mass[i]).ljust(ljust_i), str(round(lims[-1],round_i)).ljust(ljust_i), str(round(lims[.5],round_i)).ljust(ljust_i), str(round(lims[.025],round_i)).ljust(ljust_i), str(round(lims[.16],round_i)).ljust(ljust_i), str(round(lims[.84],round_i)).ljust(ljust_i), str(round(lims[.975],round_i)).ljust(ljust_i))
+    print()
     # signExp = "="
     # signObs = "="
     # if limExpected==800: signExp = "<"
@@ -230,9 +236,11 @@ def PlotLimits(limitDir,limitFile,tempKey):
     chLatex.SetTextAlign(11) # align right
     chString = 'B #rightarrow tW'
     chLatex.DrawLatex(0.18, 0.82, chString)
-    chString = '1-lep, M(B)'
+    chString = '1-lep'
     chLatex.DrawLatex(0.18, 0.77, chString)
-    chString = 'ParticleNet, tuned cuts'
+    chString = 'MC bkgd.'
+    if 'ABCDnn' in limitDir:
+            chString = 'ABCDnn'
     chLatex.DrawLatex(0.18, 0.72, chString)
         
     prelimTex=TLatex()
@@ -269,7 +277,7 @@ def PlotLimits(limitDir,limitFile,tempKey):
     #legend.AddEntry(dec2022mass_gr, 'M(B), Dec 2022', 'l')
     #legend.AddEntry(may2022mass_gr, '', 'l')
     legend.AddEntry(theory_xsec_gr, 'Theory: Bbj 1%','f')
-    legend.AddEntry(0,'tW 100%','')
+    legend.AddEntry(0,'Singlet: tW 50%','')
     legend.SetShadowColor(0)
     legend.SetFillStyle(0)
     legend.SetBorderSize(0)
@@ -303,5 +311,5 @@ for tempKey in tempKeys:
                 expLims.append(expTemp)
                 obsLims.append(obsTemp)
 
-print "Expected:",expLims
-print "Observed:",obsLims
+print("Expected:",expLims)
+print("Observed:",obsLims)
