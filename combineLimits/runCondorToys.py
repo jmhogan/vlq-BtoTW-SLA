@@ -1,7 +1,7 @@
 import os,sys,shutil,datetime,time,random
 from ROOT import *
 
-execfile("/uscms_data/d3/jmanagan/EOSSafeUtils.py")
+exec(open("/uscms_data/d3/jmanagan/EOSSafeUtils.py").read())
 
 start_time = time.time()
 
@@ -16,20 +16,20 @@ limitdir = sys.argv[2]
 mass = sys.argv[3]
 
 if whichjob == 'inject':
-    rInj = float(sys.argv[5])
-    nToys = int(sys.argv[6])
+    rInj = float(sys.argv[4])
+    nToys = int(sys.argv[5])
     executable = 'condorToyFitting.sh'
 elif whichjob == 'gof':
     rInj = 0
-    nToys = int(sys.argv[5])
+    nToys = int(sys.argv[4])
     executable = 'condorGofFitting.sh'
     outputDir = outputDir.replace('Injection','GOF')
     condorDir = condorDir.replace('Injection','GOF')
 
 if whichjob == 'inject':
-    name = limitdir.replace('limits_templatesABCDnn_V_Oct2024_','').replace('limits_templatesABCDnn_DV_Oct2024_','')+'InjR'+str(rInj).replace('.','p')+'CDMS0'
+    name = limitdir.replace('limits_templatesABCDnn_V2_Oct2024_','').replace('limits_templatesABCDnn_DV2_Oct2024_','')+'InjR'+str(rInj).replace('.','p')+'CDMS0'
 else:
-    name = limitdir.replace('limits_templatesABCDnn_V_Oct2024_','').replace('limits_templatesABCDnn_DV_Oct2024_','')+'GOF'
+    name = limitdir.replace('limits_templatesABCDnn_V2_Oct2024_','').replace('limits_templatesABCDnn_DV2_Oct2024_','')+'GOF'
 path = limitdir+'/cmb/'+mass
 outDir=outputDir[10:]+'/'+limitdir+'_'+mass
 condorDir += limitdir+'_'+mass
@@ -43,13 +43,13 @@ if isSR:
     maskstring += ',signalScale=0.001' # reset 1fb after CR-only fit
 
 else:
-    toysperjob = 5
+    toysperjob = 25
     filename = 'initialFitWorkspace.root'
     maskstring = '' # shouldn't need to change anything
 
 if whichjob == 'gof': filename = 'workspace.root' # GOF always just starts from the bare workspace, assuming CR categories only
 
-print 'Starting submission'
+print('Starting submission')
 count=0
 
 os.system('eos root://cmseos.fnal.gov/ mkdir -p '+outDir)
@@ -60,7 +60,7 @@ for i in range(0,nToys,toysperjob):
     ijob += 1
 
     seed = random.randrange(100000,999999)
-    print 'Job',ijob,'using seed',seed
+    print('Job',ijob,'using seed',seed)
 
     count+=1
     dict={'RUNDIR':runDir, 'EXEC':executable, 'CONDORDIR':condorDir, 'OUTPUTDIR':outDir, 'PATH':path, 'WORKSPACE':filename, 'NTOYS':toysperjob, 'RINJ':rInj, 'RMIN':rInj-10, 'RMAX':rInj+10,
@@ -69,7 +69,7 @@ for i in range(0,nToys,toysperjob):
     if not EOSpathExists(outDir+'/fitDiagnostics'+name+'_'+str(ijob)+'.root'): ## this is a super baseline failure checker -- if there's a file, don't resubmit
 
         jdfName=condorDir+'/%(NAME)s_%(INDEX)s.job'%dict
-        print "jdfname: ",jdfName
+        print("jdfname: ",jdfName)
         jdf=open(jdfName,'w')
         jdf.write(
             """use_x509userproxy = true
@@ -91,9 +91,9 @@ Queue 1"""%dict)
         os.system('condor_submit %(NAME)s_%(INDEX)s.job'%dict)
         os.system('sleep 0.5')                                
         os.chdir('%s'%(runDir))
-        print count, "jobs submitted!!!"
+        print(count, "jobs submitted!!!")
     else:
-        print 'Found this file, skipping! fitDiagnostics'+name+'_'+str(ijob)+'.root'
+        print('Found this file, skipping! fitDiagnostics'+name+'_'+str(ijob)+'.root')
 
 print("--- %s minutes ---" % (round(time.time() - start_time, 2)/60))
 

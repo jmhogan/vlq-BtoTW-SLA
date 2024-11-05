@@ -1,11 +1,12 @@
 import sys, subprocess, ROOT
-execfile("/uscms_data/d3/jmanagan/EOSSafeUtils.py")
+exec(open("/uscms_data/d3/jmanagan/EOSSafeUtils.py").read())
 
+ROOT.gROOT.SetBatch(1)
 limitdir = sys.argv[1]
 mass = sys.argv[2]
-rInj = float(sys.argv[4])
+rInj = float(sys.argv[3])
 
-name = limitdir.replace('limits_templatesABCDnn_V_Oct2024_','').replace('limits_templatesABCDnn_DV_Oct2024_','')+'InjR'+str(rInj).replace('.','p')+'CDMS0'
+name = limitdir.replace('limits_templatesABCDnn_V2_Oct2024_','').replace('limits_templatesABCDnn_DV2_Oct2024_','')+'InjR'+str(rInj).replace('.','p')+'CDMS0'
 path = limitdir+'/cmb/'+mass
 
 rootfiles = EOSlist_root_files('/store/user/jmanagan/CombineV10_BpInjection/'+limitdir+'_'+mass+'/')	
@@ -27,8 +28,8 @@ tree_fit_sb.Draw("(r-"+str(rInj)+")/(rHiErr*(r<"+str(rInj)+")+rLoErr*(r>"+str(rI
 min = 0 - rInj*5
 max = 0 + rInj*5
 if rInj == 0:
-    min = -10
-    max = 10
+    min = -1
+    max = 1
 tree_fit_sb.Draw("(r-"+str(rInj)+")>>sigstrength(20,"+str(min)+','+str(max)+")","fit_status==0")
 
 hsigpull = ROOT.gDirectory.Get('sigpull')

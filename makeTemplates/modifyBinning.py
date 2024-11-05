@@ -51,6 +51,8 @@ if 'kinematics' in folder:
 massList = [800,1000,1200,1300,1400,1500,1600,1700,1800,2000,2200]
 sigProcList = ['BpM'+str(mass) for mass in massList]
 bkgProcList = ['ttbar','singletop','wjets','ttx','ewk','qcd'] #put the most dominant process first
+if 'ABCDnn' in iPlot:
+        bkgProcList = ['major','ttx','ewk'] #put the most dominant process first
 #ABCDProcList = ['',]
 
 stat_saved = 0.2 #statistical uncertainty requirement (enter >1.0 for no rebinning; i.g., "1.1")
@@ -136,32 +138,31 @@ for hist in datahists:
 
 xbinsListTemp = {}
 for chn in totBkgHists.keys():
-	stat = stat_saved
+        stat = stat_saved
+        #print 'Channel',chn,'integral is',totBkgHists[chn].Integral()
+        print('Processing '+chn)
 
-	#print 'Channel',chn,'integral is',totBkgHists[chn].Integral()
-	print('Processing '+chn)
-
-	Nbins = 0
-	if 'templates' in folder:
+        Nbins = 0
+        if 'templates' in folder:
                 xbinsListTemp[chn]=[tfile.Get(datahists[0]).GetXaxis().GetBinUpEdge(tfile.Get(datahists[0]).GetXaxis().GetNbins())]
                 Nbins = tfile.Get(datahists[0]).GetNbinsX()
                 
-	totTempBinContent = 0.
-	totTempBinErrSquared = 0.
-	totTempDataContent = 0.
-	totTempDataErrSquared = 0.
-	totTempSigContent = 0;
-	for iBin in range(1,Nbins+1):
+        totTempBinContent = 0.
+        totTempBinErrSquared = 0.
+        totTempDataContent = 0.
+        totTempDataErrSquared = 0.
+        totTempSigContent = 0;
+        for iBin in range(1,Nbins+1):
                 totTempBinContent += totBkgHists[chn].GetBinContent(Nbins+1-iBin)
                 totTempBinErrSquared += totBkgHists[chn].GetBinError(Nbins+1-iBin)**2
                 try:
                         totTempSigContent += SigHists[chn].GetBinContent(Nbins+1-iBin)
-                except: pass
+                except:
+                        pass
                 totTempDataContent += DataHists[chn].GetBinContent(Nbins+1-iBin)
                 totTempDataErrSquared += totBkgHists[chn].GetBinError(Nbins+1-iBin)**2
-		
-		#print 'totTempBinContent =',totTempBinContent,' ',totTempBinContent_M,', totTempBinErrSquared =',totTempBinErrSquared,' ',totTempBinErrSquared_M
-		#print 'totTempSigContent =',totTempSigContent,' ',totTempSigContent_M
+                #print 'totTempBinContent =',totTempBinContent,' ',totTempBinContent_M,', totTempBinErrSquared =',totTempBinErrSquared,' ',totTempBinErrSquared_M
+                #print 'totTempSigContent =',totTempSigContent,' ',totTempSigContent_M
 
                 if totTempBinContent>0.:
                         if rebin4chi2 and (totTempDataContent == 0): continue
@@ -175,8 +176,11 @@ for chn in totBkgHists.keys():
                                         #print 'Appending bin edge',totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin)
                                         xbinsListTemp[chn].append(totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin))
 
-	## Going right to left -- if the last entry isn't 0 add it
-	if xbinsListTemp[chn][-1]!=0: xbinsListTemp[chn].append(0)
+        ## Going right to left -- if the last entry isn't 0 add it
+        if '42bins' in folder:
+                if xbinsListTemp[chn][-1]!=400: xbinsListTemp[chn].append(400)
+        else:
+                if xbinsListTemp[chn][-1]!=0: xbinsListTemp[chn].append(0)
 
         ## Placeholder: if needed for some plot, can add 1 at the end if rebinning left to right
 	#if 'Large' in chn and 'LargeJ' not in chn and 'templatesCR' in folder and xbinsListTemp[chn][-1]!=1: xbinsListTemp[chn].append(1)
@@ -188,16 +192,16 @@ for chn in totBkgHists.keys():
 	# elif (iPlot == 'DnnTprime' or iPlot == 'DnnBprime') and 'CR' in folder and 'SCR' not in folder and xbinsListTemp[chn][0]!=0.5: xbinsListTemp[chn][0] = 0.5 
 	
 	## If the 1st bin is empty or too small, make the left side wider
-	if totBkgHists[chn].GetBinContent(1)==0.: 
-		if len(xbinsListTemp[chn])>2: del xbinsListTemp[chn][-2]
-	elif totBkgHists[chn].GetBinError(1)/totBkgHists[chn].GetBinContent(1)>stat: 
-		if len(xbinsListTemp[chn])>2: del xbinsListTemp[chn][-2]
-
+        if totBkgHists[chn].GetBinContent(1)==0.:
+                if len(xbinsListTemp[chn])>2: del xbinsListTemp[chn][-2]
+        elif totBkgHists[chn].GetBinError(1)/totBkgHists[chn].GetBinContent(1)>stat:
+                if len(xbinsListTemp[chn])>2: del xbinsListTemp[chn][-2]
+                
 	## Ignore all this if stat is > 1
-	if stat>1.0:
-		xbinsListTemp[chn] = [tfile.Get(datahists[0]).GetXaxis().GetBinUpEdge(tfile.Get(datahists[0]).GetXaxis().GetNbins())]
-		for iBin in range(1,Nbins+1): 
-			xbinsListTemp[chn].append(totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin))
+        if stat>1.0:
+                xbinsListTemp[chn] = [tfile.Get(datahists[0]).GetXaxis().GetBinUpEdge(tfile.Get(datahists[0]).GetXaxis().GetNbins())]
+                for iBin in range(1,Nbins+1):
+                        xbinsListTemp[chn].append(totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin))
 
 print("==> Here is the binning I found with "+str(stat_saved*100)+"% uncertainty threshold: ")
 print("//"*40)
@@ -406,8 +410,6 @@ for chn in channels:
 	if chn.split('_')[0] not in isEMlist: isEMlist.append(chn.split('_')[0])
 	if chn.split('_')[1] not in taglist: taglist.append(chn.split('_')[1])
 
-if 'ABCDnn' in iPlot:
-        bkgProcList = ['major','ttx','ewk'] #put the most dominant process first
 print("List of systematics for "+bkgProcList[0]+" process and "+channels[0]+" channel:")
 print("        "+str(sorted([hist[hist.find(bkgProcList[0])+len(bkgProcList[0])+2:hist.find(upTag)] for hist in yieldsAll.keys() if channels[0] in hist and '__'+bkgProcList[0]+'__' in hist and upTag in hist])))
 

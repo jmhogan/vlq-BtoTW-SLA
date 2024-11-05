@@ -1,6 +1,7 @@
 import os, sys
-from ROOT import TFile, TH2D, TCanvas, TPaletteAxis, gPad, gStyle
+from ROOT import TFile, TH2D, TCanvas, TPaletteAxis, gPad, gStyle, gROOT
 
+gROOT.SetBatch(1)
 limitdir = sys.argv[1]
 mass = sys.argv[2]
 
@@ -10,14 +11,14 @@ name = limitdir.replace('limits_templatesABCDnn_V_Oct2024_','').replace('limits_
 os.chdir(path)
 
 if not os.path.exists('covariance_fit_b.png'):
-    print "Running FitDiagnostics with plots"
+    print("Running FitDiagnostics with plots")
     os.system('combine -M FitDiagnostics -d workspace.root --saveWorkspace --plots --saveShapes')
 
-fd = TFile.Open("fitDiagnostics.root")
+fd = TFile.Open("fitDiagnosticsTest.root")
 covar = fd.Get("covariance_fit_s");
 
-covar.GetXaxis().SetRange(1,68); ## check me!
-covar.GetYaxis().SetRange(covar.GetNbinsY()-67,covar.GetNbinsY()); ## check me!
+covar.GetXaxis().SetRange(1,82); ## check me!
+covar.GetYaxis().SetRange(covar.GetNbinsY()-81,covar.GetNbinsY()); ## check me!
 covar.SetMarkerSize(0.5)
 covar.GetYaxis().SetLabelSize(0.03);
 covar.GetZaxis().SetLabelSize(0.03);
@@ -41,8 +42,8 @@ c1.SaveAs(name+'_covariance_s.png');
 c1.SaveAs(name+'_covariance_s.pdf');
 
 covar = fd.Get("covariance_fit_b");
-covar.GetXaxis().SetRange(1,68); ## check me!
-covar.GetYaxis().SetRange(covar.GetNbinsY()-67,covar.GetNbinsY()); ## check me!
+covar.GetXaxis().SetRange(1,82); ## check me!
+covar.GetYaxis().SetRange(covar.GetNbinsY()-81,covar.GetNbinsY()); ## check me!
 covar.SetMarkerSize(0.5)
 covar.GetYaxis().SetLabelSize(0.03);
 covar.GetZaxis().SetLabelSize(0.03);
