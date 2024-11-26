@@ -6,9 +6,9 @@ import os
 
 targetlumi = {'2016APV':19500, '2016':16800, '2017':41480, '2018':59830}
 lumiStr = '138fbfb' #str(targetlumi/1000).replace('.','p') # 1/fb
-systListShort = ['elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', 'Pileup', 'Prefire', 'jsf', 'toppt', 'muRFcorrd', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec', 'PuJetSF']
-systListFull = ['elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', 'Pileup', 'Prefire', 'jsf', 'toppt', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec', 'pNetTtag', 'pNetWtag', 'PuJetSF']
-uncorrList_sf = ['TrigEffEl', 'TrigEffMu', 'jer', 'jec', 'btagHFUC', 'btagLFUC']
+systListShort = ['Pileup', 'Prefire', 'muRFcorrd', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] #'elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', , 'jsf', 'toppt', 'PuJetSF'
+systListFull = ['Pileup', 'Prefire', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] #'elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', , 'pNetTtag', 'pNetWtag', 'PuJetSF', 'jsf', 'toppt'
+uncorrList_sf = ['jer', 'jec', 'btagHFUC', 'btagLFUC'] #'TrigEffEl', 'TrigEffMu', 
 yearList = ["2016APV", "2016", "2017", "2018"]        
 systListShortPlots = systListShort.copy()
 systListFullPlots = systListFull.copy()
