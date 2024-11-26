@@ -4,7 +4,7 @@ import os
 # Question: A lot of the samples have _PSweights_.  The samples we were working with before didn't have this.  Is it good or bad?
 # Sample Dictionaries: samples, samples_2016APVUL, samples_2016UL, samples_2017UL, samples_2018UL, samples_test, samples_QCD
 
-targetlumi = {'2016APV':19500, '2016':16800, '2017':41480, '2018':59830}
+targetlumi = {'2022':5010.4+2970.0, '2022EE':5807.0+17781.9+3082.8, '2023':17794., '2023BPix':9451.}
 lumiStr = '138fbfb' #str(targetlumi/1000).replace('.','p') # 1/fb
 systListShort = ['Pileup', 'Prefire', 'muRFcorrd', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] #'elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', , 'jsf', 'toppt', 'PuJetSF'
 systListFull = ['Pileup', 'Prefire', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] #'elRecoSF', 'elIdSF', 'elIsoSF', 'TrigEffEl', 'muRecoSF', 'muIdSF', 'muIsoSF', 'TrigEffMu', , 'pNetTtag', 'pNetWtag', 'PuJetSF', 'jsf', 'toppt'
