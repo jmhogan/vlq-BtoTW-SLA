@@ -107,8 +107,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         
                         weightPileupUpStr   = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
                         weightPileupDnStr   = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
-                        weightPuJetSFUpStr    = weightStr.replace('puJetSF[0]','puJetSF[1]')
-                        weightPuJetSFDnStr    = weightStr.replace('puJetSF[0]','puJetSF[2]')
+                        #weightPuJetSFUpStr    = weightStr.replace('puJetSF[0]','puJetSF[1]')
+                        #weightPuJetSFDnStr    = weightStr.replace('puJetSF[0]','puJetSF[2]')
                         weightBtagHFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[18]')
                         weightBtagHFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[19]')
                         weightBtagHFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[20]')
@@ -344,8 +344,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 #.Define('weightTrigEffMuDn',weightTrigEffMuDnStr)\
                          sel = df.Define('weightPileupUp'   ,weightPileupUpStr)\
                                 .Define('weightPileupDn'   ,weightPileupDnStr)\
-                                .Define('weightPuJetSFUp'  ,weightPuJetSFUpStr)\
-                                .Define('weightPuJetSFDn'  ,weightPuJetSFDnStr)\
+                                #.Define('weightPuJetSFUp'  ,weightPuJetSFUpStr)\
+                                #.Define('weightPuJetSFDn'  ,weightPuJetSFDnStr)\
                                 .Define('weightPrefireUp'  ,weightPrefireUpStr)\
                                 .Define('weightPrefireDn'  ,weightPrefireDnStr)\
                                 #.Define('weightjsfUp'      ,weightjsfUpStr)\
@@ -385,8 +385,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         #hist_TrigEffMuDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuDn')
                         hist_PileupUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupUp'   )
                         hist_PileupDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupDn'   )
-                        hist_PuJetSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFUp'  )
-                        hist_PuJetSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFDn'  )
+                        #hist_PuJetSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFUp'  )
+                        #hist_PuJetSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFDn'  )
                         hist_PrefireUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PrefireUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPrefireUp'  )
                         hist_PrefireDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PrefireDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPrefireDn'  )
                         #hist_jsfUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfUp'      )
@@ -489,8 +489,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         #hist_TrigEffMuDn.Write()
                         hist_PileupUp.Write()
                         hist_PileupDn.Write()
-                        hist_PuJetSFUp.Write()
-                        hist_PuJetSFDn.Write()
+                        #hist_PuJetSFUp.Write()
+                        #hist_PuJetSFDn.Write()
                         hist_PrefireUp.Write()
                         hist_PrefireDn.Write()
                         #hist_jsfUp.Write()
