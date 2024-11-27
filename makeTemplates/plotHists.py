@@ -12,7 +12,7 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-lumi=59.8 #for plots #56.1 #
+lumi=138. #for plots #56.1 #
 lumiInTemplates= lumiStr
 
 iPlot='HT'
@@ -110,7 +110,7 @@ if len(sys.argv)>5: blind=bool(eval(sys.argv[5]))
 yLog  = False
 if len(sys.argv)>6: yLog=bool(eval(sys.argv[6]))
 print('Plotting blind?',blind,' yLog?',yLog)
-if yLog or region == 'V' or 'validation' in pfix: scaleSignals = False
+if yLog or 'V' in region or 'validation' in pfix: scaleSignals = False
 
 partialBlind = False
 
@@ -253,7 +253,7 @@ totBkgTemp1 = {}
 totBkgTemp2 = {}
 totBkgTemp3 = {}
 for tag in taglist:
-        perNGeV = 50 # choose what "unit" to use for bin widths, similar to the smaller bin widths in the plot. Values < 1 are ok for e.g. NN scores
+        perNGeV = 5 # choose what "unit" to use for bin widths, similar to the smaller bin widths in the plot. Values < 1 are ok for e.g. NN scores
         print('------------------ ',tag,' with perNGeV = ',perNGeV,' -----------------------')
 
         tagStr=tag
@@ -289,7 +289,7 @@ for tag in taglist:
                 if plotNorm:
                         hData.Scale(1/hData.Integral())
 
-                if plotABCDnn and not partialBlind and 'validation' not in pfix and region != 'V': # to scale training regions of ABCDnn
+                if plotABCDnn and not partialBlind and 'validation' not in pfix and 'V' not in region: # to scale training regions of ABCDnn
                         factor = (hData.Integral()-totMinor)/totMajor
                         for proc in ABCDnnProcList:
                                 bkghists[proc+catStr].Scale(factor)
@@ -626,8 +626,11 @@ for tag in taglist:
                 if isCategorized:
                         tagString = tag
                         regionString = 'region '+region
-                        if region == 'V':
-                                regionString = 'VR: region D, ST < 850 GeV'
+                        if 'V' in region:
+                                if 'untag' in tag:
+                                        regionString = 'VR: region D, full ST'
+                                else:
+                                        regionString = 'VR: region D, ST < 850 GeV'
                 if tagString.endswith(', '): tagString = tagString[:-2]		
                 if not yLog:
                         chLatex.DrawLatex(0.7, 0.54, flvString)
