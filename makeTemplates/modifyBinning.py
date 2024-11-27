@@ -60,9 +60,14 @@ if len(sys.argv)>3: stat_saved=float(sys.argv[3])
 
 rebin4chi2 = False
 
+rebinX = 1
+if len(sys.argv)>4: rebinX = int(sys.argv[4])
+print("Initial rebin of factor "+str(rebinX))
+
 FullMu = True
-if len(sys.argv)>4: FullMu=bool(eval(sys.argv[4]))
+if len(sys.argv)>5: FullMu=bool(eval(sys.argv[5]))
 print("FullMu: "+str(FullMu))
+
 
 dataName = 'data_obs'
 upTag = 'Up'
@@ -74,6 +79,7 @@ addShapes = True
 lumiSys = math.sqrt(0.018**2) #lumi uncertainty plus higgs prop
 
 removalKeys = {} # True == keep, False == remove
+removalKeys['__factor'] = False
 removalKeys['__muRUp'] = False
 removalKeys['__muRDown'] = False
 removalKeys['__muF'] = False
@@ -112,21 +118,37 @@ allhists = {chn:[hist.GetName() for hist in tfile.GetListOfKeys() if chn in hist
 
 DataHists = {}
 for hist in datahists:
-	channel = hist[hist.find('fb_')+3:hist.find('__')]
-	DataHists[channel] = tfile.Get(hist).Clone()
+        channel = hist[hist.find('fb_')+3:hist.find('__')]
+        DataHists[channel] = tfile.Get(hist).Clone()
+        if rebinX > 1:
+                DataHists[channel].Rebin(rebinX)
 
 totBkgHists = {}
 for hist in datahists:
-	channel = hist[hist.find('fb_')+3:hist.find('__')]
-	totBkgHists[channel]=tfile.Get(hist.replace('__'+dataName,'__'+bkgProcList[0])).Clone()
-	for proc in bkgProcList:
-		if proc == bkgProcList[0]: continue
-		try: totBkgHists[channel].Add(tfile.Get(hist.replace('__'+dataName,'__'+proc)))
-		except: 
-			print("Missing "+proc+" for category: "+hist)
-			print("WARNING! Skipping this process!!!!")
-			pass
+        channel = hist[hist.find('fb_')+3:hist.find('__')]
+        totBkgHists[channel]=tfile.Get(hist.replace('__'+dataName,'__'+bkgProcList[0])).Clone()
+        if rebinX > 1:
+                totBkgHists[channel].Rebin(rebinX)
+        ##### Use this if the "major" histogram needs statistical uncertainties added
+        # if bkgProcList[0] == 'major':
+        #         temphist = totBkgHists[channel].Clone()
+        #         for ibin in range(1,temphist.GetNbinsX()+1):
+        #                 totBkgHists[channel].SetBinContent(ibin,temphist.GetBinContent(ibin))
+        #                 totBkgHists[channel].SetBinError(ibin,math.sqrt(temphist.GetBinContent(ibin)))
+        #                 #print("CHECK: content = ",totBkgHists[channel].GetBinContent(ibin),' and error = ',totBkgHists[channel].GetBinError(ibin))
+        for proc in bkgProcList:
+                if proc == bkgProcList[0]: continue
+                try:
+                        if rebinX > 1:
+                                totBkgHists[channel].Add(tfile.Get(hist.replace('__'+dataName,'__'+proc)).Rebin(rebinX))
+                        else:
+                                totBkgHists[channel].Add(tfile.Get(hist.replace('__'+dataName,'__'+proc)))
+                except:
+                        print("Missing "+proc+" for category: "+hist)
+                        print("WARNING! Skipping this process!!!!")
+                        pass
 
+                
 ## Not currently using this -- it's for rebinning on signal stats.
 ##SigHists = {}
 # for hist in datahists:
@@ -144,8 +166,8 @@ for chn in totBkgHists.keys():
 
         Nbins = 0
         if 'templates' in folder:
-                xbinsListTemp[chn]=[tfile.Get(datahists[0]).GetXaxis().GetBinUpEdge(tfile.Get(datahists[0]).GetXaxis().GetNbins())]
-                Nbins = tfile.Get(datahists[0]).GetNbinsX()
+                Nbins = DataHists[chn].GetNbinsX()-1 ## TEMPORARY REMOVE -1!
+                xbinsListTemp[chn]=[DataHists[chn].GetXaxis().GetBinUpEdge(Nbins)] #[tfile.Get(datahists[0]).GetXaxis().GetBinUpEdge(tfile.Get(datahists[0]).GetXaxis().GetNbins()-1)]
                 
         totTempBinContent = 0.
         totTempBinErrSquared = 0.
@@ -177,7 +199,7 @@ for chn in totBkgHists.keys():
                                         xbinsListTemp[chn].append(totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin))
 
         ## Going right to left -- if the last entry isn't 0 add it
-        if '42bins' in folder:
+        if '42bins' in folder or '420bins' in folder or 'FU' in folder:
                 if xbinsListTemp[chn][-1]!=400: xbinsListTemp[chn].append(400)
         else:
                 if xbinsListTemp[chn][-1]!=0: xbinsListTemp[chn].append(0)
@@ -217,11 +239,11 @@ for key in xbinsList.keys(): xbins[key] = array('d', xbinsList[key])
 
 #os._exit(1)
 
-### FIXME: not computed yet for Bprime...we will go for shape-only for now, very reasonable
-muSFsUp = {'TTM900':0.744,'TTM1000':0.744,'TTM1100':0.747,'TTM1200':0.742,'TTM1300':0.741,'TTM1400':0.738,'TTM1500':0.740,'TTM1600':0.735,'TTM1700':0.721,'TTM1800':0.746}
-muSFsDn = {'TTM900':1.312,'TTM1000':1.312,'TTM1100':1.306,'TTM1200':1.315,'TTM1300':1.316,'TTM1400':1.322,'TTM1500':1.319,'TTM1600':1.329,'TTM1700':1.354,'TTM1800':1.311}
-pdfSFsUp = {'TTM900':0.997,'TTM1000':0.997,'TTM1100':0.996,'TTM1200':0.995,'TTM1300':0.994,'TTM1400':0.991,'TTM1500':0.986,'TTM1600':0.984,'TTM1700':0.980,'TTM1800':0.966}
-pdfSFsDn = {'TTM900':1.005,'TTM1000':1.005,'TTM1100':1.007,'TTM1200':1.008,'TTM1300':1.011,'TTM1400':1.015,'TTM1500':1.022,'TTM1600':1.027,'TTM1700':1.031,'TTM1800':1.050}
+### FIXME: not computed yet for Bprime...we will go for shape-only , very reasonable
+#muSFsUp = {'TTM900':0.744,'TTM1000':0.744,'TTM1100':0.747,'TTM1200':0.742,'TTM1300':0.741,'TTM1400':0.738,'TTM1500':0.740,'TTM1600':0.735,'TTM1700':0.721,'TTM1800':0.746}
+#muSFsDn = {'TTM900':1.312,'TTM1000':1.312,'TTM1100':1.306,'TTM1200':1.315,'TTM1300':1.316,'TTM1400':1.322,'TTM1500':1.319,'TTM1600':1.329,'TTM1700':1.354,'TTM1800':1.311}
+#pdfSFsUp = {'TTM900':0.997,'TTM1000':0.997,'TTM1100':0.996,'TTM1200':0.995,'TTM1300':0.994,'TTM1400':0.991,'TTM1500':0.986,'TTM1600':0.984,'TTM1700':0.980,'TTM1800':0.966}
+#pdfSFsDn = {'TTM900':1.005,'TTM1000':1.005,'TTM1100':1.007,'TTM1200':1.008,'TTM1300':1.011,'TTM1400':1.015,'TTM1500':1.022,'TTM1600':1.027,'TTM1700':1.031,'TTM1800':1.050}
 
 iRfile=0
 yieldsAll = {}
@@ -238,7 +260,7 @@ for rfile in rfiles:
                 if not FullMu: 
                         outputRfiles[iRfile] = TFile(rfile.replace('.root','_BKGNORM_rebinned_stat'+str(stat).replace('.','p')+'.root'),'RECREATE')
                 else: 
-                        outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned_stat'+str(stat).replace('.','p')+'.root'),'RECREATE')
+                        outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'.root'),'RECREATE')
         else: 
                 outputRfiles[iRfile] = TFile(rfile.replace('.root','_chi2_rebinned_stat'+str(stat).replace('.','p')+'.root'),'RECREATE')
 
@@ -431,6 +453,7 @@ def getShapeSystUnc(proc,chn):
 
 table = []
 taglist = ['tag','untag']
+factor = {'tagTjet':0.02,'tagWjet':0.02,'untagTlep':0.10,'untagWlep':0.08}
 if 'kinematics' in folder: taglist = ['all']
 for isEM in isEMlist:
         if isEM=='isE': corrdSys = elcorrdSys
@@ -445,7 +468,8 @@ for isEM in isEMlist:
                         row = [proc]
                         for chn in channels:
                                 if not (isEM in chn and tag in chn): continue
-                                modTag = chn[chn.find('is'):]
+                                modTag = chn[chn.find('is'):].split('_')[1]
+                                #print('modTag = ',modTag)
                                 histoPrefix = allhists[chn][0][:allhists[chn][0].find('__')+2]
                                 yieldtemp = 0.
                                 yielderrtemp = 0.
@@ -458,7 +482,10 @@ for isEM in isEMlist:
                                                 except:
                                                         if bkg != 'qcd': print("Missing "+bkg+" for channel in totBkg or dataOverBkg: "+chn)
                                                         pass
-                                        yielderrtemp += (corrdSys*yieldtemp)**2
+                                                if bkg != 'major':
+                                                        yielderrtemp += (corrdSys*yieldsAll[histoPrefix+bkg])**2
+                                                else:
+                                                        yielderrtemp += (factor[modTag]*yieldsAll[histoPrefix+bkg])**2
                                         if proc=='dataOverBkg':
                                                 dataTemp = yieldsAll[histoPrefix+dataName]+1e-20
                                                 dataTempErr = yieldsErrsAll[histoPrefix+dataName]**2
@@ -478,7 +505,10 @@ for isEM in isEMlist:
                                                 if 'right' in signal: signal=proc.replace('right','')+'right'
                                                 #yieldtemp*=xsec[signal]  ### FIXME using the new dicts if we want non-1pb
                                                 #yielderrtemp*=xsec[signal]**2
-                                        yielderrtemp += (corrdSys*yieldtemp)**2
+                                        if proc != 'major':
+                                                yielderrtemp += (corrdSys*yieldsAll[histoPrefix+proc])**2
+                                        else:
+                                                yielderrtemp += (factor[modTag]*yieldsAll[histoPrefix+proc])**2
                                 yielderrtemp = math.sqrt(yielderrtemp)
 				#print "yieldsAll: ",yieldsAll
                                 if proc==dataName: 
