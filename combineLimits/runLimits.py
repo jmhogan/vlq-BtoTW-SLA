@@ -9,19 +9,25 @@ limitdir = sys.argv[1]
 path = limitdir+'/'
 os.chdir(path)
 blind = True
-morph = False
+morph = True
 
 print('====================================================================')
 print('==   Launching limits for in',limitdir)
 print('==   ...')
 
 if not morph:
+    masks = 'mask_Case1_D=0,mask_Case2_D=0,mask_Case3_D=0,mask_Case4_D=0,mask_Case1_V2=1,mask_Case2_V2=1,mask_Case3_V2=1,mask_Case4_V2=1' # unmask D, mask V
+    if 'MC' in limitdir:
+        masks = 'mask_Case1_D=0,mask_Case2_D=0,mask_Case3_D=1,mask_Case4_D=1,mask_Case1_V=1,mask_Case2_V=1,mask_Case3_V=1,mask_Case4_V=1,mask_Case3_A=1,mask_Case4_A=1,mask_Case3_B=1,mask_Case3_B=1,mask_Case3_C=1,mask_Case4_C=1' # unmask D, mask V
+    if '36fb' not in limitdir:
+        masks = masks+',signalScale=0.01' # 10 fb
+
     if blind:
 
         print('***** Running Asymptotic CLs limits for all masses in'+os.getcwd()+' *****')
         print('Running Asymptotic CLs limits for all masses')
-        print('Command = combineTool.py -M AsymptoticLimits -d cmb/*/workspace.root --there -n .limit --run=blind')
-        os.system('combineTool.py -M AsymptoticLimits -d cmb/*/workspace.root --there -n .limit --run=blind') #
+        print('Command = combineTool.py -M AsymptoticLimits -d cmb/*/workspace.root --there -n .limit --run=blind --setParameters '+masks)
+        os.system('combineTool.py -M AsymptoticLimits -d cmb/*/workspace.root --there -n .limit --run=blind --setParameters '+masks) #
         
         print('Making a JSON file')
         print('Command = combineTool.py -M CollectLimits cmb/*/*.limit.* --use-dirs -o limits_cmb.json')
@@ -30,26 +36,27 @@ if not morph:
     else:
         print('***** Running Asymptotic CLs limits for all masses in'+os.getcwd()+' *****')
         print('Running Asymptotic CLs limits for all masses')
-        print('Command = combineTool.py -M AsymptoticLimits -d cmb/*/workspace.root --there -n .limitUB')
+        print('Command = combineTool.py -M AsymptoticLimits -d cmb/*/workspace.root --there -n .limitUB --setParameters '+masks)
         os.system('combineTool.py -M AsymptoticLimits -d cmb/*/workspace.root --there -n .limitUB') #
         
         print('Making a JSON file')
-        print('Command = combineTool.py -M CollectLimits cmb/*/*.limitUB.* --use-dirs -o limitsUB_cmb.json')
+        print('Command = combineTool.py -M CollectLimits cmb/*/*.limitUB.* --use-dirs -o limitsUB_cmb.json --setParameters '+masks)
         os.system('combineTool.py -M CollectLimits cmb/*/*.limitUB.* --use-dirs -o limitsUB_cmb.json')
 
 else:
 
-    masks = 'mask_Bp_isL_tagTjet_D_0_Combine=1,mask_Bp_isL_tagWjet_D_0_Combine=1,mask_Bp_isL_untagWlep_D_0_Combine=1,mask_Bp_isL_untagTlep_D_0_Combine=1' # mask D for initial fit on untested masses
-    # signal scale default is 1 pb, should be good for V-only fit
+    masks = 'mask_Case1_D=1,mask_Case2_D=1,mask_Case3_D=1,mask_Case4_D=1,mask_Case1_V2=0,mask_Case2_V2=0,mask_Case3_V2=0,mask_Case4_V2=0,signalScale=1' # mask D for initial fit on untested masses, 1pb for V2 fit
 
     for mass in ['800','1000','1200','1300','1400','1500','1600','1700','1800','2000']:
-        os.chdir('cmb/'+mass+'/')
-        if os.path.exists('morphedWorkspace.root'): continue
 
-        # check for consistency with the initial fit settings used for combine tests. Sometimes specific tweaks may be needed to get consistent converging fits
+        if os.path.exists('cmb/'+mass+'/morphedWorkspace.root'): continue
+
+        os.chdir('cmb/'+mass+'/')
+        # CMDS0 needed for tests in 1200. rMin/Max wasn't needed, but shouldn't hurt (will allow < 0)
+        # Some messages about uncert matrix in s+b, but none about b-only
         print("Running Fit Diagnostics for initial workspace with SR channels masked")
-        print('Command = combine -M FitDiagnostics -d workspace.root --rMin -5 --rMax 5 --saveWorkspace -n Masked --cminDefaultMinimizerStrategy 0 --setParameters '+masks)
-        os.system('combine -M FitDiagnostics -d workspace.root --rMin -5 --rMax 5 --saveWorkspace -n Masked --cminDefaultMinimizerStrategy 0 --setParameters '+masks)
+        print('Command = combine -M FitDiagnostics -d workspace.root --rMin -2 --rMax 2 --saveWorkspace -n Masked --cminDefaultMinimizerStrategy 0 --setParameters '+masks)
+        os.system('combine -M FitDiagnostics -d workspace.root --rMin -2 --rMax 2 --saveWorkspace -n Masked --cminDefaultMinimizerStrategy 0 --setParameters '+masks)
         
         print("Creating initialFit snapshot file: morphedWorkspace.root")
         w_f = TFile.Open('higgsCombineMasked.FitDiagnostics.mH120.root')
@@ -62,10 +69,10 @@ else:
         fout.WriteTObject(w,'w')
         fout.Close()
         os.chdir('../../')
-
+        
     # now unmask D, remask V
-    masks = 'mask_Bp_isL_tagTjet_D_0_Combine=0,mask_Bp_isL_tagWjet_D_0_Combine=0,mask_Bp_isL_untagWlep_D_0_Combine=0,mask_Bp_isL_untagTlep_D_0_Combine=0,mask_Bp_isL_tagTjet_V_0_Combine=1,mask_Bp_isL_tagWjet_V_0_Combine=1,mask_Bp_isL_untagWlep_V_0_Combine=1,mask_Bp_isL_untagTlep_V_0_Combine=1' # unmask D, mask V after initial fit
-    masks = masks+',signalScale=0.001' # 1 fb
+    masks = 'mask_Case1_D=0,mask_Case2_D=0,mask_Case3_D=0,mask_Case4_D=0,mask_Case1_V2=1,mask_Case2_V2=1,mask_Case3_V2=1,mask_Case4_V2=1' # unmask D, mask V after initial fit
+    masks = masks+',signalScale=0.01' # 10 fb
     
     print('Command = combineTool.py -M AsymptoticLimits -d cmb/*/morphedWorkspace.root --snapshotName initialFit --there -n .limitM --parallel 5 --run=blind --setParameters '+masks)
     os.system('combineTool.py -M AsymptoticLimits -d cmb/*/morphedWorkspace.root --snapshotName initialFit --there -n .limitM --parallel 5 --run=blind --setParameters '+masks) #

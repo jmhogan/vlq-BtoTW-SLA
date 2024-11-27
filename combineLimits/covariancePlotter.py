@@ -6,7 +6,7 @@ limitdir = sys.argv[1]
 mass = sys.argv[2]
 
 path = limitdir+'/cmb/'+mass
-name = limitdir.replace('limits_templatesABCDnn_V_Oct2024_','').replace('limits_templatesABCDnn_DV_Oct2024_','')
+name = limitdir.replace('limits_templatesABCDnn_V2_Oct2024_','').replace('limits_templatesABCDnn_DV2_Oct2024_','').replace('limits_templatesABCDnn_ABCV2V2_Oct2024_','')
 
 os.chdir(path)
 

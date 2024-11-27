@@ -13,7 +13,7 @@ if 'ABCDnn' not in limitdir: style = 'MC'
 path = limitdir+'/cmb/'+mass
 
 isSR = False
-if '_D' in limitdir: isSR = True
+if '_DV2' in limitdir or '_ABCDCV2V2' in limitdir: isSR = True
 
 os.chdir(path)
 
@@ -24,10 +24,10 @@ if not isSR and not os.path.exists(filename):
 
     # no masking is needed here since only V will be in the workspace.
     # check whether the 1 pb normalization is fine for getting r ~ 1
-    
+
     print("Running Fit Diagnostics for initial workspace")
-    print('Command = combine -M FitDiagnostics -d workspace.root --saveWorkspace --saveShapes --plots --cminDefaultMinimizerStrategy 0 --setParameters signalScale=1')#
-    os.system('combine -M FitDiagnostics -d workspace.root --saveWorkspace --saveShapes --plots --cminDefaultMinimizerStrategy 0 --setParameters signalScale=1') #
+    print('Command = combine -M FitDiagnostics -d workspace.root --saveWorkspace --cminDefaultMinimizerStrategy 0 --rMin -1  --verbose 1 --saveShapes --plots --setParameters signalScale=1')# 
+    os.system('combine -M FitDiagnostics -d workspace.root --saveWorkspace --cminDefaultMinimizerStrategy 0 --rMin -1  --verbose 1 --saveShapes --plots --setParameters signalScale=1') # 
     
     print("Creating initialFit snapshot file: initialFitWorkspace.root")
     w_f = TFile.Open('higgsCombineTest.FitDiagnostics.mH120.root')
@@ -42,9 +42,11 @@ if not isSR and not os.path.exists(filename):
 
 print('looking for',filename,'in',path)
 if isSR and not os.path.exists(filename):
-    masks = 'mask_Case1_D=1,mask_Case2_D=1,mask_Case3_D=1,mask_Case4_D=1'
-
-    masks = masks+',signalScale=1' #1pb for V-only fit
+    if style == 'MC':
+        if 'ABCD' in limitdir:
+            masks = 'mask_Case1_D=1,mask_Case2_D=1,mask_Case3_D=1,mask_Case4_D=1,mask_Case1_C=1,mask_Case2_C=1,mask_Case3_C=1,mask_Case4_C=1,signalScale=1'
+    else:
+            masks = 'mask_Case1_D=1,mask_Case2_D=1,mask_Case3_D=1,mask_Case4_D=1,signalScale=1'
 
     print("Running Fit Diagnostics for initial workspace with SR channels masked: Mass =",mass)
     print('Command = combine -M FitDiagnostics -d workspace.root --saveWorkspace -n Masked --cminDefaultMinimizerStrategy 0 --setParameters '+masks)
