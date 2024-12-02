@@ -50,8 +50,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
         weightStr = '1'
         doMuRF = True
-        if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
-                doMuRF = False
+        #if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
+        #        doMuRF = False
 
         if 'ABCDnn' in iPlot and not doABCDnn:
                 if 'FatJet' in iPlot: # TEMP
@@ -65,8 +65,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 if doABCDnn:
                         weightStr += f' * {factorABCDnn[tag]}'
                 else:
-			# '+jetSFstr+' * '+topCorr+' * leptonIDSF[0] * leptonRecoSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * puJetSF[0] * 
-                        weightStr += ' * PileupWeights[0] * L1PreFiringWeight_Nom * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
+			# '+jetSFstr+' * '+topCorr+' * leptonIDSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * puJetSF[0] * 
+                        weightStr += ' * PileupWeights[0] * leptonRecoSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
                         
                         #if isCategorized:
                         #        if tag=="tagTjet" or tag=="allWlep":
@@ -78,14 +78,14 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         #                weightpNetWtagUpStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[10]')
                         #                weightpNetWtagDnStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[11]')
 
-                        weightPrefireUpStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
-                        weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')                        
+                        #weightPrefireUpStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
+                        #weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')                        
                         
                         # Reco has the main value in [0], up in [1], down in [2]. Up/Down are not additive on [0]
-                        #weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
-                        #weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
-                        #weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
-                        #weightmuRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
+                        weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
+                        weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
+                        weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
+                        weightmuRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
 
                         # FIXED 7/24/24 (HLT --> ID). Muon has independent [0] nominal, [1] up, [2] down. Electron has the shift stored in [1]
                         #weightelIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
@@ -326,32 +326,12 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_FACTORUP  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_factorUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}','weightfactorUp')
                         hist_FACTORDN  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_factorDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),f'{plotTreeName}','weightfactorDn')
                 else:
-                        #sel = df.Define('weightelRecoSFUp' ,weightelRecoSFUpStr)\
-                                #.Define('weightelRecoSFDn' ,weightelRecoSFDnStr)\
-                                #Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFDn'   ,weightelIdSFDnStr)\
-                                #.Define('weightelIsoSFUp'  ,weightelIsoSFUpStr)\
-                                #.Define('weightelIsoSFDn'  ,weightelIsoSFDnStr)\
-                                #.Define('weightTrigEffElUp',weightTrigEffElUpStr)\
-                                #.Define('weightTrigEffElDn',weightTrigEffElDnStr)\
-                                #.Define('weightmuRecoSFUp' ,weightmuRecoSFUpStr)\
-                                #.Define('weightmuRecoSFDn' ,weightmuRecoSFDnStr)\
-                                #.Define('weightmuIdSFUp'   ,weightmuIdSFUpStr)\
-                                #.Define('weightmuIdSFDn'   ,weightmuIdSFDnStr)\
-                                #.Define('weightmuIsoSFUp'  ,weightmuIsoSFUpStr)\
-                                #.Define('weightmuIsoSFDn'  ,weightmuIsoSFDnStr)\
-                                #.Define('weightTrigEffMuUp',weightTrigEffMuUpStr)\
-                                #.Define('weightTrigEffMuDn',weightTrigEffMuDnStr)\
-                         sel = df.Define('weightPileupUp'   ,weightPileupUpStr)\
+                        sel = df.Define('weightelRecoSFUp' ,weightelRecoSFUpStr)\
+                                .Define('weightelRecoSFDn' ,weightelRecoSFDnStr)\
+                                .Define('weightmuRecoSFUp' ,weightmuRecoSFUpStr)\
+                                .Define('weightmuRecoSFDn' ,weightmuRecoSFDnStr)\
+                                .Define('weightPileupUp'   ,weightPileupUpStr)\
                                 .Define('weightPileupDn'   ,weightPileupDnStr)\
-                                #.Define('weightPuJetSFUp'  ,weightPuJetSFUpStr)\
-                                #.Define('weightPuJetSFDn'  ,weightPuJetSFDnStr)\
-                                .Define('weightPrefireUp'  ,weightPrefireUpStr)\
-                                .Define('weightPrefireDn'  ,weightPrefireDnStr)\
-                                #.Define('weightjsfUp'      ,weightjsfUpStr)\
-                                #.Define('weightjsfDn'      ,weightjsfDnStr)\
-                                #.Define('weighttopptUp'    ,weighttopptUpStr)\
-                                #.Define('weighttopptDn'    ,weighttopptDnStr)\
                                 .Define('weightmuRFcorrdUp',weightmuRFcorrdUpStr)\
                                 .Define('weightmuRFcorrdDn',weightmuRFcorrdDnStr)\
                                 .Define('weightmuRUp'      ,weightmuRUpStr)\
@@ -366,17 +346,35 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 .Define('weightbtagLFCODn' ,weightBtagLFCODnStr)\
                                 .Define('weightbtagLFUCUp' ,weightBtagLFUCUpStr)\
                                 .Define('weightbtagLFUCDn' ,weightBtagLFUCDnStr)
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFDn'   ,weightelIdSFDnStr)\
+                                #.Define('weightelIsoSFUp'  ,weightelIsoSFUpStr)\
+                                #.Define('weightelIsoSFDn'  ,weightelIsoSFDnStr)\
+                                #.Define('weightTrigEffElUp',weightTrigEffElUpStr)\
+                                #.Define('weightTrigEffElDn',weightTrigEffElDnStr)\
+                                #.Define('weightmuIdSFUp'   ,weightmuIdSFUpStr)\
+                                #.Define('weightmuIdSFDn'   ,weightmuIdSFDnStr)\
+                                #.Define('weightmuIsoSFUp'  ,weightmuIsoSFUpStr)\
+                                #.Define('weightmuIsoSFDn'  ,weightmuIsoSFDnStr)\
+                                #.Define('weightTrigEffMuUp',weightTrigEffMuUpStr)\
+                                #.Define('weightTrigEffMuDn',weightTrigEffMuDnStr)\
+                                #.Define('weightPuJetSFUp'  ,weightPuJetSFUpStr)\
+                                #.Define('weightPuJetSFDn'  ,weightPuJetSFDnStr)\
+                                #.Define('weightjsfUp'      ,weightjsfUpStr)\
+                                #.Define('weightjsfDn'      ,weightjsfDnStr)\
+                                #.Define('weighttopptUp'    ,weighttopptUpStr)\
+                                #.Define('weighttopptDn'    ,weighttopptDnStr)\
                         
-                        #hist_elRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp' )
-                        #hist_elRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn' )
+                        hist_elRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp' )
+                        hist_elRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn' )
                         #hist_elIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'   )
                         #hist_elIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDn'   )
                         #hist_elIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFUp'  )
                         #hist_elIsoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFDn'  )
                         #hist_TrigEffElUp = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElUp')
                         #hist_TrigEffElDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElDn')
-                        #hist_muRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFUp' )
-                        #hist_muRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFDn' )
+                        hist_muRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFUp' )
+                        hist_muRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFDn' )
                         #hist_muIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFUp'   )
                         #hist_muIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFDn'   )
                         #hist_muIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFUp'  )
@@ -387,8 +385,6 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_PileupDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupDn'   )
                         #hist_PuJetSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFUp'  )
                         #hist_PuJetSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PuJetSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPuJetSFDn'  )
-                        hist_PrefireUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PrefireUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPrefireUp'  )
-                        hist_PrefireDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PrefireDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPrefireDn'  )
                         #hist_jsfUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfUp'      )
                         #hist_jsfDn       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_jsfDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightjsfDn'      )
                         #hist_topptUp     = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_topptUp_{process}'    ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttopptUp'    )
@@ -471,16 +467,16 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_FACTORUP.Write()
                         hist_FACTORDN.Write()
                 else:
-                        #hist_elRecoSFUp.Write()
-                        #hist_elRecoSFDn.Write()
+                        hist_elRecoSFUp.Write()
+                        hist_elRecoSFDn.Write()
                         #hist_elIdSFUp.Write()
                         #hist_elIdSFDn.Write()
                         #hist_elIsoSFUp.Write()
                         #hist_elIsoSFDn.Write()
                         #hist_TrigEffElUp.Write()
                         #hist_TrigEffElDn.Write()
-                        #hist_muRecoSFUp.Write()
-                        #hist_muRecoSFDn.Write()
+                        hist_muRecoSFUp.Write()
+                        hist_muRecoSFDn.Write()
                         #hist_muIdSFUp.Write()
                         #hist_muIdSFDn.Write()
                         #hist_muIsoSFUp.Write()
@@ -491,8 +487,6 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         hist_PileupDn.Write()
                         #hist_PuJetSFUp.Write()
                         #hist_PuJetSFDn.Write()
-                        hist_PrefireUp.Write()
-                        hist_PrefireDn.Write()
                         #hist_jsfUp.Write()
                         #hist_jsfDn.Write()
                         #hist_topptUp.Write()
