@@ -331,6 +331,7 @@ for rfile in rfiles:
                                         ## For D we need to know the percentage to apply to major... store as __VRpct
                                         ## Will construct this as an uncertainty on "major"
                                         VRuncUp = majorhist.Clone(majorname.replace('__major','__major__valUp')) # can add Down if desired...
+                                        VRuncUp = majorhist.Clone(majorname.replace('__major','__major__valDown')) # can add Down if desired...
                                         VRpct = majorhist.Clone(majorname.replace('__major','__VRpct'))
                                         for ibin in range(1,datahist.GetNbinsX()+1):
                                                 if datahist.GetBinContent(ibin) > 100:  # avoid the lower-stats regions with more fluctuation
@@ -342,6 +343,7 @@ for rfile in rfiles:
                                                 # percentage should be (shift - nominal)/nominal
                                                 VRpct.SetBinContent(ibin,(datMinusMinor - majorhist.GetBinContent(ibin))/majorhist.GetBinContent(ibin))
                                         VRuncUp.Write()
+                                        VRuncDown.Write()
                                         VRpct.Write()
                                 elif 'templatesD' in folder:                                        
                                         ## Check if the matching V (or V2, choose!) file exists and open it, extract VRpct
@@ -357,11 +359,13 @@ for rfile in rfiles:
                                         Vfile.Close()
                                         outputRfiles[iRfile].cd()
                                         VRuncUp = majorhist.Clone(majorname.replace('__major','__major__valUp'))
+                                        VRuncDown = majorhist.Clone(majorname.replace('__major','__major__valDown'))
                                         for ibin in range(1,datahist.GetNbinsX()+1):
                                                 shiftpct = VRpct.GetBinContent(ibin)
                                                 # want shift to contain major + major*pct
                                                 VRuncUp.SetBinContent(ibin,majorhist.GetBinContent(ibin)*(1.0 + shiftpct))                                                
                                         VRuncUp.Write()
+                                        VRuncDown.Write()
                                         
                         else:
                                 print('You need to implement the VR uncert for MC background, or set it to false!')
