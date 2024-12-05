@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os,sys,time,math,fnmatch
+import os,sys,time,math,fnmatch,copy
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
 from array import array
@@ -266,8 +266,16 @@ for rfile in rfiles:
                 print("         "+chn)
                 rebinnedHists = {}
                 #Rebinning histograms
-                for hist in allhists[chn]:
-                        rebinnedHists[hist] = tfiles[iRfile].Get(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
+                allhistschntemp = allhists[chn].copy() ## remove this when pNet has "Down" originally...
+                for hist in allhistschntemp:      ## set back to allhists[chn]                  
+                        if 'tagDn' in hist:     ## remove all this, just use the "else"
+                                hist = hist.replace('tagDn','tagDown')
+                                allhists[chn].remove(hist.replace('tagDown','tagDn'))
+                                allhists[chn].append(hist)
+                                rebinnedHists[hist] = tfiles[iRfile].Get(hist.replace('tagDown','tagDn')).Clone(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
+                                print('Hist is now',hist,', and histo name is',rebinnedHists[hist].GetName())
+                        else:
+                                rebinnedHists[hist] = tfiles[iRfile].Get(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
                         rebinnedHists[hist].SetDirectory(0)
                         if '__'+sigName in hist:
                                 rebinnedHists[hist].Scale(1.0/0.5) # already did lumi*1pb/Ngen, need lumi*1pb/(Ngen*BRsinglet)
@@ -318,8 +326,7 @@ for rfile in rfiles:
                 #Construct or apply the validation region uncertainty:
                 if doVRunc:
                         if 'ABCDnn' in iPlot:
-                                majorname = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if '__major' in k.GetName() and chn in k.GetName() and upTag not in k.GetName() and downTag not in k.GetName()][0]
-                                print('Found major hist?',str(majorname))
+                                majorname = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if '__major' in k.GetName() and chn in k.GetName() and upTag not in k.GetName() and downTag not in k.GetName()][0]                                
                                 datahist = rebinnedHists[majorname.replace('__major','__data_obs')]
                                 majorhist = rebinnedHists[majorname]
 
@@ -331,7 +338,7 @@ for rfile in rfiles:
                                         ## For D we need to know the percentage to apply to major... store as __VRpct
                                         ## Will construct this as an uncertainty on "major"
                                         VRuncUp = majorhist.Clone(majorname.replace('__major','__major__valUp')) # can add Down if desired...
-                                        VRuncUp = majorhist.Clone(majorname.replace('__major','__major__valDown')) # can add Down if desired...
+                                        VRuncDown = majorhist.Clone(majorname.replace('__major','__major__valDown')) # can add Down if desired...
                                         VRpct = majorhist.Clone(majorname.replace('__major','__VRpct'))
                                         for ibin in range(1,datahist.GetNbinsX()+1):
                                                 if datahist.GetBinContent(ibin) > 100:  # avoid the lower-stats regions with more fluctuation
@@ -543,13 +550,13 @@ for isEM in isEMlist:
                                                 yielderrtemp = ((dataTemp/yieldtemp)**2)*(dataTempErr/dataTemp**2+yielderrtemp/yieldtemp**2)
                                                 yieldtemp = dataTemp/yieldtemp
                                 else:
-                                        try:
-                                                yieldtemp += yieldsAll[histoPrefix+proc]
-                                                yielderrtemp += yieldsErrsAll[histoPrefix+proc]**2
-                                                yielderrtemp += (getShapeSystUnc(proc,chn)*yieldsAll[histoPrefix+proc])**2
-                                        except:
-                                                if proc != 'qcd': print("Missing "+proc+" for channel individual: "+chn)
-                                                pass
+                                        #try:
+                                        yieldtemp += yieldsAll[histoPrefix+proc]
+                                        yielderrtemp += yieldsErrsAll[histoPrefix+proc]**2
+                                        yielderrtemp += (getShapeSystUnc(proc,chn)*yieldsAll[histoPrefix+proc])**2
+                                        #except:
+                                        #        if proc != 'qcd': print("Missing "+proc+" for channel individual: "+chn)
+                                        #        pass
                                         if proc in sigProcList:
                                                 signal=proc
                                                 if 'left' in signal: signal=proc.replace('left','')+'left'
