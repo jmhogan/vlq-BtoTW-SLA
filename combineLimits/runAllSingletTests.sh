@@ -5,19 +5,19 @@ echo "MAKE SURE YOU ARE ON EL9!!!"
 
 # echo "--------------- Working on VR  -------------------"
 
-dir=limits_templatesABCDnn_V2_Oct2024_420RB2
+dir=limits_templatesABCDnn_V2_Oct2024_420RB5_TUValSmooth
 mass=1200
 
 echo "Creating initial fit workspace:" 
 python3 -u runInitialFit.py $dir $mass
-
-## Post bug-fix, need the last bin clipped out, then it works.
 
 echo "Running nuisance plot: CHECK LINES 382 and 411 FOR RANGES IF SYSTEMATICS CHANGE"
 python3 -u diffNuisances.py -g $dir/$BR/cmb/$mass/nuisancepulls.root $dir/$BR/cmb/$mass/fitDiagnosticsTest.root >& $dir/$BR/cmb/$mass/nuisancepulls.txt
 
 echo "Running covariance plot: CHECK LINES 23/24 and 48/49 FOR RANGES IF SYSTEMATICS CHANGE"
 python3 -u covariancePlotter.py $dir $mass
+
+python3 -u PostFitPlots.py $dir $mass
 
 ## Make sure you have a grid proxy, then can submit condor jobs. EDIT THE FILES FIRST FOR OUTPUT PATHS!
 
@@ -40,8 +40,8 @@ python3 -u covariancePlotter.py $dir $mass
 
 #echo "--------------- Working on D+V2 for B -------------------"
 
-#dir=limits_templatesABCDnn_DV2_Oct2024_420RB10
-#mass=1200
+dir=limits_templatesABCDnn_DV2_Oct2024_420RB5_TUValSmooth
+mass=1200
 
 #echo "Creating initial fit workspace:"
 #python3 -u runInitialFit.py $dir $mass 0 500   ## Mask D, unmask V. Then swap later...
@@ -73,24 +73,24 @@ python3 -u covariancePlotter.py $dir $mass
 
 #mass=1200
 #echo "Submitting toys to condor for 1200 R = exp0:"
-#python3 -u runCondorToys.py inject $dir $mass 1.39 500  ## 
+#python3 -u runCondorToys.py inject $dir $mass 1.31 500  ## 
 
 #mass=1800
 #echo "Submitting toys to condor for 1800 R = exp0:"
-#python3 -u runCondorToys.py inject $dir $mass 0.33 500
+#python3 -u runCondorToys.py inject $dir $mass 0.39 500
 
 #mass=1200
 #echo "Running impact test: "
-#python3 -u runImpacts.py $dir $mass local 1.39
+#python3 -u runImpacts.py $dir $mass local 1.31
 
-#python3 -u /uscms_data/d3/jmanagan/CombineV10/CMSSW_14_1_0_pre4/bin/el9_amd64_gcc12/plotImpacts.py --input $dir/cmb/$mass/impacts1p39.json --output $dir/cmb/$mass/impacts1p39 --summary
+#python3 -u /uscms_data/d3/jmanagan/CombineV10/CMSSW_14_1_0_pre4/bin/el9_amd64_gcc12/plotImpacts.py --input $dir/cmb/$mass/impacts1p31.json --output $dir/cmb/$mass/impacts1p31 --summary
 
 #echo "Plotting all injection results:"
 #mass=1200
-#python3 -u signalInjectionPlotter.py $dir $mass 1.39   # r-value of expected limit
+#python3 -u signalInjectionPlotter.py $dir $mass 1.31   # r-value of expected limit
 
 #mass=1800
-#python3 -u signalInjectionPlotter.py $dir $mass 0.33   # r-value of expected limit
+#python3 -u signalInjectionPlotter.py $dir $mass 0.39   # r-value of expected limit
 
 
 # echo "Done!"

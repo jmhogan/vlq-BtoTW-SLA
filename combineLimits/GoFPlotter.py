@@ -9,6 +9,7 @@ mass = sys.argv[2]
 name = limitdir.replace('limits_templatesABCDnn_V2_Oct2024_','').replace('limits_templatesABCDnn_DV2_Oct2024_','')
 path = limitdir+'/cmb/'+mass
 
+scriptdir = os.getcwd()
 os.chdir(path)
 
 datafile = 'higgsCombineTest.GoodnessOfFit.mH120.root'
@@ -31,7 +32,7 @@ collect = 'combineTool.py -M CollectGoodnessOfFit --input '+datafile+' '+toysfil
 print(collect)
 os.system(collect)
 
-plot = 'plotGof.py gof.json --statistic saturated --mass 120.0 -o gof_plot --title-right="Region V2"'
+plot = scriptdir+'/plotGof.py gof.json --statistic saturated --mass 120.0 -o gof_plot --range 0 600 --title-right="Region V2"'
 print(plot)
 os.system(plot)
 
