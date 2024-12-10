@@ -56,7 +56,7 @@ else:
         from samples import samples_ttbar
 
 bkgProcs = {'ewk':samples_electroweak,'wjets':samples_wjets,'ttbar':samples_ttbar,'singletop':samples_singletop,'ttx':samples_ttbarx,'qcd':samples_qcd}
-massList = [800,1000,1200,1300,1400,1500,1600,1700,1800,2000,2200]
+massList = [1000,1200,1300,1400,1500,1600,1700,1800,2000,2200] #800
 sigList = ['BpM'+str(mass) for mass in massList]
 
 isEMlist = ['L'] #['E','M'], 'L' #
@@ -123,7 +123,7 @@ if groupHists:
                         nomHists = {}
                         systHists = {}
                         systHistsWrite = {}
-                        isFirstHistDir = {"2016APV":True, "2016":True, "2017":True, "2018":True}
+                        isFirstHistDir = {"2022":True, "2022EE":True, "2023":True, "2023BPix":True}
 
                         if doABCDnn and (proc=="ttbar" or proc=="qcd" or proc=="wjets" or proc=="singletop"):
                                 systematicList = systListABCDnn
@@ -264,6 +264,7 @@ if groupHists:
 
                         for year in yearList:
                                 if year == yearList[0]: continue
+                                print('Trying to add',f'{histoPrefix}_Bprime_M{mass}_{year}')
                                 nomHistsAllYears.Add(sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_{year}'))
                                 if doAllSys:
                                         for syst in corrList_sf:

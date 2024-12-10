@@ -12,7 +12,7 @@ from utils import *
 gROOT.SetBatch(1)
 start_time = time.time()
 
-lumi=59.8 #for plots #56.1 #
+lumi=61.9 #for plots #56.1 #
 lumiInTemplates= lumiStr
 
 iPlot='HT'
@@ -47,9 +47,9 @@ saveKey = '' # tag for plot names
 datalabel = 'data_obs'
 shiftlist = ['Up','Down'] # change to Down for future
 sig1='BpM1000' #  choose the 1st signal to plot
-sig1leg='B (1.0 TeV, 36 fb)'
+sig1leg='B (1.0 TeV)'
 sig2='BpM1800' #  choose the 2nd signal to plot
-sig2leg='B (1.8 TeV, 1 fb)'
+sig2leg='B (1.8 TeV)'
 
 
 scaleSignals = True
@@ -190,7 +190,7 @@ def formatUpperHist(histogram,th1hist):
                 if yLog:
                         uPad.SetLogy()
                         if not doNormByBinWidth:
-                                histogram.SetMaximum(500*histogram.GetMaximum())
+                                histogram.SetMaximum(200*histogram.GetMaximum())
                         else: 
                                 histogram.SetMaximum(200*histogram.GetMaximum())
                         if iPlot=='YLD': 
@@ -465,7 +465,7 @@ for tag in taglist:
                 if scaleFact2==0: scaleFact2=1
                 if sigScaleFact>0:
                         scaleFact1=sigScaleFact
-                        scaleFact2=sigScaleFact*4
+                        scaleFact2=sigScaleFact
                 if not scaleSignals:
                         scaleFact1=1
                         scaleFact2=1
@@ -567,7 +567,7 @@ for tag in taglist:
                         lPad.SetLeftMargin(0.15) #used to be 0.105. y axis label overlaps with title
                         lPad.SetGridy()
                         lPad.Draw()
-                if not doNormByBinWidth: hData.SetMaximum(1.4*max(hData.GetMaximum(),bkgHT.GetMaximum()))
+                if not doNormByBinWidth: hData.SetMaximum(1.1*max(hData.GetMaximum(),bkgHT.GetMaximum()))
                 hData.SetMinimum(0.015)
                 hData.SetTitle("")
                 # this is super important now!! gaeData has badly defined (negative) maximum

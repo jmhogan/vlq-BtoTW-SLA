@@ -25,7 +25,7 @@ gROOT.SetBatch(1)
 start_time = time.time()
 
 # ------------- File location and total lumi ---------------
-step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BtoTW_Oct2024_fullRun2/'
+step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BtoTW_Nov2024_Run3/'
 step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2024_fullRun2/'
 
 # ------------- Arguments and default values ------------

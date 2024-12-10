@@ -434,10 +434,10 @@ samples_signal={
     "Bprime_M2200_2022EE":  Bprime_M2200_2022EE,  
     "Bprime_M2200_2023":    Bprime_M2200_2023,    
     "Bprime_M2200_2023BPix":Bprime_M2200_2023BPix,
-    "Bprime_M800_2022":     Bprime_M800_2022,     
-    "Bprime_M800_2022EE ":  Bprime_M800_2022EE ,  
-    "Bprime_M800_2023":     Bprime_M800_2023,     
-    "Bprime_M800_2023BPix": Bprime_M800_2023BPix,
+    #"Bprime_M800_2022":     Bprime_M800_2022,     
+    #"Bprime_M800_2022EE ":  Bprime_M800_2022EE ,  
+    #"Bprime_M800_2023":     Bprime_M800_2023,     
+    #"Bprime_M800_2023BPix": Bprime_M800_2023BPix,
     }
 samples_electroweak = {
     "WW2L2022":     WW2L2022,     
@@ -538,8 +538,8 @@ samples_singletop = {
     "STtW2023BPix":  STtW2023BPix,  
     "STtWb2022":     STtWb2022,     
     "STtWb2022EE":   STtWb2022EE,   
-    "STtWb2023":     STtWb2023,     
-    "STtWb2023BPix": STtWb2023BPix,
+    #"STtWb2023":     STtWb2023,     
+    #"STtWb2023BPix": STtWb2023BPix,
     }
 samples_ttbarx = {
     "TTHB2022":       TTHB2022,       
