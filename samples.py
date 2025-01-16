@@ -20,8 +20,9 @@ for syst in uncorrList_sf:
         systListFullPlots.append(syst+year)
 
 
-systListABCDnn = ['peak', 'tail', 'closure', 'factor']
+systListABCDnn = ['val','train','pNetTtag','pNetWtag']#'param0','param1','param2','param3','param4','param5','param6','param7','lastbin']
 
+# out of date
 factorABCDnn = {'allWlep':'0.034045477',
                 'allTlep':'0.08270128', 
                 'tagTjet':'0.024456696', # '0.027892638',
@@ -30,12 +31,10 @@ factorABCDnn = {'allWlep':'0.034045477',
                 'untagTlep':'0.035287068', # '0.135501722'
 }
 
-yieldUncertABCDnn = {'allWlep':0.056370156, #'0.020091821',
-                     'allTlep':0.010990787, #'0.077063257',
-                     'tagTjet':0.040886962, #'0.078577386',
-                     'tagWjet':0.045300831, #'0.061932256',
-                     'untagWlep':0.020008949, #'0.080574995',
-                     'untagTlep':0.055798559, #'0.018414285'
+yieldUncertABCDnn = {'tagTjet':0.02, #'0.078577386',
+                     'tagWjet':0.02, #'0.061932256',
+                     'untagTlep':0.10, #'0.018414285'
+                     'untagWlep':0.08, #'0.080574995',
 }
 
 # all with direct alpha-ratio. sqrt(sys^2+stat^2+closure^2)
@@ -496,7 +495,7 @@ TTHB2017.nrun = 7661778.0 # from integral 7825000, file TTHB2017
 TTHnonB2017.nrun = 4965389.0 # from integral 5070989, file TTHnonB2017
 TTTo2L2Nu2017.nrun = 105859990.0 # from integral 106724000, file TTTo2L2Nu2017
 TTToHadronic2017.nrun = 231117295.00000003 # from integral 232999999, file TTToHadronic2017
-TTToSemiLeptonic2017.nrun = 342446298.0 # from integral 345234000, file TTToSemiLeptonic2017
+TTToSemiLeptonic2017.nrun = 343257666.0 # from integral 346052000, file TTToSemiLeptonic2017
 TTMT10002017.nrun = 21545730.0 + 0.02474*(TTToHadronic2017.nrun+TTToSemiLeptonic2017.nrun+TTTo2L2Nu2017.nrun) # from integral 22724532, file TTMT10002017
 TTMT7002017.nrun = 35196862.0 + 0.0921*(TTToHadronic2017.nrun+TTToSemiLeptonic2017.nrun+TTTo2L2Nu2017.nrun) # from integral 35862238, file TTMT7002017
 TTTo2L2Nu20170.nrun = TTTo2L2Nu2017.nrun*0.8832
@@ -527,7 +526,7 @@ Bprime_M1200_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1200_20
 Bprime_M1300_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1300_2018
 Bprime_M1400_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1400_2018
 Bprime_M1500_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1500_2018
-Bprime_M1600_2018.nrun = 934000.0 # from integral 934000, file Bprime_M1600_2018
+Bprime_M1600_2018.nrun = 999000.0 # from integral 999000, file Bprime_M1600_2018
 Bprime_M1700_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1700_2018
 Bprime_M1800_2018.nrun = 1000000.0 # from integral 1000000, file Bprime_M1800_2018
 Bprime_M2000_2018.nrun = 998000.0 # from integral 998000, file Bprime_M2000_2018
@@ -555,7 +554,7 @@ TTHB2018.nrun = 9467226.0 # from integral 9668000, file TTHB2018
 TTHnonB2018.nrun = 7176599.0 # from integral 7328993, file TTHnonB2018
 TTTo2L2Nu2018.nrun = 143848848.00000003 # from integral 145020000, file TTTo2L2Nu2018
 TTToHadronic2018.nrun = 331506194.0 # from integral 334206000, file TTToHadronic2018
-TTToSemiLeptonic2018.nrun = 472557630.0 # from integral 476408000, file TTToSemiLeptonic2018
+TTToSemiLeptonic2018.nrun = 471248534.0 # from integral 475088000, file TTToSemiLeptonic2018
 TTMT10002018.nrun = 22396890.0 + 0.02474*(TTToHadronic2018.nrun+TTToSemiLeptonic2018.nrun+TTTo2L2Nu2018.nrun) # from integral 23624506, file TTMT10002018
 TTMT7002018.nrun = 30084128.0 + 0.0921*(TTToHadronic2018.nrun+TTToSemiLeptonic2018.nrun+TTTo2L2Nu2018.nrun) # from integral 30653714, file TTMT7002018
 TTTo2L2Nu20180.nrun = TTTo2L2Nu2018.nrun*0.8832
@@ -567,7 +566,7 @@ TTToSemiLeptonic2018700.nrun = TTToSemiLeptonic2018.nrun*0.0921 + TTMT7002018.nr
 TTTo2L2Nu20181000.nrun = TTTo2L2Nu2018.nrun*0.02474 + TTMT10002018.nrun*0.105
 TTToHadronic20181000.nrun = TTToHadronic2018.nrun*0.02474 + TTMT10002018.nrun*0.457
 TTToSemiLeptonic20181000.nrun = TTToSemiLeptonic2018.nrun*0.02474 + TTMT10002018.nrun*0.438
-TTWl2018.nrun = 4443620.999999998 # from integral 8195955, file TTWl2018
+TTWl2018.nrun = 5666427.999999999 # from integral 10450000, file TTWl2018
 TTWq2018.nrun = 530327.0000000001 # from integral 970179, file TTWq2018
 TTZM102018.nrun = 9651834.000000002 # from integral 19608000, file TTZM102018
 TTZM1to102018.nrun = 550706.0 # from integral 994000, file TTZM1to102018
