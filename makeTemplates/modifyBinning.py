@@ -42,6 +42,9 @@ print("templateDir: "+templateDir)
 combinefile = 'templates_'+iPlot+'_'+lumiInTemplates+'.root'
 print("file: "+combinefile)
 
+doTwoSided = False
+doTruncated = False
+if 'templatesD_' not in folder: doTruncated = False
 normalizeRENORM = True #only for signals
 normalizePDF    = True #only for signals
 if 'kinematics' in folder:
@@ -97,7 +100,8 @@ def findfiles(path, filtre):
             yield os.path.join(root, f)
 
 #Setup the selection of the files to be rebinned: templates_BpMass_138fbfb.root
-rfiles = [file for file in findfiles(templateDir, '*.root') if 'rebinned' not in file and combinefile in file]
+rfiles = [file for file in findfiles(templateDir, '*.root') if 'rebinned' not in file and 'smoothed' not in file and iPlot in file]
+print(rfiles)
 
 print("templateDir: "+templateDir)
 print("iPlot: "+iPlot)
@@ -166,6 +170,8 @@ for chn in totBkgHists.keys():
         if 'templates' in folder:
                 Nbins = DataHists[chn].GetNbinsX() #-1 ## TEMPORARY REMOVE -1!
                 xbinsListTemp[chn]=[DataHists[chn].GetXaxis().GetBinUpEdge(Nbins)] #[tfile.Get(datahists[0]).GetXaxis().GetBinUpEdge(tfile.Get(datahists[0]).GetXaxis().GetNbins()-1)]
+                if doTruncated and 'jet' in chn:
+                        xbinsListTemp[chn]=[800.0] # partialBlind D
                 
         totTempBinContent = 0.
         totTempBinErrSquared = 0.
@@ -194,10 +200,13 @@ for chn in totBkgHists.keys():
                                         totTempDataErrSquared = 0.
                                         totTempSigContent = 0.
                                         #print 'Appending bin edge',totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin)
-                                        xbinsListTemp[chn].append(totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin))
+                                        
+                                        if doTruncated and 'jet' in chn and totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin)>=800: pass
+                                        else:
+                                                xbinsListTemp[chn].append(totBkgHists[chn].GetXaxis().GetBinLowEdge(Nbins+1-iBin))
 
         ## Going right to left -- if the last entry isn't 0 add it
-        if '_42' in folder or '420bins' in folder or 'FU' in folder:
+        if '_42' in folder or 'Jan2025' in folder:
                 if xbinsListTemp[chn][-1]!=400: xbinsListTemp[chn].append(400)
         else:
                 if xbinsListTemp[chn][-1]!=0: xbinsListTemp[chn].append(0)
@@ -254,8 +263,18 @@ for rfile in rfiles:
         tfiles = {}
         outputRfiles = {}
         tfiles[iRfile] = TFile(rfile)	
-        if not rebin4chi2: 
-                outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'.root'),'RECREATE')
+        if not rebin4chi2:
+                if doVRunc:
+                        if 'templatesV_' in folder or 'templatesHST_' in folder:
+                                outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'_valUpDn.root'),'RECREATE')
+                        elif 'templatesV2_' in folder:
+                                outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'_valUpDnFromV.root'),'RECREATE')
+                                #outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'_valUpDn.root'),'RECREATE')
+                        elif 'templatesD_' in folder:
+                                outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'_valUpDnFromVWithD.root'),'RECREATE')
+                                #outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'_valUpDnWithD.root'),'RECREATE')
+                else:
+                        outputRfiles[iRfile] = TFile(rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'.root'),'RECREATE')
         else: 
                 outputRfiles[iRfile] = TFile(rfile.replace('.root','_chi2_rebinned_stat'+str(stat).replace('.','p')+'.root'),'RECREATE')
 
@@ -274,6 +293,12 @@ for rfile in rfiles:
                                 allhists[chn].append(hist)
                                 rebinnedHists[hist] = tfiles[iRfile].Get(hist.replace('tagDown','tagDn')).Clone(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
                                 print('Hist is now',hist,', and histo name is',rebinnedHists[hist].GetName())
+                        elif 'trainDn' in hist:     ## remove all this, just use the "else"
+                                hist = hist.replace('trainDn','trainDown')
+                                allhists[chn].remove(hist.replace('trainDown','trainDn'))
+                                allhists[chn].append(hist)
+                                rebinnedHists[hist] = tfiles[iRfile].Get(hist.replace('trainDown','trainDn')).Clone(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
+                                print('Hist is now',hist,', and histo name is',rebinnedHists[hist].GetName())
                         else:
                                 rebinnedHists[hist] = tfiles[iRfile].Get(hist).Rebin(len(xbins[chn])-1,hist,xbins[chn])
                         rebinnedHists[hist].SetDirectory(0)
@@ -285,6 +310,8 @@ for rfile in rfiles:
                         if '__pdf' in hist:
                                 if 'Up' not in hist or 'Down' not in hist: continue
                         if any([item in hist and not removalKeys[item] for item in removalKeys.keys()]): continue
+
+
                         rebinnedHists[hist].Write()
                         yieldHistName = hist
                         yieldsAll[yieldHistName] = rebinnedHists[hist].Integral()
@@ -329,11 +356,16 @@ for rfile in rfiles:
                                 majorname = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if '__major' in k.GetName() and chn in k.GetName() and upTag not in k.GetName() and downTag not in k.GetName()][0]                                
                                 datahist = rebinnedHists[majorname.replace('__major','__data_obs')]
                                 majorhist = rebinnedHists[majorname]
-
-                                if 'templatesV' in folder:
-                                        totbkghist = majorhist.Clone(majorname.replace('__major','__totbkg'))
-                                        totbkghist.Add(rebinnedHists[majorname.replace('__major','__ewk')])
-                                        totbkghist.Add(rebinnedHists[majorname.replace('__major','__ttx')])
+                                totbkghist = majorhist.Clone(majorname.replace('__major','__totbkg'))
+                                totbkghist.Add(rebinnedHists[majorname.replace('__major','__ewk')])
+                                totbkghist.Add(rebinnedHists[majorname.replace('__major','__ttx')])
+                                
+                                ### CHANGE THIS BACK TO TEMPLATESV_ FOR THE TEST!!!
+                                ### USE templatesV for the original method
+                                if 'templatesV_' in folder or 'templatesHST' in folder:
+                                        #totbkghist = majorhist.Clone(majorname.replace('__major','__totbkg'))
+                                        #totbkghist.Add(rebinnedHists[majorname.replace('__major','__ewk')])
+                                        #totbkghist.Add(rebinnedHists[majorname.replace('__major','__ttx')])
                                         ## For V we just need to find the difference and SBC an unc (1-sided by definition? symmetrized?)
                                         ## For D we need to know the percentage to apply to major... store as __VRpct
                                         ## Will construct this as an uncertainty on "major"
@@ -341,38 +373,95 @@ for rfile in rfiles:
                                         VRuncDown = majorhist.Clone(majorname.replace('__major','__major__valDown')) # can add Down if desired...
                                         VRpct = majorhist.Clone(majorname.replace('__major','__VRpct'))
                                         for ibin in range(1,datahist.GetNbinsX()+1):
-                                                if datahist.GetBinContent(ibin) > 100:  # avoid the lower-stats regions with more fluctuation
+                                                if totbkghist.GetBinError(ibin)/totbkghist.GetBinContent(ibin) < 0.1: # bkg stat unc < 10%
+                                                        # datahist.GetBinContent(ibin) > 100:  # this is == bins w/ data stat uncert < 10%, seems fine
                                                         # set content of this shifted major to be the expected data - minor
                                                         datMinusMinor = majorhist.GetBinContent(ibin) + datahist.GetBinContent(ibin) - totbkghist.GetBinContent(ibin)
                                                 else:
                                                         datMinusMinor = majorhist.GetBinContent(ibin)
                                                 VRuncUp.SetBinContent(ibin,datMinusMinor)
-                                                # percentage should be (shift - nominal)/nominal
                                                 VRpct.SetBinContent(ibin,(datMinusMinor - majorhist.GetBinContent(ibin))/majorhist.GetBinContent(ibin))
+                                                if doTwoSided:
+                                                        VRuncDown.SetBinContent(ibin, majorhist.GetBinContent(ibin)*(1.0 - VRpct.GetBinContent(ibin)))
+                                                # percentage should be (shift - nominal)/nominal
                                         VRuncUp.Write()
                                         VRuncDown.Write()
                                         VRpct.Write()
-                                elif 'templatesD' in folder:                                        
+                                        yieldsAll[VRuncUp.GetName()] = VRuncUp.Integral()
+                                        yieldsAll[VRuncDown.GetName()] = VRuncDown.Integral()
+
+                                ### UNCOMMENT THIS FOR THE TEST!!!
+                                ### COMMENT it for the original method, entire elif block
+                                elif 'templatesV2_' in folder:
                                         ## Check if the matching V (or V2, choose!) file exists and open it, extract VRpct
                                         ## Make a VRuncUp and add the right amount
-                                        Vfilename = rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'.root').replace('templatesD','templatesV2')
+                                        Vfilename = rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'.root').replace('templatesV2','templatesV')
+                                        if doTwoSided:
+                                                Vfilename = Vfilename.replace('.root','_valUpDn.root')
+                                        print('Opening Vfile = ',Vfilename)
                                         if os.path.exists(Vfilename):
                                                 Vfile = TFile.Open(Vfilename)
                                         else:
-                                                print('You asked for VR uncert on region D, but the VR file is missing!')
+                                                print('You asked for VR uncert on region V2, but the V file is missing!')
                                                 exit()
-                                        VRpct = Vfile.Get(majorname.replace('_D','_V2').replace('__major','__VRpct'))
+                                        VRpct = Vfile.Get(majorname.replace('_V2','_V').replace('__major','__VRpct'))
                                         VRpct.SetDirectory(0)
                                         Vfile.Close()
                                         outputRfiles[iRfile].cd()
                                         VRuncUp = majorhist.Clone(majorname.replace('__major','__major__valUp'))
                                         VRuncDown = majorhist.Clone(majorname.replace('__major','__major__valDown'))
                                         for ibin in range(1,datahist.GetNbinsX()+1):
-                                                shiftpct = VRpct.GetBinContent(ibin)
+                                                Vpct = VRpct.GetBinContent(ibin)
+                                                shiftpct = Vpct
                                                 # want shift to contain major + major*pct
-                                                VRuncUp.SetBinContent(ibin,majorhist.GetBinContent(ibin)*(1.0 + shiftpct))                                                
+                                                VRuncUp.SetBinContent(ibin,majorhist.GetBinContent(ibin)*(1.0 + shiftpct))
+                                                if doTwoSided:
+                                                        VRuncDown.SetBinContent(ibin,majorhist.GetBinContent(ibin)*(1.0 - shiftpct))
                                         VRuncUp.Write()
                                         VRuncDown.Write()
+
+                                        yieldsAll[VRuncUp.GetName()] = VRuncUp.Integral()
+                                        yieldsAll[VRuncDown.GetName()] = VRuncDown.Integral()
+
+                                ### CHANGE V2s BACK TO V FOR THE TEST!!!
+                                elif 'templatesD' in folder:
+                                        ## Check if the matching V (or V2, choose!) file exists and open it, extract VRpct
+                                        ## Make a VRuncUp and add the right amount
+                                        Vfilename = rfile.replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p')+'.root').replace('templatesD','templatesV')
+                                        if doTwoSided:
+                                                Vfilename = Vfilename.replace('.root','_valUpDn.root')
+                                        print('Opening Vfile = ',Vfilename)
+                                        if os.path.exists(Vfilename):
+                                                Vfile = TFile.Open(Vfilename)
+                                        else:
+                                                print('You asked for VR uncert on region D, but the V file is missing!')
+                                                exit()
+                                        VRpct = Vfile.Get(majorname.replace('_D','_V').replace('__major','__VRpct'))
+                                        VRpct.SetDirectory(0)
+                                        Vfile.Close()
+                                        outputRfiles[iRfile].cd()
+                                        VRuncUp = majorhist.Clone(majorname.replace('__major','__major__valUp'))
+                                        VRuncDown = majorhist.Clone(majorname.replace('__major','__major__valDown'))
+                                        for ibin in range(1,datahist.GetNbinsX()+1):
+                                                if totbkghist.GetBinError(ibin)/totbkghist.GetBinContent(ibin) < 0.1 and datahist.GetXaxis().GetBinLowEdge(ibin) < 700:
+                                                        datMinusMinor = majorhist.GetBinContent(ibin) + datahist.GetBinContent(ibin) - totbkghist.GetBinContent(ibin)
+                                                else:
+                                                        datMinusMinor = majorhist.GetBinContent(ibin)
+                                                Dpct = (datMinusMinor - majorhist.GetBinContent(ibin))/majorhist.GetBinContent(ibin)                                                
+                                                Vpct = VRpct.GetBinContent(ibin)
+                                                shiftpct = Vpct
+                                                if abs(Dpct) > abs(Vpct):
+                                                        shiftpct = Dpct
+                                                # want shift to contain major + major*pct
+                                                VRuncUp.SetBinContent(ibin,majorhist.GetBinContent(ibin)*(1.0 + shiftpct))
+                                                if doTwoSided:
+                                                        VRuncDown.SetBinContent(ibin,majorhist.GetBinContent(ibin)*(1.0 - shiftpct))
+                                        VRuncUp.Write()
+                                        VRuncDown.Write()
+
+                                        yieldsAll[VRuncUp.GetName()] = VRuncUp.Integral()
+                                        yieldsAll[VRuncDown.GetName()] = VRuncDown.Integral()
+
                                         
                         else:
                                 print('You need to implement the VR uncert for MC background, or set it to false!')
@@ -427,7 +516,7 @@ for rfile in rfiles:
                         #         muRFcorrdNewDnHist.Scale(renormNomHist.Integral()/muRFcorrdNewDnHist.Integral())
                         muRFcorrdNewUpHist.Write()
                         muRFcorrdNewDnHist.Write()
-
+ 
                         yieldsAll[muRFcorrdNewUpHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewUpHist.Integral()
                         yieldsAll[muRFcorrdNewDnHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewDnHist.Integral()
 
@@ -455,8 +544,8 @@ for rfile in rfiles:
                                                 print('Weird: central is 0 but not PDF unc has errsq',errsq,'in bin',ibin,'of hist',hist)
                                         shiftpct = 0
                 
-                                if abs(shiftpct) > 1 and pdfNomHist.GetBinContent(ibin) > 0.008:
-                                        print('WARNING: pdf shift is',shiftpct,', flooring down at 0 in bin',ibin,'of hist',hist,'on bin content of',pdfNomHist.GetBinContent(ibin))
+                                #if abs(shiftpct) > 1 and pdfNomHist.GetBinContent(ibin) > 0.008:
+                                        #print('WARNING: pdf shift is',shiftpct,', flooring down at 0 in bin',ibin,'of hist',hist,'on bin content of',pdfNomHist.GetBinContent(ibin))
                                 ## multiply the central value by 1 +/- the shift
                                 pdfNewUpHist.SetBinContent(ibin, max(0,pdfNomHist.GetBinContent(ibin)*(1 + shiftpct)))
                                 pdfNewDnHist.SetBinContent(ibin, max(0,pdfNomHist.GetBinContent(ibin)*(1 - shiftpct)))                                
@@ -510,8 +599,8 @@ def getShapeSystUnc(proc,chn):
 	return shpSystUncPrctg	
 
 table = []
-taglist = ['tag','untag']
-factor = {'tagTjet':0.02,'tagWjet':0.02,'untagTlep':0.10,'untagWlep':0.08}
+taglist = ['tag']
+factor = {'tagTjet':0.02,'tagWjet':0.02,'untagTlep':0.02,'untagWlep':0.08}
 if 'kinematics' in folder: taglist = ['all']
 for isEM in isEMlist:
         if isEM=='isE': corrdSys = elcorrdSys
@@ -681,7 +770,16 @@ for proc in bkgProcList+sigProcList:
         table.append(['break'])
 
 postFix = ''
-out=open(templateDir+'/'+combinefile.replace('templates','yields').replace('.root','_rebinned_stat'+str(stat).replace('.','p'))+postFix+'.txt','w')
+if 'templatesV_' in folder:
+        postFix = '_valUpDn'
+elif 'templatesV2_' in folder:
+        postFix = '_valUpDnFromV'
+        #postFix = '_valUpDn'
+elif 'templatesD_' in folder:
+        postFix = '_valUpDnFromVWithD'
+        #postFix = '_valUpDnWithD'
+
+out=open(templateDir+'/'+combinefile.replace('templates','yields').replace('.root','_rebinned'+str(rebinX)+'_stat'+str(stat).replace('.','p'))+postFix+'.txt','w')
 
 printTable(table,out)
 
