@@ -47,14 +47,16 @@ saveKey = '' # tag for plot names
 datalabel = 'data_obs'
 shiftlist = ['Up','Down'] # change to Down for future
 sig1='BpM1000' #  choose the 1st signal to plot
-sig1leg='B (1.0 TeV, 36 fb)'
+sig1leg='B (1.0 TeV, 1 pb)'
 sig2='BpM1800' #  choose the 2nd signal to plot
-sig2leg='B (1.8 TeV, 1 fb)'
-
+sig2leg='B (1.8 TeV, 1 pb)'
+if isCategorized:
+        sig1leg='B (1.0 TeV, 36 fb)'
+        sig2leg='B (1.8 TeV, 1 fb)'
 
 scaleSignals = True
 #if not isCategorized: scaleSignals = True
-sigScaleFact = 25
+sigScaleFact = 100
 print('Scaling signals?',scaleSignals)
 print('Scale factor = ',sigScaleFact)
 tempsig='templates_'+iPlot+'_'+lumiInTemplates+''+isRebinned+'.root'#+'_Data18.root'
@@ -84,7 +86,7 @@ else:
                                'major'                       
                 ]
         ABCDnnProcList = ['major']#'qcd','wjets','singletop','ttbar']
-minorProcList = ['ewk', 'ttx']
+minorProcList = ['ttx','ewk']
 
 
 if plotABCDnn:
@@ -95,7 +97,11 @@ else:
 doAllSys = True
 
 doNormByBinWidth=False
-if len(isRebinned)>0 and 'stat1p1' not in isRebinned and 'mvagof' not in isRebinned: doNormByBinWidth = True
+if len(isRebinned)>0 and 'stat1p1' not in isRebinned and 'mvagof' not in isRebinned:
+        if 'rebinned1' not in isRebinned and 'Jan2025' in pfix:
+                doNormByBinWidth = False
+        else:
+                doNormByBinWidth = True
 
 doOneBand = True
 if not doAllSys: doOneBand = True # Don't change this!
@@ -125,15 +131,11 @@ if isCategorized == True:
                 partialBlind = True
                 print(f'Partial blind {iPlot} for {region}.')
 
-lumiSys = 0.018 # lumi uncertainty
+lumiSys = 0.016 # lumi uncertainty
+factor = {'tagTjet':0.02,'tagWjet':0.02,'untagTlep':0.10,'untagWlep':0.08}
 
 #### Consider: Did not set removeThreshold
 ####           No doPDF
-
-def getNormUnc(hist,ibin,modelingUnc):
-        contentsquared = hist.GetBinContent(ibin)**2
-        error = lumiSys*lumiSys*contentsquared  #might be others in future
-        return error
 
 def formatUpperHist(histogram,th1hist):
         histogram.GetXaxis().SetLabelSize(0)
@@ -161,6 +163,7 @@ def formatUpperHist(histogram,th1hist):
                 for ibin in range(1,th1hist.GetNbinsX()+1):
                         histogram.GetXaxis().SetBinLabel(ibin,labels[ibin-1])
                 histogram.GetXaxis().SetLabelSize(0.25)
+                histogram.GetXaxis().SetRangeUser(1,5)
                 histogram.GetXaxis().SetTitleOffset(1.0)
                 histogram.GetXaxis().SetTitle('B quark decay mode')
 
@@ -218,6 +221,7 @@ def formatLowerHist(histogram):
                 for ibin in range(1,histogram.GetNbinsX()+1):
                         histogram.GetXaxis().SetBinLabel(ibin,labels[ibin-1])
                 histogram.GetXaxis().SetLabelSize(0.25)
+                histogram.GetXaxis().SetRangeUser(1,5)
                 histogram.GetXaxis().SetTitleOffset(1.0)
                 histogram.GetXaxis().SetTitle('B quark decay mode')
 
@@ -253,7 +257,7 @@ totBkgTemp1 = {}
 totBkgTemp2 = {}
 totBkgTemp3 = {}
 for tag in taglist:
-        perNGeV = 5 # choose what "unit" to use for bin widths, similar to the smaller bin widths in the plot. Values < 1 are ok for e.g. NN scores
+        perNGeV = 10 # choose what "unit" to use for bin widths, similar to the smaller bin widths in the plot. Values < 1 are ok for e.g. NN scores
         print('------------------ ',tag,' with perNGeV = ',perNGeV,' -----------------------')
 
         tagStr=tag
@@ -261,7 +265,7 @@ for tag in taglist:
                 histPrefix=iPlot+'_'+lumiInTemplates+'_'
                 catStr='is'+isEM+'_'+tagStr
                 histPrefix+=catStr
-                if isCategorized: histPrefix+='_'+region
+                if isCategorized: histPrefix+='_'+region.replace('HST','highST')
                 totBkg = 0.
                 totMajor = 0.
                 totMinor = 0.
@@ -374,10 +378,10 @@ for tag in taglist:
                         for proc in bkgProcList:
                                 if plotABCDnn and (proc in ABCDnnProcList):
                                         systematicList = systListABCDnn.copy()
-                                        try:
-                                                systematicList.remove('factor')
-                                        except:
-                                                print("Unable to remove factor")
+                                        # try:
+                                        #         systematicList.remove('factor')
+                                        # except:
+                                        #         print("Unable to remove factor")
                                 else:
                                         if isCategorized:
                                                 systematicList = systListFullPlots.copy()
@@ -427,7 +431,7 @@ for tag in taglist:
                         errorStatDn = gaeBkgHT.GetErrorYlow(ibin-1)**2
                         errorNorm = (lumiSys**2)*(bkgHT.GetBinContent(ibin)**2)
                         if plotABCDnn:
-                                errorNorm += (yieldUncertABCDnn[tag]*bkghists['major'+catStr].GetBinContent(ibin))**2
+                                errorNorm = (yieldUncertABCDnn[tag]*bkghists['major'+catStr].GetBinContent(ibin))**2 + (lumiSys*(bkghists['ewk'+catStr].GetBinContent(ibin)+bkghists['ttx'+catStr].GetBinContent(ibin)))**2
                         if doAllSys:
                                 for syst in systematicList:
                                         for proc in bkgProcList:
@@ -465,7 +469,9 @@ for tag in taglist:
                 if scaleFact2==0: scaleFact2=1
                 if sigScaleFact>0:
                         scaleFact1=sigScaleFact
-                        scaleFact2=sigScaleFact*4
+                        scaleFact2=sigScaleFact
+                        if isCategorized:
+                                scaleFact1 *= 0.25
                 if not scaleSignals:
                         scaleFact1=1
                         scaleFact2=1
@@ -492,7 +498,7 @@ for tag in taglist:
                 if region=='WJCR':
                         bkgProcListNew[bkgProcList.index("top")],bkgProcListNew[bkgProcList.index("ewk")]=bkgProcList[bkgProcList.index("ewk")],bkgProcList[bkgProcList.index("top")]
                 if plotABCDnn:
-                        bkgProcListNew = ["ABCDnn"] + minorProcList
+                        bkgProcListNew = minorProcList + ["ABCDnn"]
                         #print(bkgProcListNew)
                 for proc in bkgProcListNew:
                         try: 
@@ -624,13 +630,21 @@ for tag in taglist:
                 tagString = ''
                 regionString = ''
                 if isCategorized:
-                        tagString = tag
+                        if tag == 'tagTjet':
+                                tagString = 'Case 1'
+                        elif tag == 'tagWjet':
+                                tagString = 'Case 2'
+                        elif tag == 'untagTlep':
+                                tagString = 'Case 3'
+                        else:
+                                tagString = 'Case 4'
                         regionString = 'region '+region
-                        if 'V' in region:
-                                if 'untag' in tag:
-                                        regionString = 'VR: region D, full ST'
-                                else:
-                                        regionString = 'VR: region D, ST < 850 GeV'
+                        if region == 'V' or (region == 'V2' and 'untag' not in tag):
+                                regionString = 'VR'                                
+                        elif region == 'V2' and 'untag' in tag:
+                                regionString = 'VR'
+                        elif region == 'D':
+                                regionString = 'SR'
                 if tagString.endswith(', '): tagString = tagString[:-2]		
                 if not yLog:
                         chLatex.DrawLatex(0.7, 0.54, flvString)
