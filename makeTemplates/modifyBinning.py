@@ -470,36 +470,24 @@ for rfile in rfiles:
                 #Constructing muRF shapes
                 muRUphists = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if 'muR'+upTag in k.GetName() and chn in k.GetName()]
                 for hist in muRUphists:
-                        newMuRFNameBase = 'muRFcorrdNew'
-                        if 'qcd__' in hist: newMuRFName = newMuRFNameBase+'QCD'
-                        if 'ewk__' in hist: newMuRFName = newMuRFNameBase+'EWK'
-                        if 'wjets__' in hist: newMuRFName = newMuRFNameBase+'WJT'
-                        if 'ttbar__' in hist: newMuRFName = newMuRFNameBase+'TT'
-                        if 'singletop__' in hist: newMuRFName = newMuRFNameBase+'ST'
-                        if 'ttx__' in hist: newMuRFName = newMuRFNameBase+'TTX'
-                        if '__'+sigName in hist: newMuRFName = newMuRFNameBase+'SIG'
-                        muRFcorrdNewUpHist = rebinnedHists[hist].Clone(hist.replace('muR'+upTag,newMuRFName+upTag))
-                        muRFcorrdNewDnHist = rebinnedHists[hist].Clone(hist.replace('muR'+upTag,newMuRFName+downTag))
-                        histList = [
-                                rebinnedHists[hist[:hist.find('__mu')]], #nominal
-                                rebinnedHists[hist],
-                                rebinnedHists[hist.replace('muR'+upTag,'muR'+downTag)],
-                                rebinnedHists[hist.replace('muR'+upTag,'muF'+upTag)],
-                                rebinnedHists[hist.replace('muR'+upTag,'muF'+downTag)],
-                                rebinnedHists[hist.replace('muR'+upTag,'muRFcorrd'+upTag)],
-                                rebinnedHists[hist.replace('muR'+upTag,'muRFcorrd'+downTag)]
-                        ]
-                        if histList[0].Integral() < 1e-6: 
+                        newMuRNameBase = 'muR'
+                        if 'qcd__' in hist: newMuRName = newMuRNameBase+'QCD'
+                        if 'ewk__' in hist: newMuRName = newMuRNameBase+'EWK'
+                        if 'wjets__' in hist: newMuRName = newMuRNameBase+'WJT'
+                        if 'ttbar__' in hist: newMuRName = newMuRNameBase+'TT'
+                        if 'singletop__' in hist: newMuRName = newMuRNameBase+'ST'
+                        if 'ttx__' in hist: newMuRName = newMuRNameBase+'TTX'
+                        if '__'+sigName in hist: newMuRName = newMuRNameBase+'SIG'
+                        newMuFName = newMuRName.replace('muR','muF')
+                        
+                        muRUpHist = rebinnedHists[hist].Clone(hist.replace('muR'+upTag,newMuRName+upTag))
+                        muRDnHist = rebinnedHists[hist.replace('muR'+upTag,'muR'+downTag)].Clone(hist.replace('muR'+upTag,newMuRName+downTag))
+                        muFUpHist = rebinnedHists[hist.replace('muR'+upTag,'muF'+upTag)].Clone(hist.replace('muR'+upTag,newMuFName+upTag))
+                        muFDnHist = rebinnedHists[hist.replace('muR'+upTag,'muF'+downTag)].Clone(hist.replace('muR'+upTag,newMuFName+downTag))
+                        renormNomHist = rebinnedHists[hist[:hist.find('__mu')]], #nominal
+                        if renormNomHist.Integral() < 1e-6: 
                                 print("muRF: Empty hist found, skipping: "+hist)
                                 continue
-                        for ibin in range(1,histList[0].GetNbinsX()+1):
-                                weightList = [histList[ind].GetBinContent(ibin) for ind in range(len(histList))]
-                                indCorrdUp = weightList.index(max(weightList))
-                                indCorrdDn = weightList.index(min(weightList))
-                                muRFcorrdNewUpHist.SetBinContent(ibin,histList[indCorrdUp].GetBinContent(ibin))
-                                muRFcorrdNewDnHist.SetBinContent(ibin,histList[indCorrdDn].GetBinContent(ibin))
-                                muRFcorrdNewUpHist.SetBinError(ibin,histList[indCorrdUp].GetBinError(ibin))
-                                muRFcorrdNewDnHist.SetBinError(ibin,histList[indCorrdDn].GetBinError(ibin))
                         if ('__'+sigName in hist and '__mu' in hist and normalizeRENORM): #normalize the renorm/fact shapes to nominal
                                 signame = hist.split('__')[1]
                                 if sigName not in signame: print("DIDNT GET SIGNAME "+signame)
@@ -507,18 +495,23 @@ for rfile in rfiles:
                                 #scalefactorDn = muSFsDn[signame]
                                 #muRFcorrdNewUpHist.Scale(scalefactorUp) #drop down .7   ### FIXME, NEED THIS FOR BPRIME
                                 #muRFcorrdNewDnHist.Scale(scalefactorDn) #raise up 1.3
-                                renormNomHist = histList[0]
-                                muRFcorrdNewUpHist.Scale(renormNomHist.Integral()/muRFcorrdNewUpHist.Integral())
-                                muRFcorrdNewDnHist.Scale(renormNomHist.Integral()/muRFcorrdNewDnHist.Integral())
+                                muRUpHist.Scale(renormNomHist.Integral()/muRUpHist.Integral())
+                                muRDnHist.Scale(renormNomHist.Integral()/muRDnHist.Integral())
+                                muFUpHist.Scale(renormNomHist.Integral()/muFUpHist.Integral())
+                                muFDnHist.Scale(renormNomHist.Integral()/muFDnHist.Integral())
                         # if ('__'+sigName not in hist and normalizeRENORM and not FullMu):
                         #         renormNomHist = histList[0]
                         #         muRFcorrdNewUpHist.Scale(renormNomHist.Integral()/muRFcorrdNewUpHist.Integral())
                         #         muRFcorrdNewDnHist.Scale(renormNomHist.Integral()/muRFcorrdNewDnHist.Integral())
-                        muRFcorrdNewUpHist.Write()
-                        muRFcorrdNewDnHist.Write()
+                        muRUpHist.Write()
+                        muRDnHist.Write()
+                        muFUpHist.Write()
+                        muFDnHist.Write()
  
-                        yieldsAll[muRFcorrdNewUpHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewUpHist.Integral()
-                        yieldsAll[muRFcorrdNewDnHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRFcorrdNewDnHist.Integral()
+                        yieldsAll[muRUpHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRUpHist.Integral()
+                        yieldsAll[muRDnHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muRDnHist.Integral()
+                        yieldsAll[muFUpHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muFUpHist.Integral()
+                        yieldsAll[muFDnHist.GetName().replace('_sig','_'+rfile.split('_')[-2])] = muFDnHist.Integral()
 
                 #Constructing PDF shapes -- FIXME LATER FOR BPRIME!
                 pdfUphists = [k.GetName() for k in tfiles[iRfile].GetListOfKeys() if 'pdf0' in k.GetName() and chn in k.GetName()]
