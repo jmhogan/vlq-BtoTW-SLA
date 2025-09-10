@@ -54,9 +54,9 @@ print('Set pfix to '+pfix)
 
 # -------------- Groups of background samples to use --------------
 
-doData = False
+doData = True
 doSigs = False
-doBkgs = True
+doBkgs = False
 
 # this is a list of group dictionaries. "wjets" has entries like "WJetsHT2002018":WJetsHT2002018, where the 2nd is the class
 bkgList = {"ewk"      : samples_electroweak,           
@@ -214,6 +214,8 @@ for cat in catList:
                 for data in samples_data.keys(): # "data" is the class 
                         print('------------ '+data+' -------------')
                         fileprefix = (samples_data[data].samplename).split('/')[1]+((samples_data[data].samplename).split('/')[2])[7]
+                        if (((samples_data[data].samplename).split('/')[2]).split('-')[1])[-2] == 'v':
+                                fileprefix += (((samples_data[data].samplename).split('/')[2]).split('-')[1])[-2:]
                         tTreeData[data]=readTreeNominal(fileprefix,samples_data[data].year,step1Dir) ## located in utils.py
 
                         ### For analyze_RDF make the switch here (and similar regions below)
