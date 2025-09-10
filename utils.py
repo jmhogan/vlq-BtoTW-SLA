@@ -52,7 +52,8 @@ def EOSlist_root_files(Dir):
     return rootlist
 
 def readTreeNominal(sample,year,step1Dir,treename = 'Events_Nominal'):
-    #RDF_SingleMuonH_2016_75.root
+    #RDF_Muon1Dv2_2023BPix_50.root
+    #RDF_MuonC_2022_0.root
     #RDF_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_2016APV_0.root
     pathstring0 = 'RDF_'+sample+'_'+year+'_0.root'
     if not EOSpathExists(step1Dir[23:]+'/',pathstring0): #and not EOSpathExists(step1Dir[23:]+'/',pathstring1): 
