@@ -55,7 +55,7 @@ def readTreeNominal(sample,year,step1Dir,treename = 'Events_Nominal'):
     #RDF_Muon1Dv2_2023BPix_50.root
     #RDF_MuonC_2022_0.root
     #RDF_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_2016APV_0.root
-    pathstring0 = 'RDF_'+sample+'_'+year+'_0.root'
+    pathstring0 = sample+'_'+year+'_0.root'
     if not EOSpathExists(step1Dir[23:]+'/',pathstring0): #and not EOSpathExists(step1Dir[23:]+'/',pathstring1): 
         print("Error: path does not exist! Aborting ... no "+pathstring0) #,"nor",pathstring1
         os._exit(1)
@@ -68,7 +68,7 @@ def readTreeNominal(sample,year,step1Dir,treename = 'Events_Nominal'):
     return tChain 
 
 def readTreeShift(sample,year,shift,step1Dir):	
-    pathstring0 = 'RDF_'+sample+'_'+year+'_0.root'
+    pathstring0 = sample+'_'+year+'_0.root'
     if not EOSpathExists(step1Dir[23:]+'/',pathstring0): #and not EOSpathExists(step1Dir[23:]+'/',pathstring1):
         print("Error: path does not exist! Aborting ... no "+pathstring0) #,"nor",pathstring1
         os._exit(1)
