@@ -1,18 +1,18 @@
 import os,sys
 from ROOT import TFile, TH1
-from samples import sample, mclist_2016APV, mclist_2016, mclist_2017, mclist_2018
+from samples import sample, mclist_2022, mclist_2022EE, mclist_2023, mclist_2023BPix
 from utils import *
 from math import sqrt
 
 ## something about samples goes here
 
-for sample in mclist_2016APV:
+for sample in mclist_2022:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BtoTW_Aug2024_fullRun2/'
-    tree = readTreeNominal(samplename,"2016APV",step1dir,"Runs")
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    tree = readTreeNominal(samplename,"2022",step1dir,"Runs")
 
     integral = 0
     adjusted = 0
@@ -26,13 +26,13 @@ for sample in mclist_2016APV:
     #if 'Bp' in sample:
         # use the LHEScaleWeight and LHEPDFWeight to extract the SFs
 
-for sample in mclist_2016:
+for sample in mclist_2022EE:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BtoTW_Aug2024_fullRun2/'
-    tree = readTreeNominal(samplename,"2016",step1dir,"Runs")
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    tree = readTreeNominal(samplename,"2022EE",step1dir,"Runs")
 
     integral = 0
     adjusted = 0
@@ -46,13 +46,13 @@ for sample in mclist_2016:
     #if 'Bp' in sample:
         # use the LHEScaleWeight and LHEPDFWeight to extract the SFs
 
-for sample in mclist_2017:
+for sample in mclist_2023:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BtoTW_Aug2024_fullRun2/'
-    tree = readTreeNominal(samplename,"2017",step1dir,"Runs")
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    tree = readTreeNominal(samplename,"2023",step1dir,"Runs")
 
     integral = 0
     adjusted = 0
@@ -66,13 +66,13 @@ for sample in mclist_2017:
     #if 'Bp' in sample:
         # use the LHEScaleWeight and LHEPDFWeight to extract the SFs
 
-for sample in mclist_2018:
+for sample in mclist_2023BPix:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BtoTW_Aug2024_fullRun2/'
-    tree = readTreeNominal(samplename,"2018",step1dir,"Runs")
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    tree = readTreeNominal(samplename,"2023BPix",step1dir,"Runs")
 
     integral = 0
     adjusted = 0
@@ -85,4 +85,5 @@ for sample in mclist_2018:
 
     #if 'Bp' in sample:
         # use the LHEScaleWeight and LHEPDFWeight to extract the SFs
+
 
