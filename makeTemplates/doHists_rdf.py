@@ -18,15 +18,14 @@ sys.path.append(parent)
 from numpy import linspace
 
 from analyze_RDF import *
-from samples import samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal
+from samples import samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, samples_data, samples_signal, samples_ttbar
 from utils import *
 
 gROOT.SetBatch(1)
 start_time = time.time()
 
 # ------------- File location and total lumi ---------------
-step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BtoTW_Nov2024_Run3/'
-step1Dir_ABCDnn = 'root://cmseos.fnal.gov//store/user/xshen/BtoTW_Oct2024_fullRun2/'
+step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
 
 # ------------- Arguments and default values ------------
 iPlot = 'BpMass' #choose a discriminant from plotList below!
@@ -37,14 +36,9 @@ if len(sys.argv)>3: region=sys.argv[3]
 isCategorized = True
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 
-if 'ABCDnn' in iPlot:
-        from samples import samples_ttbar_abcdnn as samples_ttbar
-else:
-        from samples import samples_ttbar
-
 doABCDnn = False
-doJetRwt= 1
-doAllSys= True
+doJetRwt= 0
+doAllSys= False
 cTime=datetime.datetime.now()
 datestr='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
 timestr='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
@@ -55,15 +49,15 @@ print('Set pfix to '+pfix)
 # -------------- Groups of background samples to use --------------
 
 doData = True
-doSigs = False
-doBkgs = False
+doSigs = True
+doBkgs = True
 
 # this is a list of group dictionaries. "wjets" has entries like "WJetsHT2002018":WJetsHT2002018, where the 2nd is the class
 bkgList = {"ewk"      : samples_electroweak,           
            "ttx"      : samples_ttbarx,
-           #"qcd"      : samples_qcd,
+           "qcd"      : samples_qcd,
            #"wjets"    : samples_wjets,
-           #"ttbar"    : samples_ttbar,
+           "ttbar"    : samples_ttbar,
            #"singletop": samples_singletop,
 }
 
@@ -184,7 +178,7 @@ print( "         LJMET Variable: "+plotList[iPlot][0])
 print( "         X-AXIS TITLE  : "+plotList[iPlot][2])
 print( "         BINNING USED  : "+str(plotList[iPlot][1]))
 
-shapesFiles = ['JEC','JER']
+shapesFiles = []#'JEC','JER']
 tTreeData = {}
 tTreeSig = {}
 tTreeBkg = {}

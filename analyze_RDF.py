@@ -52,21 +52,13 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         doMuRF = True
         #if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
         #        doMuRF = False
-
-        if 'ABCDnn' in iPlot and not doABCDnn:
-                if 'FatJet' in iPlot: # TEMP
-                        plotTreeName  = "gcOSFatJet_pNetJ[0]"
-                        plotTreeNameTemp = "gcOSFatJet_pNetJ[0]"
-                else:
-                        plotTreeName  = plotTreeName.split('_ABCDnn')[0]
-        #print(sample.prefix, plotTreeName)
         
-        if 'Single' not in sample.prefix: 
+        if ('Single' not in sample.prefix and 'MuonEG' not in sample.prefix and 'Tau' not in samples.prefix): 
                 if doABCDnn:
                         weightStr += f' * {factorABCDnn[tag]}'
                 else:
 			# '+jetSFstr+' * '+topCorr+' * leptonIDSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * puJetSF[0] * 
-                        weightStr += ' * PileupWeights[0] * leptonRecoSF[0] * btagWeights[17] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
+                        weightStr += ' * PileupWeights[0] * elrecoSF[0] * elidSF[0] * muonidSF[0] * muonisoSF[0] * tauidVSeSF[0] * tauidVSmuSF[0] * tauidVSjetSF[0] * btagWeights[0] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
                         
                         #if isCategorized:
                         #        if tag=="tagTjet" or tag=="allWlep":
@@ -170,14 +162,14 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         elif isEM=='M': 
                 isEMCut+='isMu==1'
         elif isEM=='L': 
-                isEMCut+='(isMu==1 || isEl==1)'
+                isEMCut+=''#(isMu==1 || isEl==1)'
         if 'SingleMuon' in sample.prefix: # don't let data double count
                 isEMCut+=' && isMu==1'
         elif 'SingleElec' in sample.prefix:
                 isEMCut+=' && isEl==1'
 
 	# Define cuts by region. Use region "all" for all selected events
-        cut  = ' && W_MT < 200' #TEMP. TODO: Comment out once it got implemented in the analyer
+        cut  = ''# && W_MT < 200' #TEMP. TODO: Comment out once it got implemented in the analyer
                 
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
@@ -311,7 +303,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')             
 
-        if 'Single' not in process and doAllSys:
+        if ('Single' not in process and 'MuonEG' not in process and 'Tau' not in process) and doAllSys:
                 if doABCDnn:
                         shift = yieldUncertABCDnn[tag]
                         sel = df.Define("weightfactorUp", f"weight * (1 + {shift})")\
@@ -456,7 +448,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
         # WRITE all the histograms (hopefully no event loop gets triggered until here?)
         hist.Write()
-        if 'Single' not in process and doAllSys:
+        if ('Single' not in process and 'MuonEG' not in process and 'Tau' not in process) and doAllSys:
                 if doABCDnn:
                         hist_PEAKUP.Write()
                         hist_PEAKDN.Write()
