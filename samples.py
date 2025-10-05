@@ -5,7 +5,7 @@ import os
 # Sample Dictionaries: samples, samples_2016APVUL, samples_2016UL, samples_2017UL, samples_2018UL, samples_test, samples_QCD
 
 targetlumi = {'2022':5010.4+2970.0, '2022EE':5807.0+17781.9+3082.8, '2023':17794., '2023BPix':9451.}
-lumiStr = '138fbfb' #str(targetlumi/1000).replace('.','p') # 1/fb
+lumiStr = '62fb' #str(targetlumi/1000).replace('.','p') # 1/fb
 systListShort = ['Pileup', 'elRecoSF', 'muRecoSF', 'muRFcorrd', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] #'elIdSF', 'elIsoSF', 'TrigEffEl', 'muIdSF', 'muIsoSF', 'TrigEffMu', , 'jsf', 'toppt', 'PuJetSF'
 systListFull = ['Pileup', 'elRecoSF', 'muRecoSF', 'muRFcorrd', 'muR', 'muF', 'btagHFCO', 'btagHFUC', 'btagLFCO', 'btagLFUC', 'jer', 'jec'] #'elIdSF', 'elIsoSF', 'TrigEffEl', 'muIdSF', 'muIsoSF', 'TrigEffMu', , 'pNetTtag', 'pNetWtag', 'PuJetSF', 'jsf', 'toppt'
 uncorrList_sf = ['jer', 'jec', 'btagHFUC', 'btagLFUC'] #'TrigEffEl', 'TrigEffMu',
@@ -20,24 +20,6 @@ for syst in uncorrList_sf:
         systListFullPlots.append(syst+year)
 
 
-systListABCDnn = ['peak', 'tail', 'closure', 'factor']
-
-factorABCDnn = {'allWlep':'0.034045477',
-                'allTlep':'0.08270128', 
-                'tagTjet':'0.024456696', # '0.027892638',
-                'tagWjet':'0.025098598', # '0.028440602',
-                'untagWlep':'0.097960876', # '0.047838701',
-                'untagTlep':'0.035287068', # '0.135501722'
-}
-
-yieldUncertABCDnn = {'allWlep':0.056370156, #'0.020091821',
-                     'allTlep':0.010990787, #'0.077063257',
-                     'tagTjet':0.040886962, #'0.078577386',
-                     'tagWjet':0.045300831, #'0.061932256',
-                     'untagWlep':0.020008949, #'0.080574995',
-                     'untagTlep':0.055798559, #'0.018414285'
-}
-
 # all with direct alpha-ratio. sqrt(sys^2+stat^2+closure^2)
 
 class sample:
@@ -51,10 +33,8 @@ class sample:
         self.xsec = xsec # in pb
         self.color = ROOT.kBlack
 
-# We will use these for plotting in this "xsec" folder, but keep them as 1 in the actual sample definitions for ROOT files
-# From Xanda, for "singlet" B prod with a b quark, for 1% width, for 50% tW
-xsec = {'800':1.1*0.1187124, '900':1.1*0.0640113, '1000':1.1*0.0362987, '1100':1.1*0.0215009, '1200':1.1*0.0131348, '1300':1.1*0.0082629, '1400':1.1*0.0053213, '1500':1.1*0.0035078, '1600':1.1*0.0022829, '1700':1.1*0.0014947, '1800':1.1*0.0009898, '1900':1.1*0.0006519, '2000':1.1*0.0004499}
-# extrapolating from ln(xsec) fit I get 0.000238 for 2200
+# fill in these pair production xsec later if desired
+xsec = {}
 
 Bprime_M1000_2022 = sample("Bprime_M1000_2022", 1.0, "2022", "Bprime_M1000_2022NanoList.txt", "/BprimeBtoTW_M-1000_NWALO_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
 Bprime_M1000_2022EE = sample("Bprime_M1000_2022EE", 1.0, "2022EE", "Bprime_M1000_2022EENanoList.txt", "/BprimeBtoTW_M-1000_NWALO_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
