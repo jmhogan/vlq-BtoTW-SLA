@@ -126,22 +126,22 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         # weightBtagCFE1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[14]')
                         # weightBtagCFE2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[15]')
                         # weightBtagCFE2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[16]')
-                        weightelidSFUpStr = weightStr.replace('elidSF[0]','elidSF[1]')
-                        weightelidSFDnStr = weightStr.replace('elidSF[0]','elidSF[2]')
-                        weightelrecoSFUpStr = weightStr.replace('elrecoSF[0]','elrecoSF[1]')
-                        weightelrecoSFDnStr = weightStr.replace('elrecoSF[0]','elrecoSF[2]')
+                        weightelIDSFUpStr = weightStr.replace('elidSF[0]','elidSF[1]')
+                        weightelIDSFDnStr = weightStr.replace('elidSF[0]','elidSF[2]')
+                        weightelRecoSFUpStr = weightStr.replace('elrecoSF[0]','elrecoSF[1]')
+                        weightelRecoSFDnStr = weightStr.replace('elrecoSF[0]','elrecoSF[2]')
                         
-                        weightmuonidSFUpStr = weightStr.replace('muonidSF[0]','muonidSF[1]')
-                        weightmuonidSFDnStr = weightStr.replace('muonidSF[0]','muonidSF[2]')
-                        weightmuonisoSFUpStr = weightStr.replace('muonisoSF[0]','muonisoSF[1]')
-                        weightmuonisoSFDnStr = weightStr.replace('muonisoSF[0]','muonisoSF[2]')
+                        weightmuIDSFUpStr = weightStr.replace('muonidSF[0]','muonidSF[1]')
+                        weightmuIDSFDnStr = weightStr.replace('muonidSF[0]','muonidSF[2]')
+                        weightmuIsoSFUpStr = weightStr.replace('muonisoSF[0]','muonisoSF[1]')
+                        weightmuIsoSFDnStr = weightStr.replace('muonisoSF[0]','muonisoSF[2]')
                         
-                        weighttauidVSeSFUpStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[1]')
-                        weighttauidVSeSFDnStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[2]')
-                        weighttauidVSmuSFUpStr = weightStr.replace('tauidVSmuSF[0]','tauidVSmuSF[1]')
-                        weighttauidVSmuSFDnStr = weightStr.replace('tauidVSmuSF[0]','tauidVSmuSF[2]')
-                        weighttauidVSjetSFUpStr = weightStr.replace('tauidVSjetSF[0]','tauidVSjetSF[1]')
-                        weighttauidVSjetSFDnStr = weightStr.replace('tauidVSjetSF[0]','tauidVSjetSF[2]')
+                        weighttauIDVSeSFUpStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[1]')
+                        weighttauIDVSeSFDnStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[2]')
+                        weighttauIDVSmuSFUpStr = weightStr.replace('tauidVSmuSF[0]','tauidVSmuSF[1]')
+                        weighttauIDVSmuSFDnStr = weightStr.replace('tauidVSmuSF[0]','tauidVSmuSF[2]')
+                        weighttauIDVSjetSFUpStr = weightStr.replace('tauidVSjetSF[0]','tauidVSjetSF[1]')
+                        weighttauIDVSjetSFDnStr = weightStr.replace('tauidVSjetSF[0]','tauidVSjetSF[2]')
 
                         if doMuRF:
                                 weightmuRFcorrdUpStr = 'LHEScaleWeight[8] * '+weightStr
@@ -355,43 +355,22 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 .Define('weightbtagLFCODn' ,weightBtagLFCODnStr)\
                                 .Define('weightbtagLFUCUp' ,weightBtagLFUCUpStr)\
                                 .Define('weightbtagLFUCDn' ,weightBtagLFUCDnStr)\
-                                .Define('weightelidSFUpStr' ,weightelidSFUpStr)\
-                                .Define('weightelidSFDnStr' ,weightelidSFDnStr)\
-                                .Define('weightelrecoSFUpStr' ,weightelrecoSFUpStr)\
-                                .Define('weightelrecoSFDnStr' ,weightelrecoSFDnStr)\
-                                .Define('weightmuonidSFUpStr' ,weightmuonidSFUpStr)\
-                                .Define('weightmuonidSFDnStr' ,weightmuonidSFDnStr)\
-                                .Define('weightmuonisoSFUpStr' ,weightmuonisoSFUpStr)\
-                                .Define('weightmuonisoSFDnStr' ,weightmuonisoSFDnStr)\
-                                .Define('weighttauidVSeSFUpStr' ,weighttauidVSeSFUpStr)\
-                                .Define('weighttauidVSeSFDnStr' ,weighttauidVSeSFDnStr)\
-                                .Define('weighttauidVSmuSFUpStr' ,weighttauidVSmuSFUpStr)\
-                                .Define('weighttauidVSmuSFDnStr' ,weighttauidVSmuSFDnStr)\
-                                .Define('weighttauidVSjetSFUpStr' ,weighttauidVSjetSFUpStr)\
-                                .Define('weighttauidVSjetSFDnStr' ,weighttauidVSjetSFDnStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
-                                #.Define('weightelIdSFDn'   ,weightelIdSFDnStr)\
-                                #.Define('weightelIsoSFUp'  ,weightelIsoSFUpStr)\
-                                #.Define('weightelIsoSFDn'  ,weightelIsoSFDnStr)\
+                                .Define('weightelIdSFUp' ,weightelIdSFUpStr)\
+                                .Define('weightelIdSFDn' ,weightelIdSFDnStr)\
+                                .Define('weightelRecoSFUp' ,weightelRecoSFUpStr)\
+                                .Define('weightelRecoSFDn' ,weightelRecoSFDnStr)\
+                                .Define('weightmuIdSFUp' ,weightmuIdSFUpStr)\
+                                .Define('weightmuIdSFDn' ,weightmuIdSFDnStr)\
+                                .Define('weightmuIsoSFUp' ,weightmuIsoSFUpStr)\
+                                .Define('weightmuIsoSFDn' ,weightmuIsoSFDnStr)\
+                                .Define('weighttauIdVSeSFUp' ,weighttauIdVSeSFUpStr)\
+                                .Define('weighttauIdVSeSFDn' ,weighttauIdVSeSFDnStr)\
+                                .Define('weighttauIdVSmuSFUp' ,weighttauIdVSmuSFUpStr)\
+                                .Define('weighttauIdVSmuSFDn' ,weighttauIdVSmuSFDnStr)\
+                                .Define('weighttauIdVSjetSFUp' ,weighttauIdVSjetSFUpStr)\
+                                .Define('weighttauIdVSjetSFDn' ,weighttauIdVSjetSFDnStr)\
                                 #.Define('weightTrigEffElUp',weightTrigEffElUpStr)\
                                 #.Define('weightTrigEffElDn',weightTrigEffElDnStr)\
-                                #.Define('weightmuIdSFUp'   ,weightmuIdSFUpStr)\
-                                #.Define('weightmuIdSFDn'   ,weightmuIdSFDnStr)\
-                                #.Define('weightmuIsoSFUp'  ,weightmuIsoSFUpStr)\
-                                #.Define('weightmuIsoSFDn'  ,weightmuIsoSFDnStr)\
                                 #.Define('weightTrigEffMuUp',weightTrigEffMuUpStr)\
                                 #.Define('weightTrigEffMuDn',weightTrigEffMuDnStr)\
                                 #.Define('weightPuJetSFUp'  ,weightPuJetSFUpStr)\
@@ -403,18 +382,25 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         
                         hist_elRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp' )
                         hist_elRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn' )
-                        #hist_elIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'   )
-                        #hist_elIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDn'   )
-                        #hist_elIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFUp'  )
-                        #hist_elIsoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIsoSFDn'  )
+                        hist_elIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'   )
+                        hist_elIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDn'   )
+                        hist_elRecoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp'  )
+                        hist_elRecoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn'  )
                         #hist_TrigEffElUp = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElUp')
                         #hist_TrigEffElDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElDn')
                         hist_muRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFUp' )
                         hist_muRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFDn' )
-                        #hist_muIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFUp'   )
-                        #hist_muIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFDn'   )
-                        #hist_muIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFUp'  )
-                        #hist_muIsoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFDn'  )
+                        hist_muIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFUp'   )
+                        hist_muIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFDn'   )
+                        hist_muIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFUp'  )
+                        hist_muIsoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFDn'  )
+                        
+                        hist_tauIdVSeSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tauIdVSeSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttauIdVSeSFUp'  )
+                        hist_tauIdVSeSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tauIdVSeSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttauIdVSeSFDn'  )
+                        hist_tauIdVSmuSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tauIdVSmuSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttauIdVSmuSFUp'  )
+                        hist_tauIdVSmuSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tauIdVSmuSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttauIdVSmuSFDn'  )
+                        hist_tauIdVSjetSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tauIdVSjetSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttauIdVSjetSFUp'  )
+                        hist_tauIdVSjetSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_tauIdVSjetSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weighttauIdVSjetSFDn'  )
                         #hist_TrigEffMuUp = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuUp')
                         #hist_TrigEffMuDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffMuDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffMuDn')
                         hist_PileupUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_PileupUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightPileupUp'   )
@@ -505,18 +491,24 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 else:
                         hist_elRecoSFUp.Write()
                         hist_elRecoSFDn.Write()
-                        #hist_elIdSFUp.Write()
-                        #hist_elIdSFDn.Write()
+                        hist_elIdSFUp.Write()
+                        hist_elIdSFDn.Write()
                         #hist_elIsoSFUp.Write()
                         #hist_elIsoSFDn.Write()
                         #hist_TrigEffElUp.Write()
                         #hist_TrigEffElDn.Write()
                         hist_muRecoSFUp.Write()
                         hist_muRecoSFDn.Write()
-                        #hist_muIdSFUp.Write()
-                        #hist_muIdSFDn.Write()
-                        #hist_muIsoSFUp.Write()
-                        #hist_muIsoSFDn.Write()
+                        hist_muIdSFUp.Write()
+                        hist_muIdSFDn.Write()
+                        hist_muIsoSFUp.Write()
+                        hist_muIsoSFDn.Write()
+                        hist_tauIdVSeSFUp.Write()
+                        hist_tauIdVSeSFDn.Write()
+                        hist_tauIdVSmuSFUp.Write()
+                        hist_tauIdVSmuSFDn.Write()
+                        hist_tauIdVSjetSFUp.Write()
+                        hist_tauIdVSjetSFDn.Write()
                         #hist_TrigEffMuUp.Write()
                         #hist_TrigEffMuDn.Write()
                         hist_PileupUp.Write()
