@@ -126,6 +126,23 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                         # weightBtagCFE1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[14]')
                         # weightBtagCFE2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[15]')
                         # weightBtagCFE2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[16]')
+                        weightelidSFUpStr = weightStr.replace('elidSF[0]','elidSF[1]')
+                        weightelidSFDnStr = weightStr.replace('elidSF[0]','elidSF[2]')
+                        weightelrecoSFUpStr = weightStr.replace('elrecoSF[0]','elrecoSF[1]')
+                        weightelrecoSFDnStr = weightStr.replace('elrecoSF[0]','elrecoSF[2]')
+                        
+                        weightmuonidSFUpStr = weightStr.replace('muonidSF[0]','muonidSF[1]')
+                        weightmuonidSFDnStr = weightStr.replace('muonidSF[0]','muonidSF[2]')
+                        weightmuonisoSFUpStr = weightStr.replace('muonisoSF[0]','muonisoSF[1]')
+                        weightmuonisoSFDnStr = weightStr.replace('muonisoSF[0]','muonisoSF[2]')
+                        
+                        weighttauidVSeSFUpStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[1]')
+                        weighttauidVSeSFDnStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[2]')
+                        weighttauidVSmuSFUpStr = weightStr.replace('tauidVSmuSF[0]','tauidVSmuSF[1]')
+                        weighttauidVSmuSFDnStr = weightStr.replace('tauidVSmuSF[0]','tauidVSmuSF[2]')
+                        weighttauidVSjetSFUpStr = weightStr.replace('tauidVSjetSF[0]','tauidVSjetSF[1]')
+                        weighttauidVSjetSFDnStr = weightStr.replace('tauidVSjetSF[0]','tauidVSjetSF[2]')
+
                         if doMuRF:
                                 weightmuRFcorrdUpStr = 'LHEScaleWeight[8] * '+weightStr
                                 weightmuRFcorrdDnStr = 'LHEScaleWeight[0] * '+weightStr
@@ -337,7 +354,34 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                                 .Define('weightbtagLFCOUp' ,weightBtagLFCOUpStr)\
                                 .Define('weightbtagLFCODn' ,weightBtagLFCODnStr)\
                                 .Define('weightbtagLFUCUp' ,weightBtagLFUCUpStr)\
-                                .Define('weightbtagLFUCDn' ,weightBtagLFUCDnStr)
+                                .Define('weightbtagLFUCDn' ,weightBtagLFUCDnStr)\
+                                .Define('weightelidSFUpStr' ,weightelidSFUpStr)\
+                                .Define('weightelidSFDnStr' ,weightelidSFDnStr)\
+                                .Define('weightelrecoSFUpStr' ,weightelrecoSFUpStr)\
+                                .Define('weightelrecoSFDnStr' ,weightelrecoSFDnStr)\
+                                .Define('weightmuonidSFUpStr' ,weightmuonidSFUpStr)\
+                                .Define('weightmuonidSFDnStr' ,weightmuonidSFDnStr)\
+                                .Define('weightmuonisoSFUpStr' ,weightmuonisoSFUpStr)\
+                                .Define('weightmuonisoSFDnStr' ,weightmuonisoSFDnStr)\
+                                .Define('weighttauidVSeSFUpStr' ,weighttauidVSeSFUpStr)\
+                                .Define('weighttauidVSeSFDnStr' ,weighttauidVSeSFDnStr)\
+                                .Define('weighttauidVSmuSFUpStr' ,weighttauidVSmuSFUpStr)\
+                                .Define('weighttauidVSmuSFDnStr' ,weighttauidVSmuSFDnStr)\
+                                .Define('weighttauidVSjetSFUpStr' ,weighttauidVSjetSFUpStr)\
+                                .Define('weighttauidVSjetSFDnStr' ,weighttauidVSjetSFDnStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
+                                #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
                                 #.Define('weightelIdSFUp'   ,weightelIdSFUpStr)\
                                 #.Define('weightelIdSFDn'   ,weightelIdSFDnStr)\
                                 #.Define('weightelIsoSFUp'  ,weightelIsoSFUpStr)\
