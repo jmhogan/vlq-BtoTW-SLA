@@ -56,7 +56,7 @@ def readTreeNominal(sample,year,step1Dir,treename = 'Events_Nominal'):
     #RDF_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_2016APV_0.root
     pathstring0 = sample+'_'+year+'_0.root'
     if not EOSpathExists(step1Dir[23:]+'/',pathstring0): #and not EOSpathExists(step1Dir[23:]+'/',pathstring1): 
-        print("Error: path does not exist! Aborting ... no "+pathstring0) #,"nor",pathstring1
+        print("Error: path does not exist! Aborting ... no "+step1Dir[23:]+'/'+pathstring0) #,"nor",pathstring1
         os._exit(1)
     rootfiles = EOSlist_root_files(step1Dir[23:])	
         

@@ -5,7 +5,7 @@ import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F, TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from samples import targetlumi, lumiStr, systListShort, systListFull, systListABCDnn, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, uncorrList_sf, yearList
+from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, uncorrList_sf, yearList
 from utils import *
 
 gROOT.SetBatch(1)
@@ -14,15 +14,15 @@ start_time = time.time()
 if len(sys.argv)>1:
 	iPlot = str(sys.argv[1])
 else:   
-        iPlot = 'BpMass'
+        iPlot = 'BpMassAve'
 if len(sys.argv)>2:
         region = str(sys.argv[2])
 else:
-        region='D' # BAX, DCY, individuals, or all
+        region='all' # BAX, DCY, individuals, or all
 if len(sys.argv)>3:
         isCategorized = bool(eval(sys.argv[3]))
 else:
-        isCategorized=True
+        isCategorized=False
 
 if isCategorized:
         pfix='templates'+region
@@ -31,7 +31,7 @@ else:
 if len(sys.argv)>4:
         pfix+=str(sys.argv[4])
 else:
-        pfix+='_Apr2024SysAll'
+        pfix+='_Oct2025_NoSys'
 outDir=f'{os.getcwd()}/{pfix}/'
 
 print('Grouping hists for iPlot',iPlot,', region',region,', isCategorized',isCategorized,', and folder',pfix)
@@ -43,20 +43,16 @@ print('Grouping hists for iPlot',iPlot,', region',region,', isCategorized',isCat
 removeThreshold = 0.0005 # TODO: add if necessary
 
 scaleSignalXsecTo1pb = False # Set to True if analyze.py ever uses a non-1 cross section
-doAllSys = True
+doAllSys = False
 doPDF = False
 if isCategorized: doPDF=False # FIXME later
 skipQCD300 = False # we have enough number of events per bin in control plots for BpM, so it's okay to include it. actually provides better data/MC agreement
 
-if 'ABCDnn' in iPlot:
-        doABCDnn = True
-        from samples import samples_ttbar_abcdnn as samples_ttbar
-else:
-        doABCDnn = False
-        from samples import samples_ttbar
+doABCDnn = False
+from samples import samples_ttbar
 
-bkgProcs = {'ewk':samples_electroweak,'wjets':samples_wjets,'ttbar':samples_ttbar,'singletop':samples_singletop,'ttx':samples_ttbarx,'qcd':samples_qcd}
-massList = [1000,1200,1300,1400,1500,1600,1700,1800,2000,2200] #800
+bkgProcs = {'ewk':samples_electroweak,'ttbar':samples_ttbar,'ttx':samples_ttbarx}
+massList = [400,700,1000,1300,1600]
 sigList = ['BpM'+str(mass) for mass in massList]
 
 isEMlist = ['L'] #['E','M'], 'L' #
@@ -73,7 +69,7 @@ catList = ['is'+item[0]+'_'+item[1] for item in list(itertools.product(isEMlist,
 lumiSys = 0.018 #lumi uncertainty
 
 groupHists = True # TEMP: turn this on to group histograms
-getYields = True # TEMP: turn this on to get yield tables
+getYields = False # TEMP: turn this on to get yield tables
 if len(yearList) == 1:
         getYields = False
 
@@ -97,7 +93,7 @@ if groupHists:
                 outHistFile = TFile.Open(f'{outDir}templates_{iPlot}_{lumiStr}.root', "RECREATE")
         for cat in catList:
                 print("PROGRESS: "+cat)
-                if region=="all":
+                if region=="all" or isCategorized == False:
                         histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
                 else:
                         histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
@@ -108,6 +104,7 @@ if groupHists:
                         if samples_data[dat].year not in yearList:
                                 continue
                         if isFirstHist:
+                                #print(histoPrefix+'_'+samples_data[dat].prefix)
                                 hists = dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix).Clone(f'{histoPrefix}__data_obs')
                                 isFirstHist = False
                         else:
@@ -197,44 +194,47 @@ if groupHists:
 
                         # add years for corr uncertainties
                         nomHistAllYears = nomHists[f'{histoPrefix}__{proc}{yearList[0]}'].Clone(f'{histoPrefix}__{proc}')
-                        for syst in corrList:
-                                if 'pdf' in syst: # now even VV will have pdf hists in the list (even though fake)
-                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}'] = systHists[f'{histoPrefix}__{proc}__{syst}{yearList[0]}'].Clone(f'{histoPrefix}__{proc}__{syst}')
-                                else:
-                                        try:
-                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}{yearList[0]}Up'].Clone(f'{histoPrefix}__{proc}__{syst}Up')
-                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}{yearList[0]}Down'].Clone(f'{histoPrefix}__{proc}__{syst}Down')
-                                        except:
-                                                if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
-                                                        pass
-                                                else:
-                                                        print('could not process '+syst+' for '+bkg)
+                        if doAllSys:
+                                for syst in corrList:
+                                        if 'pdf' in syst: # now even VV will have pdf hists in the list (even though fake)
+                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}'] = systHists[f'{histoPrefix}__{proc}__{syst}{yearList[0]}'].Clone(f'{histoPrefix}__{proc}__{syst}')
+                                        else:
+                                                try:
+                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}{yearList[0]}Up'].Clone(f'{histoPrefix}__{proc}__{syst}Up')
+                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}{yearList[0]}Down'].Clone(f'{histoPrefix}__{proc}__{syst}Down')
+                                                except:
+                                                        if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
+                                                                pass
+                                                        else:
+                                                                print('could not process '+syst+' for '+bkg)
                         
                         for year in yearList:
                                 if year!=yearList[0]:
                                         nomHistAllYears.Add(nomHists[f'{histoPrefix}__{proc}{year}'])
-                                        for syst in corrList:
-                                                if 'pdf' in syst:
-                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}'])
-                                                else:
-                                                        try:
-                                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'])
-                                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'])
-                                                        except:
-                                                                if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
-                                                                        pass
-                                                                else:
-                                                                        print('could not process '+syst+' for '+bkg)
+                                        if doAllSys:
+                                                for syst in corrList:
+                                                        if 'pdf' in syst:
+                                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}'])
+                                                        else:
+                                                                try:
+                                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}Up'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Up'])
+                                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}Down'].Add(systHists[f'{histoPrefix}__{proc}__{syst}{year}Down'])
+                                                                except:
+                                                                        if ('pNet' in syst and ('untag' in cat or ('Wtag' in syst and 'Tjet' in cat) or ('Ttag' in syst and 'Wjet' in cat))):
+                                                                                pass
+                                                                        else:
+                                                                                print('could not process '+syst+' for '+bkg)
 
                         # uncorr years
-                        for syst in uncorrList:
-                                for shiftyear in yearList:
-                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Clone()
-                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Clone()
-                                        for nomyear in yearList:
-                                                if nomyear!=shiftyear:
-                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
-                                                        systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
+                        if doAllSys:
+                                for syst in uncorrList:
+                                        for shiftyear in yearList:
+                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Clone()
+                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'] = systHists[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Clone()
+                                                for nomyear in yearList:
+                                                        if nomyear!=shiftyear:
+                                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Up'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
+                                                                systHistsWrite[f'{histoPrefix}__{proc}__{syst}{shiftyear}Down'].Add(nomHists[f'{histoPrefix}__{proc}{nomyear}'])
 
                         outHistFile.cd()
                         nomHistAllYears.Write()
@@ -281,14 +281,15 @@ if groupHists:
                                                                         print('could not process '+syst+' for '+bkg)
 
                         # make hists for uncorrleated systs
-                        for syst in uncorrList_sf:
-                                for shiftyear in yearList:
-                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_Bprime_M{mass}_{shiftyear}').Clone(f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up')
-                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_Bprime_M{mass}_{shiftyear}').Clone(f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down')
-                                        for year in yearList:
-                                                if year!=shiftyear:
-                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up'].Add(sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_{year}'))
-                                                        systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down'].Add(sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_{year}'))
+                        if doAllSys:
+                                for syst in uncorrList_sf:
+                                        for shiftyear in yearList:
+                                                systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up'] = sigHistFile.Get(f'{histoPrefix}_{syst}Up_Bprime_M{mass}_{shiftyear}').Clone(f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up')
+                                                systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down'] = sigHistFile.Get(f'{histoPrefix}_{syst}Dn_Bprime_M{mass}_{shiftyear}').Clone(f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down')
+                                                for year in yearList:
+                                                        if year!=shiftyear:
+                                                                systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Up'].Add(sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_{year}'))
+                                                                systHists[f'{histoPrefix}__BpM{mass}__{syst}{shiftyear}Down'].Add(sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_{year}'))
 
                         outHistFile.cd()
                         nomHistsAllYears.Write()

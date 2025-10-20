@@ -6,7 +6,7 @@ import os,sys,time,math
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
 from ROOT import *
-from samples import lumiStr, systListShortPlots, systListFullPlots,  systListABCDnn, yieldUncertABCDnn, xsec
+from samples import lumiStr, systListShortPlots, systListFullPlots, xsec
 from utils import *
 
 gROOT.SetBatch(1)
@@ -15,11 +15,11 @@ start_time = time.time()
 lumi=61.9 #for plots #56.1 #
 lumiInTemplates= lumiStr
 
-iPlot='HT'
+iPlot='BpMassAve'
 if len(sys.argv)>1: iPlot=str(sys.argv[1])
-region='lowMT2pb'
+region='all'
 if len(sys.argv)>2: region=str(sys.argv[2])
-isCategorized=True
+isCategorized=False
 if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
 if isCategorized:
         pfix=f'templates{region}'
@@ -28,7 +28,7 @@ else:
 if len(sys.argv)>4:
         pfix+=str(sys.argv[4])
 else:
-        pfix+='_Apr2024SysAll'
+        pfix+='_Oct2025_NoSys'
         #pfix+='_Apr2024SysAll_validation' # TEMP. validation only
 templateDir = f'{os.getcwd()}/{pfix}/'
 
@@ -46,15 +46,15 @@ saveKey = '' # tag for plot names
 
 datalabel = 'data_obs'
 shiftlist = ['Up','Down'] # change to Down for future
-sig1='BpM1000' #  choose the 1st signal to plot
-sig1leg='B (1.0 TeV)'
-sig2='BpM1800' #  choose the 2nd signal to plot
-sig2leg='B (1.8 TeV)'
+sig1='BpM700' #  choose the 1st signal to plot
+sig1leg='B#bar{B} (0.7 TeV, 1 pb)'
+sig2='BpM1300' #  choose the 2nd signal to plot
+sig2leg='B#bar{B} (1.3 TeV, 1 pb)'
 
 
 scaleSignals = True
 #if not isCategorized: scaleSignals = True
-sigScaleFact = 25
+sigScaleFact = 0.1
 print('Scaling signals?',scaleSignals)
 print('Scale factor = ',sigScaleFact)
 tempsig='templates_'+iPlot+'_'+lumiInTemplates+''+isRebinned+'.root'#+'_Data18.root'
@@ -70,11 +70,11 @@ if len(isRebinned)>1 and 'ABCDnn' in iPlot:
         ABCDnnProcList = ['major']
 else:
         if 'ABCDnn' not in iPlot:
-                bkgProcList = ['qcd',
+                bkgProcList = [#'qcd',
                                'ttx',
                                'ewk',
-                               'wjets',                       
-                               'singletop',
+                               #'wjets',                       
+                               #'singletop',
                                'ttbar'
                 ]
                 ABCDnnProcList = ['major']#'qcd','wjets','singletop','ttbar']
@@ -92,7 +92,7 @@ if plotABCDnn:
 else:
         bkgHistColors = {'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'ewk':kMagenta-6,'singletop':kGreen-6,'ttx':kAzure+2}
 
-doAllSys = True
+doAllSys = False
 
 doNormByBinWidth=False
 if len(isRebinned)>0 and 'stat1p1' not in isRebinned and 'mvagof' not in isRebinned: doNormByBinWidth = True
@@ -234,7 +234,7 @@ def formatLowerHist(histogram):
         elif yLog and doNormByBinWidth:
                 histogram.GetYaxis().SetRangeUser(0.1,1.9)
         else: 
-                histogram.GetYaxis().SetRangeUser(0.1,1.9)
+                histogram.GetYaxis().SetRangeUser(0.1,3.9)
         histogram.GetYaxis().CenterTitle()
         if not plotLowSide:
                 lowside =  400 #TEMP
@@ -571,7 +571,9 @@ for tag in taglist:
                 hData.SetMinimum(0.015)
                 hData.SetTitle("")
                 # this is super important now!! gaeData has badly defined (negative) maximum
-                gaeData.SetMaximum(1.2*max(hData.GetMaximum(),bkgHT.GetMaximum()))
+                gaeData.SetMaximum(1.1*max(hData.GetMaximum(),bkgHT.GetMaximum()))
+                if 'Charge' in iPlot or iPlot == 'Nleps' or iPlot == 'lepID':
+                        gaeData.SetMaximum(1.5*max(hData.GetMaximum(),bkgHT.GetMaximum()))
                 gaeData.SetMinimum(0.015)
                 gaeData.SetTitle("")
                 if doNormByBinWidth:
@@ -620,7 +622,7 @@ for tag in taglist:
                 tagString = ''
                 if isEM=='E': flvString+='e+jets'
                 if isEM=='M': flvString+='#mu+jets'
-                if isEM=='L': flvString+='e/#mu+jets'
+                if isEM=='L': flvString+='4 e/#mu/#tau + 2 b-jets'
                 tagString = ''
                 regionString = ''
                 if isCategorized:
@@ -638,7 +640,7 @@ for tag in taglist:
                         chLatex.DrawLatex(0.3, 0.79, tagString)
                         chLatex.DrawLatex(0.3, 0.73, regionString)
 
-                leg = TLegend(0.5,0.62,0.95,0.89)
+                leg = TLegend(0.45,0.62,0.95,0.89)
                 leg.SetShadowColor(0)
                 leg.SetFillColor(0)
                 leg.SetFillStyle(0)
@@ -646,6 +648,7 @@ for tag in taglist:
                 leg.SetLineStyle(0)
                 leg.SetBorderSize(0) 
                 leg.SetNColumns(2)
+                
                 leg.SetTextFont(62)#42)
                 scaleFact1Str = ' x'+str(scaleFact1)
                 scaleFact2Str = ' x'+str(scaleFact2)
@@ -708,24 +711,23 @@ for tag in taglist:
                                         leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f")
 
                                 else:
+                                        leg.AddEntry(gaeData,"Data","pel")  #left
                                         try: 
-                                                leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f") #right
+                                                leg.AddEntry(bkghists['ttbar'+catStr],"t#bar{t}","f") #left                                                
                                         except: pass
                                         leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l")  #left
-                                        try: 
-                                                leg.AddEntry(bkghists['wjets'+catStr],"W+jets","f") #right
+                                        try:
+                                                leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f") #right
+                                                #leg.AddEntry(bkghists['wjets'+catStr],"W+jets","f") #right
                                         except: pass
                                         leg.AddEntry(hsig2,sig2leg+scaleFact2Str,"l") #left
                                         try: 
-                                                leg.AddEntry(bkghists['ewk'+catStr],"DY+VV","f") #right
+                                                leg.AddEntry(bkghists['ttx'+catStr],"t#bar{t}+(V,H)","f") #right
                                         except: pass
-                                        try: 
-                                                leg.AddEntry(bkghists['ttbar'+catStr],"t#bar{t}","f") #left
-                                        except: pass
-                                        try: 
-                                                leg.AddEntry(bkghists['singletop'+catStr],"single t","f") #left
-                                        except: pass
-                                        #leg.AddEntry(0, "", "") #left
+                                        leg.AddEntry(0, "", "") #left
+                                        # try: 
+                                        #         leg.AddEntry(bkghists['singletop'+catStr],"single t","f") #left
+                                        # except: pass
                                         leg.AddEntry(bkgHTgerr,"Bkg. uncert.","f") #right
                         else:
                                 leg.AddEntry(hsig1,sig1leg+scaleFact1Str,"l")  #left
@@ -758,7 +760,7 @@ for tag in taglist:
                 prelimTex.SetTextSize(0.05)
                 if blind: prelimTex.SetTextSize(0.05)
                 prelimTex.SetLineWidth(2)
-                prelimTex.DrawLatex(0.95,0.94,str(lumi)+" fb^{-1} (13 TeV)")
+                prelimTex.DrawLatex(0.95,0.94,str(lumi)+" fb^{-1} (13.6 TeV)")
 
                 prelimTex2=TLatex()
                 prelimTex2.SetNDC()
@@ -772,7 +774,7 @@ for tag in taglist:
 
                 prelimTex3=TLatex()
                 prelimTex3.SetNDC()
-                prelimTex3.SetTextAlign(12)
+                prelimTex3.SetTextAlign(11)
 
                 #prelimTex3.SetTextFont(52)
                 prelimTex3.SetTextFont(42)
@@ -783,7 +785,7 @@ for tag in taglist:
                 #         prelimTex3.DrawLatex(0.23,0.945,"Private work (CMS data & simulation)") #"Preliminary")
                 # if blind: 
                 #         prelimTex3.DrawLatex(0.26,0.945,"Private work (CMS data & simulation)") #"Preliminary")
-                prelimTex3.DrawLatex(0.12,0.94,"Private work (CMS data & simulation)") #"Preliminary")
+                prelimTex3.DrawLatex(0.16,0.94,"Private work (CMS data & simulation)") #"Preliminary")
 
 
                 if blind == False and not doRealPull:
