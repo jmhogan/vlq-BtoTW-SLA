@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
 import os,sys,math,string
-from ROOT import *
-from ROOT import Math
+from ROOT import Math, TChain
 
 def isEqual(a, b):
     try:

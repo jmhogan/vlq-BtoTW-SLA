@@ -28,12 +28,12 @@ start_time = time.time()
 step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
 
 # ------------- Arguments and default values ------------
-iPlot = 'BpMass' #choose a discriminant from plotList below!
+iPlot = 'JetPhi' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
 region = 'V'
 
 if len(sys.argv)>3: region=sys.argv[3]
-isCategorized = True
+isCategorized = False   # CHANGE TO TRUE
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 
 doABCDnn = False

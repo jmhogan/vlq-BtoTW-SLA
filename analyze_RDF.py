@@ -71,67 +71,30 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
             #weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')                        
                         
             # Reco has the main value in [0], up in [1], down in [2]. Up/Down are not additive on [0]
-            weightelRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[1])')
-            weightelRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[0]+isEl*leptonRecoSF[2])')
-            weightmuRecoSFUpStr  = weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[1]+isEl*leptonRecoSF[0])')
-            weightmuRecoSFDnStr= weightStr.replace('leptonRecoSF[0]','(isMu*leptonRecoSF[2]+isEl*leptonRecoSF[0])')
 
-            # FIXED 7/24/24 (HLT --> ID). Muon has independent [0] nominal, [1] up, [2] down. Electron has the shift stored in [1]
-            #weightelIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(leptonIDSF[0]+isEl*leptonIDSF[1])')
-            #weightelIdSFDnStr= weightStr.replace('leptonIDSF[0]','(leptonIDSF[0]-isEl*leptonIDSF[1])')
-            #weightmuIdSFUpStr  = weightStr.replace('leptonIDSF[0]','(isEl*leptonIDSF[0]+isMu*leptonIDSF[1])')
-            #weightmuIdSFDnStr= weightStr.replace('leptonIDSF[0]','(isEl*leptonIDSF[0]+isMu*leptonIDSF[2])') # plus symbol is correct
-
-            # ISOs are not from correctionlib, [0] nominal, [1] is additive shift            
-            #weightelIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isEl*leptonIsoSF[1])')
-            #weightelIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isEl*leptonIsoSF[1])')
-            #weightmuIsoSFUpStr  = weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]+isMu*leptonIsoSF[1])')
-            #eightmuIsoSFDnStr= weightStr.replace('leptonIsoSF[0]','(leptonIsoSF[0]-isMu*leptonIsoSF[1])')
-
-            # Changed 8/11/24 -- muon trigger is not correctionlib anymore, we store central and shift
-            #weightTrigEffElUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]+isEl*leptonHLTSF[1])')
-            #weightTrigEffElDnStr= weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]-isEl*leptonHLTSF[1])')
-            #weightTrigEffMuUpStr  = weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]+isMu*leptonHLTSF[1])')
-            #weightTrigEffMuDnStr= weightStr.replace('leptonHLTSF[0]','(leptonHLTSF[0]-isMu*leptonHLTSF[1])')
-                        
             weightPileupUpStr   = weightStr.replace('PileupWeights[0]','PileupWeights[1]')
             weightPileupDnStr   = weightStr.replace('PileupWeights[0]','PileupWeights[2]')
             #weightPuJetSFUpStr    = weightStr.replace('puJetSF[0]','puJetSF[1]')
             #weightPuJetSFDnStr    = weightStr.replace('puJetSF[0]','puJetSF[2]')
-            weightBtagHFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[18]')
-            weightBtagHFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[19]')
-            weightBtagHFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[20]')
-            weightBtagHFUCDnStr   = weightStr.replace('btagWeights[17]','btagWeights[21]')
-            weightBtagLFCOUpStr   = weightStr.replace('btagWeights[17]','btagWeights[22]')
-            weightBtagLFCODnStr   = weightStr.replace('btagWeights[17]','btagWeights[23]')
-            weightBtagLFUCUpStr   = weightStr.replace('btagWeights[17]','btagWeights[24]')
-            weightBtagLFUCDnStr   = weightStr.replace('btagWeights[17]','btagWeights[25]')
-            ### These weights are here in case we ever switch back to btag shape-reweighting scale factors
-            # weightBtagHFUpStr   = weightStr.replace('btagWeights[0]','btagWeights[1]')
-            # weightBtagHFDnStr   = weightStr.replace('btagWeights[0]','btagWeights[2]')
-            # weightBtagLFUpStr   = weightStr.replace('btagWeights[0]','btagWeights[3]')
-            # weightBtagLFDnStr   = weightStr.replace('btagWeights[0]','btagWeights[4]')
-            # weightBtagHFS1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[5]')
-            # weightBtagHFS1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[6]')
-            # weightBtagHFS2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[7]')
-            # weightBtagHFS2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[8]')
-            # weightBtagLFS1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[9]')
-            # weightBtagLFS1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[10]')
-            # weightBtagLFS2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[11]')
-            # weightBtagLFS2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[12]')
-            # weightBtagCFE1UpStr   = weightStr.replace('btagWeights[0]','btagWeights[13]')
-            # weightBtagCFE1DnStr   = weightStr.replace('btagWeights[0]','btagWeights[14]')
-            # weightBtagCFE2UpStr   = weightStr.replace('btagWeights[0]','btagWeights[15]')
-            # weightBtagCFE2DnStr   = weightStr.replace('btagWeights[0]','btagWeights[16]')
+            
+            weightBtagHFCOUpStr   = weightStr.replace('btagWeights[0]','btagWeights[1]')
+            weightBtagHFCODnStr   = weightStr.replace('btagWeights[0]','btagWeights[2]')
+            weightBtagHFUCUpStr   = weightStr.replace('btagWeights[0]','btagWeights[3]')
+            weightBtagHFUCDnStr   = weightStr.replace('btagWeights[0]','btagWeights[4]')
+            weightBtagLFCOUpStr   = weightStr.replace('btagWeights[0]','btagWeights[5]')
+            weightBtagLFCODnStr   = weightStr.replace('btagWeights[0]','btagWeights[6]')
+            weightBtagLFUCUpStr   = weightStr.replace('btagWeights[0]','btagWeights[7]')
+            weightBtagLFUCDnStr   = weightStr.replace('btagWeights[0]','btagWeights[8]')
+            
             weightelIDSFUpStr = weightStr.replace('elidSF[0]','elidSF[1]')
             weightelIDSFDnStr = weightStr.replace('elidSF[0]','elidSF[2]')
             weightelRecoSFUpStr = weightStr.replace('elrecoSF[0]','elrecoSF[1]')
             weightelRecoSFDnStr = weightStr.replace('elrecoSF[0]','elrecoSF[2]')
-                        
-            weightmuIDSFUpStr = weightStr.replace('muonidSF[0]','muonidSF[1]')
-            weightmuIDSFDnStr = weightStr.replace('muonidSF[0]','muonidSF[2]')
-            weightmuIsoSFUpStr = weightStr.replace('muonisoSF[0]','muonisoSF[1]')
-            weightmuIsoSFDnStr = weightStr.replace('muonisoSF[0]','muonisoSF[2]')
+            
+            weightmuIDSFUpStr = weightStr.replace('muonidSF[0]','muonidSF[0] + muonidSF[1]')
+            weightmuIDSFDnStr = weightStr.replace('muonidSF[0]','muonidSF[0] + muonidSF[2]')
+            weightmuIsoSFUpStr = weightStr.replace('muonisoSF[0]','muonidSF[0] + muonisoSF[1]')
+            weightmuIsoSFDnStr = weightStr.replace('muonisoSF[0]','muonidSF[0] + muonisoSF[2]')
                         
             weighttauIDVSeSFUpStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[1]')
             weighttauIDVSeSFDnStr = weightStr.replace('tauidVSeSF[0]','tauidVSeSF[2]')
@@ -148,10 +111,10 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 weightmuFUpStr       = 'LHEScaleWeight[5] * '+weightStr
                 weightmuFDnStr       = 'LHEScaleWeight[3] * '+weightStr
 
-                if 'Bprime' in sample.prefix: # signals don't have [4] being the 1,1 shift! [8] undefined
-                    weightmuRFcorrdUpStr = 'LHEScaleWeight[7] * '+weightStr
-                    weightmuRUpStr       = 'LHEScaleWeight[6] * '+weightStr
-                    weightmuFUpStr       = 'LHEScaleWeight[4] * '+weightStr
+                #if 'Bprime' in sample.prefix: # signals don't have [4] being the 1,1 shift! [8] undefined
+                #    weightmuRFcorrdUpStr = 'LHEScaleWeight[7] * '+weightStr
+                #    weightmuRUpStr       = 'LHEScaleWeight[6] * '+weightStr
+                #    weightmuFUpStr       = 'LHEScaleWeight[4] * '+weightStr
                                         
             else:
                 weightmuRFcorrdUpStr = '1.15 * '+weightStr
@@ -363,12 +326,12 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                     hist_elRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn' )
                     hist_elIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFUp'   )
                     hist_elIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelIdSFDn'   )
-                    hist_elRecoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp'  )
-                    hist_elRecoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn'  )
+                    #hist_elRecoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFUp'  )
+                    #hist_elRecoSFDn   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_elRecoSFDn_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightelRecoSFDn'  )
                     #hist_TrigEffElUp = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElUp')
                     #hist_TrigEffElDn = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_TrigEffElDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightTrigEffElDn')
-                    hist_muRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFUp' )
-                    hist_muRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFDn' )
+                    #hist_muRecoSFUp  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFUp_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFUp' )
+                    #hist_muRecoSFDn  = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muRecoSFDn_{process}' ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuRecoSFDn' )
                     hist_muIdSFUp    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFUp_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFUp'   )
                     hist_muIdSFDn    = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIdSFDn_{process}'   ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIdSFDn'   )
                     hist_muIsoSFUp   = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muIsoSFUp_{process}'  ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuIsoSFUp'  )
@@ -466,8 +429,8 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
             #hist_elIsoSFDn.Write()
             #hist_TrigEffElUp.Write()
             #hist_TrigEffElDn.Write()
-            hist_muRecoSFUp.Write()
-            hist_muRecoSFDn.Write()
+            #hist_muRecoSFUp.Write()
+            #hist_muRecoSFDn.Write()
             hist_muIdSFUp.Write()
             hist_muIdSFDn.Write()
             hist_muIsoSFUp.Write()
