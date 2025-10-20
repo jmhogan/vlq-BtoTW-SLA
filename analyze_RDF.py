@@ -2,7 +2,7 @@
 from ROOT import TH1D,TTree,TFile,RDataFrame,TH1,EnableImplicitMT,DisableImplicitMT
 from array import array
 from numpy import linspace
-from samples import targetlumi, lumiStr, factorABCDnn, yieldUncertABCDnn
+from samples import targetlumi, lumiStr
 import math,time
 
 TH1.SetDefaultSumw2(True)
@@ -53,10 +53,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         #if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
         #        doMuRF = False
         
-        if ('Single' not in sample.prefix and 'MuonEG' not in sample.prefix and 'Tau' not in samples.prefix): 
-                if doABCDnn:
-                        weightStr += f' * {factorABCDnn[tag]}'
-                else:
+        if ('Single' not in sample.prefix and 'MuonEG' not in sample.prefix and 'Tau' not in sample.prefix): 
 			# '+jetSFstr+' * '+topCorr+' * leptonIDSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * puJetSF[0] * 
                         weightStr += ' * PileupWeights[0] * elrecoSF[0] * elidSF[0] * muonidSF[0] * muonisoSF[0] * tauidVSeSF[0] * tauidVSmuSF[0] * tauidVSjetSF[0] * btagWeights[0] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
                         
@@ -162,11 +159,11 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         elif isEM=='M': 
                 isEMCut+='isMu==1'
         elif isEM=='L': 
-                isEMCut+=''#(isMu==1 || isEl==1)'
-        if 'SingleMuon' in sample.prefix: # don't let data double count
-                isEMCut+=' && isMu==1'
-        elif 'SingleElec' in sample.prefix:
-                isEMCut+=' && isEl==1'
+                isEMCut+='(passesMuPD || passesMuEGPD || passesEGPD || passesTauPD)'#(isMu==1 || isEl==1)'
+        # if 'SingleMuon' in sample.prefix: # don't let data double count
+        #         isEMCut+=' && isMu==1'
+        # elif 'SingleElec' in sample.prefix:
+        #         isEMCut+=' && isEl==1'
 
 	# Define cuts by region. Use region "all" for all selected events
         cut  = ''# && W_MT < 200' #TEMP. TODO: Comment out once it got implemented in the analyer
@@ -174,10 +171,10 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         #if 'lowMT' in region:
         #        cut += ' && W_MT < 160'
         
-        if region == 'isoVT':
-                cut += ' && lepton_miniIso < 0.05'
-        if '1pb' in region: 
-                cut += ' && NJets_DeepFlavL > 0'
+        if region == '3lep':
+                cut += ' && NgoodLeptons == 3'
+        if region == '4lep': 
+                cut += ' && NgoodLeptons == 4'
         elif '2pb' in region: 
                 cut += ' && NJets_DeepFlavL > 1'
         elif '0b' in region: 
@@ -268,7 +265,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         process = sample.prefix
 
         # TODO: Switch back to this piece of code once jet veto got implemented in the analyzer
-        if '[0]' in plotTreeName:
+        if '[0]' in plotTreeName or 'Sum(' in plotTreeName or 'abs(' in plotTreeName or '0.5*(' in plotTreeName:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
                                                .Define('weight',weightStr)\
                                                .Define(iPlot, plotTreeName)
@@ -276,29 +273,6 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         else:
                 df = RDataFrame(tTree[process]).Filter(fullcut)\
                                                .Define('weight',weightStr)
-
-        # TEMP: jet veto
-        # 0 for run<319077. num of forwJets in the veto zone for run>=319077
-        #if sample.year=="2018":
-        #        df_original = RDataFrame(tTree[process]).Define("NJets_forward_subtract", "(int) Sum((run>=319077 || (run==1 && event%100 >= 35) ) && ((gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-2.5 && gcforwJet_eta<-1.3) || (gcforwJet_phi>-1.57 && gcforwJet_phi<-0.87 && gcforwJet_eta>-3.0 && gcforwJet_eta<-2.5)))")\
-        #                                                .Redefine("NJets_forward", "NJets_forward-NJets_forward_subtract")
-                # if 'Single' in process:
-                #         NEvents = df_original.Count().GetValue()
-                #         NEvents_adjusted = df_original.Filter("NJets_forward_subtract>0").Count().GetValue()
-                #         print(f'Number of events affected in {process}: {NEvents_adjusted}')
-                #         print(f'Number of events in {process}: {NEvents}')
-                #         print(f'Percentage of events affected in {process}: {NEvents_adjusted/NEvents}')
-        #else:
-        #        df_original = RDataFrame(tTree[process])
-
-        # if '[0]' in plotTreeName:
-        #         df = df_original.Filter(fullcut)\
-        #                         .Define('weight',weightStr)\
-        #                         .Define(iPlot, plotTreeName)
-        #         plotTreeName = iPlot                                                                                              
-        # else:                                                       
-        #         df = df_original.Filter(fullcut)\
-        #                         .Define('weight',weightStr)
                                            
 
         hist = df.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weight')             

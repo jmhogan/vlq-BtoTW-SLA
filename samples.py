@@ -54,7 +54,7 @@ Bprime_M700_2023 = sample("Bprime_M700_2023", 1.0, "2023", "Bprime_M700_2023Nano
 Bprime_M700_2023BPix = sample("Bprime_M700_2023BPix", 1.0, "2023BPix", "Bprime_M700_2023BPixNanoList.txt", "/BprimeBprimeto2B4Tau_MB-700_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
 Bprime_M400_2022 = sample("Bprime_M400_2022", 1.0, "2022", "Bprime_M400_2022NanoList.txt", "/BprimeBprimeto2B4Tau_MB-400_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
 Bprime_M400_2022EE = sample("Bprime_M400_2022EE", 1.0, "2022EE", "Bprime_M400_2022EENanoList.txt", "/BprimeBprimeto2B4Tau_MB-400_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
-Bprime_M400_2023 = sample("Bprime_M400_2023", "2023", 1.0, "Bprime_M400_2023NanoList.txt", "/BprimeBprimeto2B4Tau_MB-400_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
+Bprime_M400_2023 = sample("Bprime_M400_2023", 1.0, "2023", "Bprime_M400_2023NanoList.txt", "/BprimeBprimeto2B4Tau_MB-400_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
 Bprime_M400_2023BPix = sample("Bprime_M400_2023BPix", 1.0, "2023BPix", "Bprime_M400_2023BPixNanoList.txt", "/BprimeBprimeto2B4Tau_MB-400_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
 
 
@@ -76,7 +76,7 @@ DYPT4002023 = sample("DYPT4002023", 0.3833	, "2023", "DYPT4002023NanoList.txt", 
 DYPT4002023BPix = sample("DYPT4002023BPix", 0.3833	, "2023BPix", "DYPT4002023BPixNanoList.txt", "/DYto2L-4Jets_MLL-50_PTLL-400to600_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
 DYPT6002022 = sample("DYPT6002022", 0.06843, "2022", "DYPT6002022NanoList.txt", "/DYto2L-4Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
 DYPT6002022EE = sample("DYPT6002022EE", 0.06843, "2022EE", "DYPT6002022EENanoList.txt", "/DYto2L-4Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
-DYPT6002023 = sample("DYPT6002023", "2023", 0.06843, "DYPT6002023NanoList.txt", "/DYto2L-4Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
+DYPT6002023 = sample("DYPT6002023", 0.06843, "2023", "DYPT6002023NanoList.txt", "/DYto2L-4Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
 DYPT6002023BPix = sample("DYPT6002023BPix", 0.06843, "2023BPix", "DYPT6002023BPixNanoList.txt", "/DYto2L-4Jets_MLL-50_PTLL-600_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
 
 QCDHT10002022  = sample("QCDHT10002022", 883.7, "2022", "QCDHT10002022NanoList.txt", "/QCD-4Jets_HT-1000to1200_TuneCP5_13p6TeV_madgraphMLM-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
@@ -186,7 +186,7 @@ TTHB2023 = sample("TTHB2023", 0.570*0.5824, "2023", "TTHB2023NanoList.txt", "/TT
 TTHB2023BPix = sample("TTHB2023BPix", 0.570*0.5824, "2023BPix", "TTHB2023BPixNanoList.txt", "/TTHto2B_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM")
 TTHnonB2022 = sample("TTHnonB2022", 0.570*(1.0-0.5824), "2022", "TTHnonB2022NanoList.txt", "/TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v4/NANOAODSIM")
 TTHnonB2022EE = sample("TTHnonB2022EE", 0.570*(1.0-0.05824), "2022EE", "TTHnonB2022EENanoList.txt", "/TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
-TTHnonB2023 = sample("TTHnonB2023", "2023", 0.570*(1.0-0.05824), "TTHnonB2023NanoList.txt", "/TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM")
+TTHnonB2023 = sample("TTHnonB2023", 0.570*(1.0-0.05824), "2023", "TTHnonB2023NanoList.txt", "/TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM")
 TTHnonB2023BPix = sample("TTHnonB2023BPix", 0.570*(1.0-0.05824), "2023BPix", "TTHnonB2023BPixNanoList.txt", "/TTHtoNon2B_M-125_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v2/NANOAODSIM")
 
 #TTMT10002022 = sample("TTMT10002022", 1.0, "2022", "TTMT10002022NanoList.txt", "/TT_Mtt-1000toInf_TuneCP5_13TeV-powheg-pythia8/RunIISummer2022NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM")
@@ -214,7 +214,7 @@ TTToSemiLeptonic2022 = sample("TTToSemiLeptonic2022", 923*0.438, "2022", "TTToSe
 TTToSemiLeptonic2022ext = sample("TTToSemiLeptonic2022ext", 923*0.438, "2022", "TTToSemiLeptonic2022extNanoList.txt", "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5_ext1-v2/NANOAODSIM")
 TTToSemiLeptonic2022EE = sample("TTToSemiLeptonic2022EE", 923*0.438, "2022EE", "TTToSemiLeptonic2022EENanoList.txt", "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
 TTToSemiLeptonic2022EEext = sample("TTToSemiLeptonic2022EEext", 923*0.438, "2022EE", "TTToSemiLeptonic2022EEextNanoList.txt", "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6_ext1-v2/NANOAODSIM")
-TTToSemiLeptonic2023 = sample("TTToSemiLeptonic2023", "2023", 923*0.438, "TTToSemiLeptonic2023NanoList.txt", "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM")
+TTToSemiLeptonic2023 = sample("TTToSemiLeptonic2023", 923*0.438, "2023", "TTToSemiLeptonic2023NanoList.txt", "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM")
 TTToSemiLeptonic2023BPix = sample("TTToSemiLeptonic2023BPix", 923*0.438, "2023BPix", "TTToSemiLeptonic2023BPixNanoList.txt", "/TTtoLNu2Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v2-v3/NANOAODSIM")
 
 TTWl2022 = sample("TTWl2022", 0.2505, "2022", "TTWl2022NanoList.txt", "/TTLNu-1Jets_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22NanoAODv12-mg35x_130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
@@ -545,8 +545,8 @@ samples_electroweak = {
 }
 
 samples_qcd = {
-    "QCDHT10002022 ":   QCDHT10002022 ,   
-    "QCDHT10002022EE":  QCDHT10002022EE,  
+    #"QCDHT10002022":   QCDHT10002022 ,   
+    #"QCDHT10002022EE":  QCDHT10002022EE,  
     "QCDHT10002023":    QCDHT10002023,    
     "QCDHT10002023BPix":QCDHT10002023BPix,
     "QCDHT12002022":    QCDHT12002022,    

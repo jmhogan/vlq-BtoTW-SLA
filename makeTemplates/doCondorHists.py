@@ -8,7 +8,7 @@ outputDir = thisDir+'/'
 
 region = sys.argv[1] #all, BAX, DCY, individuals
 procs = sys.argv[2] #datsig, top, other, all
-categorize = 1 #1==categorize into 6 tags
+categorize = 0 #1==categorize into 6 tags
 
 cTime=datetime.datetime.now()
 date='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
@@ -16,82 +16,31 @@ time='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
 pfix = 'templates'+region
 if not categorize: pfix='kinematics'+region
 
-pfix+='_Oct2024_42bins'
+pfix+='_Oct2025_NoSys'
 
 plotList = [#distribution name as defined in "doHists.py"
-        #'BpMass', #:('Bprime_mass',linspace(0,4000,51).tolist(),';B quark mass [GeV]'),
-        'BpMass_ABCDnn', #:('Bprime_mass_ABCDnn',linspace(0,5000,51).tolist(),';B quark mass [GeV]')
-        #'ST', #:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
-        #'ST_ABCDnn', #:('gcJet_ST_ABCDnn',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)')
-  
-        # 'NPV',
-        # 'HT', #:('gcJet_HT',linspace(0, 5000, 51).tolist(),';H_{T} (GeV)'), 
-        # 'lepPt' , #:('lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
-        # 'lepEta', #:('lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
-        # 'lepPhi', #:('lepton_phi',linspace(-3.2,3.2,65).tolist(),';lepton #phi'),
-        # 'lepIso', #:('lepton_miniIso',linspace(0,0.2,51).tolist(),';lepton mini-isolation'),
-        # 'MET'   , #:('corrMET_pt',linspace(0, 1000, 51).tolist(),';#slash{E}_{T} [GeV]'),
-        # 'METphi', #:('corrMET_phi',linspace(-3.2,3.2, 65).tolist(),';#slash{E}_{T} phi'),
-        # 'JetEta', #:('gcJet_eta',linspace(-3, 3, 41).tolist(),';central AK4 jet #eta'),
-        # 'JetPt' , #:('gcJet_pt',linspace(0, 1500, 51).tolist(),';central AK4 jet p_{T} [GeV]'),
-        # 'JetPhi', #:('gcJet_phi',linspace(-3.2,3.2, 65).tolist(),';central AK4 jet phi'),
-        # 'JetBtag', #:('gcJet_DeepFlav',linspace(0,1,51).tolist(),';central AK4 jet DeepJet disc'),
-        # 'ForwJetEta', #:('gcforwJet_eta',linspace(-3, 3, 41).tolist(),';forward AK4 jet #eta'),
-        # 'ForwJetPt' , #:('gcforwJet_pt',linspace(0, 1500, 51).tolist(),';forward AK4 jet p_{T} [GeV]'),
-        # 'ForwJetPhi', #:('gcforwJet_phi',linspace(-3.2,3.2, 65).tolist(),';forward AK4 jet phi'),
-        # 'FatJetEta', #:('gcFatJet_eta',linspace(-3, 3, 41).tolist(),';AK8 jet #eta'),
-        # 'FatJetPt' , #:('gcFatJet_pt',linspace(0, 1500, 51).tolist(),';AK8 jet p_{T} [GeV]'),
-        # 'FatJetPhi', #:('gcFatJet_phi',linspace(-3.2,3.2, 65).tolist(),';AK8 jet phi'),
-        # 'FatJetSD' , #:('gcFatJet_sdmass',linspace(0, 500, 51).tolist(),';AK8 soft drop mass [GeV]'),
-        # 'OS1FatJetEta', #:('gcOSFatJet_eta[0]',linspace(-3, 3, 41).tolist(),';B decay AK8 #eta'),
-        # 'OS1FatJetPt' , #:('gcOSFatJet_pt[0]',linspace(0, 1500, 51).tolist(),';B decay AK8 p_{T} [GeV]'),
-        # 'OS1FatJetPhi', #:('gcOSFatJet_phi[0]',linspace(-3.2,3.2, 65).tolist(),';B decay AK8 phi'),
-        # 'OS1FatJetSD' , #:('gcOSFatJet_sdmass[0]',linspace(0, 500, 51).tolist(),';B decay AK8 soft drop mass [GeV]'),
-        # 'NJetsCentral' , #:('NJets_central',linspace(0, 10, 11).tolist(),';central AK4 jet multiplicity'),
-        # 'NJetsForward' , #:('NJets_forward',linspace(0, 10, 11).tolist(),';forward AK4 jet multiplicity'),
-        # 'NBJets', #:('NJets_DeepFlavL',linspace(0, 10, 11).tolist(),';DeepJet loose multiplicity'),
-        # 'NOSJets', #:('NOS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 opp-side jets'),
-        # 'NSSJets', #:('NSS_gcJets_central',linspace(0, 5, 6).tolist(),';central AK4 same-side jets'),
-        # 'NOSBJets', #:('NOS_gcJets_DeepFlavL',linspace(0, 5, 6).tolist(),';central AK4 opp-side b jets'),
-        # 'NSSBJets', #:('NSS_gcJets_DeepFlavL',linspace(0, 5, 6).tolist(),';central AK4 same-side b jets'),
-        # 'NFatJets', #:('NFatJets',linspace(0, 10, 11).tolist(),';AK8 jet multiplicity'),
-        # 'NOSFatJets', #:('NOS_gcFatJets',linspace(0, 5, 6).tolist(),';AK8 opp-side jets'),
-        # 'NSSFatJets', #:('NSS_gcFatJets',linspace(0, 5, 6).tolist(),';AK8 same-side jets'),
-        # 'minDR_twoAK8s', #:('minDR_leadAK8otherAK8',linspace(0,5,51).tolist(),';min #Delta R(leading AK8 jet, other AK8 jet) [GeV]'),
-        # 'minDR_twoAK4s', #:('minDR_leadAK4otherAK4',linspace(0,5,51).tolist(),';min #Delta R(leading AK4 jet, other AK4 jet) [GeV]'),
-        # 'PtRel', #:('ptRel_atMinDR_lepJets',linspace(0,500,51).tolist(),';p_{T,rel}(l, closest jet) [GeV]'),
-        # 'PtRelAK8', #:('ptRel_atMinDR_lepFatJets',linspace(0,500,51).tolist(),';p_{T,rel}(l, closest AK8 jet) [GeV]'),
-        # 'minDR', #:('minDR_lepJets',linspace(0,5,51).tolist(),';#Delta R(l, closest jet) [GeV]'),
-        # 'minDRAK8', #:('minDR_lepFatJets',linspace(0,5,51).tolist(),';#Delta R(l, closest AK8 jet) [GeV]'),
-        # 'FatJetProbJ', #:('gcFatJet_pNetJ',linspace(0,1.2,51).tolist(),';pNet J score'),
-        # 'FatJetProbTvJ', #:('gcFatJet_pNetTvsQCD',linspace(0,1.2,51).tolist(),';pNet t-v-QCD score'),
-        # 'FatJetProbWvJ', #:('gcFatJet_pNetWvsQCD',linspace(0,1.2,51).tolist(),';pNet W-v-QCD score'),
-        # 'FatJetTag', #:('gcFatJet_pNetTag',linspace(0,3,4).tolist(),';pNet tag (0 = J, 1 = t, 2 = W)'),
-        # 'OS1FatJetProbJ', #:('gcOSFatJet_pNetJ[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet J score'),
-        # 'OS1FatJetProbTvJ', #:('gcOSFatJet_pNetTvsQCD[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet t-v-QCD score'),
-        # 'OS1FatJetProbWvJ', #:('gcOSFatJet_pNetWvsQCD[0]',linspace(0,1.2,51).tolist(),';B decay AK8 pNet W-v-QCD score'),
-        # 'OS1FatJetTag', #:('gcOSFatJet_pNetTag[0]',linspace(0,3,4).tolist(),';B decay AK8 pNet tag (0 = J, 1 = t, 2 = W)'),
-        # 'nT', #:('gcFatJet_nT',linspace(0,5,6).tolist(),';N pNet t-tagged jets'),
-        # 'nW', #:('gcFatJet_nW',linspace(0,5,6).tolist(),';N pNet W-tagged jets'),
-        # 'Wmass', #:('W_mass',linspace(0,500,51).tolist(),';reco W mass [GeV]'),
-        # 'Wpt', #:('W_pt',linspace(0,1500,51).tolist(),';reco W pt [GeV]'),
-        # 'Weta', #:('W_eta',linspace(-4,4,41).tolist(),';reco W eta'),
-        # 'Wphi', #:('W_phi',linspace(-3.2,3.2, 65).tolist(),';reco W phi'),
-        # 'WMt', #:('W_MT',linspace(0,500,51).tolist(),';reco W M_{T} [GeV]'),
-        # 'Wdrlep', #:('DR_W_lep',linspace(0,5,51).tolist(),';reco W #DeltaR(W,lepton)'),        
-        # 'minMlj', #:('minM_lep_Jet',linspace(0,1000,51).tolist(),';min[M(l,jet)] [GeV]'),
-        # 'tmassSSB', #:('t_mass_SSb',linspace(0,500,51).tolist(),';reco t mass (SSb method) [GeV]'),
-        # 'tptSSB', #:('t_pt_SSb',linspace(0,1000,51).tolist(),';reco t pt (SSb method) [GeV]'),
-        # 'tetaSSB', #:('t_eta_SSb',linspace(-4,4,41).tolist(),';reco t eta (SSb method)'),
-        # 'tphiSSB', #:('t_phi_SSb',linspace(-3.2,3.2, 65).tolist(),';reco t phi (SSb method)'),
-        # 'tdrWbSSB', #:('DR_W_b_SSb',linspace(0,6.3,51).tolist(),';reco t, #DeltaR(W,b) (SSb method)'),
-        # 'BpPt', #:('Bprime_pt',linspace(0,3000,51).tolist(),';B quark p_{T} [GeV]'),
-        # 'BpEta', #:('Bprime_eta',linspace(-5,5,51).tolist(),';B quark #eta'),
-        # 'BpPhi', #:('Bprime_phi',linspace(-3.14,3.14,51).tolist(),';B quark #phi'),
-        # 'BpDeltaR', #:('Bprime_DR',linspace(0,5,51).tolist(),';#DeltaR(B quark products)'),
-        # 'BpPtBal', #:('Bprime_ptbal',linspace(0,3,51).tolist(),';B quark t/W p_{T} ratio'),
-        # 'BpChi2', #:('Bprime_chi2',linspace(0,1000,51).tolist(),';B quark reconstruction #chi^{2}'), # CHECK ME, what range?
-        # 'BpDecay', #:('Bdecay_obs',linspace(0,5,6).tolist(),';B quark mode (1: Tjet+lepW, 2: Wjet+lepT, 3: AK8+lepW, 4: AK8+lepT')
+        # 'NPV'   ,#:('PV_npvs',linspace(0,80,81).tolist(),';N PVs'),
+        #'Nleps' ,#:('NgoodLeptons',linspace(0,5,5).tolist(),';N good leptons'),
+        #'lepPt' ,#:('Good4Lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
+        # 'lepEta',#:('Good4Lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
+        # 'lepPhi',#:('Good4Lepton_phi',linspace(-3.2,3.2,65).tolist(),';lepton #phi'),
+        'lepID',#:('Good4Lepton_ID',linspace(0,0.2,51).tolist(),';lepton flavor'),
+        # 'lepCharge',#:('Good4Lepton_charge',linspace(-2,2,5).tolist(),';lepton charge'),
+        #'lepChargeSum',#:('Sum(Good4Lepton_charge)',linspace(-5,5,11).tolist(),';lepton charge sum'),
+        # 'MET'   ,#:('MET_ptcorr',linspace(0, 1000, 51).tolist(),';#slash{E}_{T} [GeV]'),
+        # 'METphi',#:('MET_phicorr',linspace(-3.2,3.2, 65).tolist(),';#slash{E}_{T} phi'),
+        'HT',#:('gcJet_ht',linspace(0, 5000, 51).tolist(),';H_{T} (GeV)'),
+        # 'ST',#:('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
+        # 'JetEta',#:('gcJet_eta',linspace(-3, 3, 41).tolist(),';central AK4 jet #eta'),
+        # 'JetPt' ,#:('gcJet_pt',linspace(0, 1500, 51).tolist(),';central AK4 jet p_{T} [GeV]'),
+        # 'JetPhi',#:('gcJet_phi',linspace(-3.2,3.2, 65).tolist(),';central AK4 jet phi'),
+        # 'JetBtag',#:('gcJet_PNet',linspace(0,1,51).tolist(),';central AK4 jet DeepJet disc'),
+        # 'NJets' ,#:('NgoodcleanJets',linspace(0, 10, 11).tolist(),';central AK4 jet multiplicity'),
+        # 'NBJets',#:('NJets_PNetL',linspace(0, 10, 11).tolist(),';ParticleNet b-tag loose multiplicity'),
+        #'BpMassAve',#:('0.5*(B1finalM+B2finalM)',linspace(0,1800,31).tolist(),';Average B quark mass [GeV]'),
+        # 'BpMassDiff',#:('abs(B1finalM-B2finalM)',linspace(0,1800,31).tolist(),';Difference in B quark masses [GeV]'),
+        # 'BpMass1',#:('B1finalM',linspace(0,1800,31).tolist(),';B quark 1 mass [GeV]'),
+        # 'BpMass2',#:('B2finalM',linspace(0,1800,31).tolist(),';B quark 2 mass [GeV]'),
 ]
 
 isEMlist = ['L'] #['E','M']
@@ -132,7 +81,7 @@ print('Dimensions:',dimstr)
 print('iPlotList:',iPlotList)
 
 count=0
-mem=4000
+mem=2000
 if categorize: mem=4000
 
 for iplot in iPlotList:
@@ -158,9 +107,10 @@ Error = condor_%(iPlot)s_%(procs)s.err
 Log = condor_%(iPlot)s_%(procs)s.log
 Notification = Never
 Arguments = %(dir)s %(iPlot)s %(region)s %(isCategorized)s %(isEM)s %(tag)s %(procs)s
-request_memory = %(memory)s
+
 
 Queue 1"""%dict)
+#request_memory = %(memory)s
 		jdf.close()
 
 		os.system('condor_submit condor.job')
