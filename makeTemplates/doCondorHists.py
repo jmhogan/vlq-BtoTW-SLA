@@ -8,7 +8,7 @@ outputDir = thisDir+'/'
 
 region = sys.argv[1] #all, BAX, DCY, individuals
 procs = sys.argv[2] #datsig, top, other, all
-categorize = 0 #1==categorize into 6 tags
+categorize = sys.argv[3] #0 = L, 1 = EMT, 2 = all the options
 
 cTime=datetime.datetime.now()
 date='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
@@ -43,15 +43,14 @@ plotList = [#distribution name as defined in "doHists.py"
         # 'BpMass2',#:('B2finalM',linspace(0,1800,31).tolist(),';B quark 2 mass [GeV]'),
 ]
 
-isEMlist = ['L'] #['E','M']
-if '2D' in pfix: isEMlist = ['L']
+isEMlist = ['L'] 
+if categorize == 1:
+        isEMlist = ['E','M','T']
+if categorize == 2:
+        isEMlist= # long thing.
+
 
 taglist = ['all']
-if categorize:
-        #taglist=['tagTjet','tagWjet','untagTlep','untagWlep', 'allWlep','allTlep']
-        #taglist=['allWlep','allTlep']
-        taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
-        ## later, can determine tag lists for different regions
 
 outDir = outputDir+pfix+'/'
 print(outDir)
