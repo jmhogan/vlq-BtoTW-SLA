@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # python3 groupHists.py $iPlot $region $isCategorized $pfix
-# python3 groupHists.py BpMass D True _Apr2024SysAll
+# python3 groupHists.py BpMassAve all True _Oct25
 import os,sys,time,math,datetime,itertools,ctypes
-from ROOT import gROOT,TFile,TH1F, TH2D
+from ROOT import gROOT,TFile,TH1F,TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
 from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, uncorrList_sf, yearList
@@ -27,11 +27,13 @@ else:
 if isCategorized:
         pfix='templates'+region
 else:
-        pfix='kinematics'+region
+        #pfix='kinematicsTEST'+region    #'TEST' is TEMP
+        pfix = 'kinematics'+region
 if len(sys.argv)>4:
         pfix+=str(sys.argv[4])
 else:
         pfix+='_Oct2025_NoSys'
+        #pfix+=''                        # TEMP
 outDir=f'{os.getcwd()}/{pfix}/'
 
 print('Grouping hists for iPlot',iPlot,', region',region,', isCategorized',isCategorized,', and folder',pfix)

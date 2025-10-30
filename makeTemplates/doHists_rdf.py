@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # python3 -u doHists_rdf.py . BpMass_ABCDnn all 1 L
+# python3 -u doHists_rdf.py
 # optional arguments:
 #    argv1: outDir (default cwd)
 #    argv2: iPlot (discriminant from plotList. default 'HT')
@@ -28,11 +29,12 @@ start_time = time.time()
 step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
 
 # ------------- Arguments and default values ------------
-iPlot = 'HT' #choose a discriminant from plotList below!
+iPlot = 'BpMassAve' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
-region = 'all'
 
+region = 'all'
 if len(sys.argv)>3: region=sys.argv[3]
+
 isCategorized = False
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 
@@ -43,7 +45,7 @@ cTime=datetime.datetime.now()
 datestr='%i_%i_%i'%(cTime.year,cTime.month,cTime.day)
 timestr='%i_%i_%i'%(cTime.hour,cTime.minute,cTime.second)
 pfix='templatesTest'+region
-if not isCategorized: pfix='kinematicsTEST'+region
+if not isCategorized: pfix='kinematics'+region
 print('Set pfix to '+pfix)
 
 # -------------- Groups of background samples to use --------------

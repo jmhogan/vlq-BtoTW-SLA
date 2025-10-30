@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
-# python3 -u plotHists.py BpMass A True 
+# python3 -u plotHists.py [iPlot='BpMassAve'] [region='all'] [isCategorized=False] 
 
 import os,sys,time,math
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from ROOT import *
+from ROOT import gROOT, TFile, kAzure, kMagenta, kOrange, kGreen, TGraphAsymmErrors, TH1, TTree, TH2, RDataFrame, TLegend, TCanvas, kBlack, TGraphAsymmErrors, TGraph, TPad, TStyle, THStack, gStyle, TLatex, SetOwnership
 from samples import lumiStr, systListShortPlots, systListFullPlots, xsec
-from utils import *
+from utils import poissonErrors
 
 gROOT.SetBatch(1)
 start_time = time.time()
@@ -24,10 +24,11 @@ if len(sys.argv)>3: isCategorized=bool(eval(sys.argv[3]))
 if isCategorized:
         pfix=f'templates{region}'
 else:
-        pfix=f'kinematics{region}'
+        pfix=f'kinematics{region}'      #'TEST' is TEMP
 if len(sys.argv)>4:
         pfix+=str(sys.argv[4])
 else:
+        #pfix+=''    # TEMP
         pfix+='_Oct2025_NoSys'
         #pfix+='_Apr2024SysAll_validation' # TEMP. validation only
 templateDir = f'{os.getcwd()}/{pfix}/'
