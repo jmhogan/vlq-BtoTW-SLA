@@ -26,13 +26,13 @@ gROOT.SetBatch(1)
 start_time = time.time()
 
 # ------------- File location and total lumi ---------------
-step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Dec2025_Run3/'
 
 # ------------- Arguments and default values ------------
 iPlot = 'BpMassAve' #choose a discriminant from plotList below!
 if len(sys.argv)>2: iPlot=sys.argv[2]
 
-region = 'all'
+region = '3lep'
 if len(sys.argv)>3: region=sys.argv[3]
 
 isCategorized = False
@@ -140,18 +140,30 @@ for cat in catList:
 
         if doData:
                 dataHistFile = TFile.Open(f'{outDir}/datahists_{iPlot}.root', "RECREATE")
+                for i in samples_data.keys():
+                    print(f'Samples_data: {samples_data[i].samplename}')
+
                 for data in samples_data.keys(): # "data" is the class 
                         print('------------ '+data+' -------------')
                         #SingleMuonRun2022EEF  = sample("SingleMuonRun2022EEF", 1.0, "2022EE", "SingleMuonRun2022EEF2022EENanoList.txt", "/Muon/Run2022F-22Sep2023-v2/NANOAOD")
                         #SingleElecRun2023C13  = sample("SingleElecRun2023C13", 1.0, "2023", "SingleElecRun2023C132023NanoList.txt", "/EGamma1/Run2023C-22Sep2023_v3-v1/NANOAOD")
-
+                        
+                        #print('START FP\n\tBuilding File Prefix')
+                        #print(f'\tData: {data}')
+                        #print(f'\tSample Name: {samples_data[data].samplename}')
                         fileprefix = (samples_data[data].samplename).split('/')[1]+((samples_data[data].samplename).split('/')[2])[7]
                         if (((samples_data[data].samplename).split('/')[2]).split('-')[1])[-2] == 'v':
                                 fileprefix += (((samples_data[data].samplename).split('/')[2]).split('-')[1])[-2:]
                         else:
                                 fileprefix += '22'
-                        tTreeData[data]=readTreeNominal(fileprefix,samples_data[data].year,step1Dir) ## located in utils.py
+                        #print('DONE FP')
 
+                        #print("START TD\n\tBuilding Tree Data")
+                        #print(f'\tFile Prefix: {fileprefix}')
+                        #print(f'\tSampels Data: {samples_data[data].year}')
+                        #print(f'\tStep 1 Dir: {step1Dir}')
+                        tTreeData[data]=readTreeNominal(fileprefix,samples_data[data].year,step1Dir) ## located in utils.py
+                        #print("DONE TD")
                         ### For analyze_RDF make the switch here (and similar regions below)
                         #dataHistFile.cd()
                         analyze(tTreeData,samples_data[data],False,iPlot,plotList[iPlot],category,region,isCategorized,dataHistFile, False)

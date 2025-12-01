@@ -32,8 +32,8 @@ else:
 if len(sys.argv)>4:
         pfix+=str(sys.argv[4])
 else:
-        pfix+='_Oct2025_NoSys'
-        #pfix+=''                        # TEMP
+        #pfix+='_Oct2025_NoSys'
+        pfix+=''                        # TEMP
 outDir=f'{os.getcwd()}/{pfix}/'
 
 print('Grouping hists for iPlot',iPlot,', region',region,', isCategorized',isCategorized,', and folder',pfix)
@@ -101,6 +101,7 @@ if groupHists:
                         histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
 
                 dataHistFile = TFile.Open(f'{outDir}{cat[2:]}/datahists_{iPlot}.root', "READ")
+                print(f'this is the file! HERE ----> {dataHistFile}')
                 isFirstHist = True
                 for dat in samples_data:
                         if samples_data[dat].year not in yearList:

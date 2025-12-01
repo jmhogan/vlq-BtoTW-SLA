@@ -132,9 +132,6 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         print("*****"*20)
         print("PROCESSING:  "+sample.prefix)
 
-        # Lepton product tags (3/4 leptons) (3: eee, eem, eet, emm,...)
-        # Ngoodleptons == 4 && ...
-
         # Design the EM cuts for categories -- THIS WILL BE THE FIRST CUT
         isEMCut=''
         if isEM == 'L': 

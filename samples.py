@@ -326,8 +326,8 @@ TTWW2022     = sample("TTWW2022", 0.008203, "2022", "TTWW2022.txt", "/TTWW_TuneC
 TTWW2022EE   = sample("TTWW2022EE", 0.008203, "2022EE", "TTWW2022EE.txt", "/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
 TTWW2023     = sample("TTWW2023", 0.008203, "2023", "TTWW2023.txt", "/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
 TTWW2023BPix = sample("TTWW2023BPix", 0.008203, "2023BPix", "TTWW2023BPix.txt", "/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
-TTWZ2022     = sample("TTWZ2022", 0.002715, "2022", "TTWZ2022.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
-TTWZ2022EE   = sample("TTWZ2022EE", 0.002715, "2022EE", "TTWZ2022EE.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
+#TTWZ2022     = sample("TTWZ2022", 0.002715, "2022", "TTWZ2022.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
+#TTWZ2022EE   = sample("TTWZ2022EE", 0.002715, "2022EE", "TTWZ2022EE.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
 TTWZ2023     = sample("TTWZ2023", 0.002715, "2023", "TTWZ2023.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
 TTWZ2023BPix = sample("TTWZ2023BPix", 0.002715, "2023BPix", "TTWZ2023BPix.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
 TTZH2022     = sample("TTZH2022", 0.001288, "2022", "TTZH2022.txt", "/TTZH_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
@@ -639,8 +639,8 @@ samples_ttbarx = {
     "TTWW2022EE"   : TTWW2022EE  ,
     "TTWW2023"     : TTWW2023    ,
     "TTWW2023BPix" : TTWW2023BPix,
-    "TTWZ2022"     : TTWZ2022    ,
-    "TTWZ2022EE"   : TTWZ2022EE  ,
+    #"TTWZ2022"     : TTWZ2022    ,
+    #"TTWZ2022EE"   : TTWZ2022EE  ,
     "TTWZ2023"     : TTWZ2023    ,
     "TTWZ2023BPix" : TTWZ2023BPix,
     "TTZH2022"     : TTZH2022    ,
@@ -872,8 +872,8 @@ samples_mc={
     "TTWW2022EE":   TTWW2022EE,
     "TTWW2023":     TTWW2023,
     "TTWW2023BPix": TTWW2023BPix,
-    "TTWZ2022":     TTWZ2022,
-    "TTWZ2022EE":   TTWZ2022EE,
+    #"TTWZ2022":     TTWZ2022,
+    #"TTWZ2022EE":   TTWZ2022EE,
     "TTWZ2023":     TTWZ2023,
     "TTWZ2023BPix": TTWZ2023BPix,
     "TTZH2022":     TTZH2022,
@@ -936,7 +936,7 @@ mclist_2022 = [
    ZZZ2022,
    TTWH2022,
    TTWW2022,
-   TTWZ2022,
+   #TTWZ2022,
    TTZH2022,
    TTZZ2022,
    TTTT2022,
@@ -983,7 +983,7 @@ mclist_2022EE = [
     ZZZ2022EE,
     TTWH2022EE,
     TTWW2022EE,
-    TTWZ2022EE,
+    #TTWZ2022EE,
     TTZH2022EE,
     TTZZ2022EE,
     TTTT2022EE,
@@ -1120,7 +1120,7 @@ WZZ2022.nrun = 1806417.9999999998 # from integral 1987058, file WZZ2022
 ZZZ2022.nrun = 1751582.0 # from integral 1970234, file ZZZ2022
 TTWH2022.nrun = 790196.0 # from integral 790196, file TTWH2022
 TTWW2022.nrun = 448443.0 # from integral 448443, file TTWW2022
-TTWZ2022.nrun = 88328.0 # from integral 88328, file TTWZ2022
+#TTWZ2022.nrun = 88328.0 # from integral 88328, file TTWZ2022
 TTZH2022.nrun = 798996.0 # from integral 798996, file TTZH2022
 TTZZ2022.nrun = 443238.0 # from integral 443238, file TTZZ2022
 TTTT2022.nrun = 1076871.0 # from integral 2396925, file TTTT2022
@@ -1163,7 +1163,7 @@ WZZ2022EE.nrun = 4809662.0 # from integral 5290014, file WZZ2022EE
 ZZZ2022EE.nrun = 5159256.0 # from integral 5803440, file ZZZ2022EE
 TTWH2022EE.nrun = 2800000.0 # from integral 2800000, file TTWH2022EE
 TTWW2022EE.nrun = 1536000.0 # from integral 1536000, file TTWW2022EE
-TTWZ2022EE.nrun = 1085872.0 # from integral 1085872, file TTWZ2022EE
+#TTWZ2022EE.nrun = 1085872.0 # from integral 1085872, file TTWZ2022EE
 TTZH2022EE.nrun = 2785771.0 # from integral 2785771, file TTZH2022EE
 TTZZ2022EE.nrun = 1054000.0 # from integral 1054000, file TTZZ2022EE
 TTTT2022EE.nrun = 3857788.0 # from integral 8571152, file TTTT2022EE

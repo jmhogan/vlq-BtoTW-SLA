@@ -11,8 +11,8 @@ tag=$6
 procs=$7
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-scramv1 project CMSSW CMSSW_13_0_18
-cd CMSSW_13_0_18
+scramv1 project CMSSW CMSSW_15_0_2
+cd CMSSW_15_0_2
 eval `scramv1 runtime -sh`
 cd -
 
