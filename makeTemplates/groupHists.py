@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # python3 groupHists.py $iPlot $region $isCategorized $pfix
-# python3 groupHists.py BpMassAve all True _Oct25
+# python3 groupHists.py VLQBMass all False _Dec2025
+# python3 groupHists.py VLQBMass all False kinematicsall_Dec2025_RJR
 import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F,TH2D
 parent = os.path.dirname(os.getcwd())
@@ -30,7 +31,7 @@ else:
         #pfix='kinematicsTEST'+region    #'TEST' is TEMP
         pfix = 'kinematics'+region
 if len(sys.argv)>4:
-        pfix+=str(sys.argv[4])
+        pfix=str(sys.argv[4])
 else:
         #pfix+='_Oct2025_NoSys'
         pfix+=''                        # TEMP
@@ -107,7 +108,7 @@ if groupHists:
                         if samples_data[dat].year not in yearList:
                                 continue
                         if isFirstHist:
-                                #print(histoPrefix+'_'+samples_data[dat].prefix)
+                                print(histoPrefix+'_'+samples_data[dat].prefix)
                                 hists = dataHistFile.Get(histoPrefix+'_'+samples_data[dat].prefix).Clone(f'{histoPrefix}__data_obs')
                                 isFirstHist = False
                         else:

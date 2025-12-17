@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-# python3 -u doHists_rdf.py . BpMass_ABCDnn all 1 L
+# python3 -u doHists_rdf.py test BpMassAve 4lep 0 L
+# python3 -u doHists_rdf.py testtest VLQCosDecayAngleAve all 0 L
 # python3 -u doHists_rdf.py
 # optional arguments:
 #    argv1: outDir (default cwd)
@@ -79,14 +80,15 @@ else:
 	if isCategorized: 
                 #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
                 #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
-                taglist=['allWlep','allTlep'] # TEMP
+                #taglist=['allWlep','allTlep'] # TEMP
+                pass
 
 # ------------- Definition of plots to make ------------------
 ### TO-DO: add ABCDnn branches
 plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
         'NPV'   :('PV_npvs',linspace(0,80,81).tolist(),';N PVs'),
         'Nleps' :('NgoodLeptons',linspace(0,5,5).tolist(),';N good leptons'),
-        'lepPt' :('Good4Lepton_pt',linspace(0, 1000, 51).tolist(),';lepton p_{T} [GeV]'),
+        'lepPt' :('Good4Lepton_pt',linspace(0, 300, 51).tolist(),';lepton p_{T} [GeV]'),
         'lepEta':('Good4Lepton_eta',linspace(-2.5, 2.5, 51).tolist(),';lepton #eta'),
         'lepPhi':('Good4Lepton_phi',linspace(-3.2,3.2,65).tolist(),';lepton #phi'),
         'lepID':('Good4Lepton_ID',linspace(10,16,7).tolist(),';lepton flavor'),
@@ -97,15 +99,35 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
         'HT':('gcJet_ht',linspace(0, 2500, 51).tolist(),';H_{T} (GeV)'),
         'ST':('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
         'JetEta':('gcJet_eta',linspace(-3, 3, 41).tolist(),';central AK4 jet #eta'),
-        'JetPt' :('gcJet_pt',linspace(0, 1500, 51).tolist(),';central AK4 jet p_{T} [GeV]'),
+        'JetPt' :('gcJet_pt',linspace(0, 400, 51).tolist(),';central AK4 jet p_{T} [GeV]'),
         'JetPhi':('gcJet_phi',linspace(-3.2,3.2, 65).tolist(),';central AK4 jet phi'),
         'JetBtag':('gcJet_PNet',linspace(0,1,51).tolist(),';central AK4 jet DeepJet disc'),
         'NJets' :('NgoodcleanJets',linspace(0, 10, 11).tolist(),';central AK4 jet multiplicity'),
         'NBJets':('NJets_PNetL',linspace(0, 10, 11).tolist(),';ParticleNet b-tag loose multiplicity'),
-        'BpMassAve':('0.5*(B1finalM+B2finalM)',linspace(0,1800,31).tolist(),';Average B quark mass [GeV]'),
+        'BpMassAve':('0.5*(B1finalM+B2finalM)',linspace(0,3000,51).tolist(),';Average B quark mass [GeV]'),
         'BpMassDiff':('abs(B1finalM-B2finalM)',linspace(0,1800,31).tolist(),';Difference in B quark masses [GeV]'),
         'BpMass1':('B1finalM',linspace(0,1800,31).tolist(),';B quark 1 mass [GeV]'),
         'BpMass2':('B2finalM',linspace(0,1800,31).tolist(),';B quark 2 mass [GeV]'),
+        'VLQBBbarMass':('VLQ_BBbar_mass',linspace(0,10000,51).tolist(),';B#bar{B} mass [GeV]'),
+        'VLQBBbarCosDecayAngle':('VLQ_BBbar_cosDecayAngle',linspace(-1.6,1.6,65).tolist(),';B#bar{B} Cos Decay Angle'),
+        'VLQBBbarDeltaPhiDecayAngle':('VLQ_BBbar_deltaPhiDecayAngle',linspace(0,3.2,65).tolist(),';B#bar{B} Delta Decay #phi'),
+        'VLQBbarMass':('VLQ_Bbar_mass',linspace(0,5000,51).tolist(),';#bar{B} quark mass [GeV]'),
+        'VLQBbarCosDecayAngle':('VLQ_Bbar_cosDecayAngle',linspace(-1.6,1.6,65).tolist(),';#bar{B} Cos Decay Angle'),
+        'VLQBbarDeltaPhiDecayAngle':('VLQ_Bbar_deltaPhiDecayAngle',linspace(0,3.2,65).tolist(),';#bar{B} Delta #phi'),
+        'VLQBMass':('VLQ_B_mass',linspace(0,5000,51).tolist(),';B quark mass [GeV]'),
+        'VLQBCosDecayAngle':('VLQ_B_cosDecayAngle',linspace(-1.6,1.6,65).tolist(),';B Cos#theta'),
+        'VLQBDeltaPhiDecayAngle':('VLQ_B_deltaPhiDecayAngle',linspace(0,3.2,65).tolist(),';B Delta #phi'),
+        'VLQtau11Mass':('VLQ_tau11_mass',linspace(0,700,51).tolist(),';#tau_{11} mass [GeV]'),
+        'VLQtau12Mass':('VLQ_tau12_mass',linspace(0,700,51).tolist(),';#tau_{12} mass [GeV]'),
+        'VLQtau21Mass':('VLQ_tau21_mass',linspace(0,700,51).tolist(),';#tau_{21} mass [GeV]'),
+        'VLQtau22Mass':('VLQ_tau22_mass',linspace(0,700,51).tolist(),';#tau_{22} mass [GeV]'),
+        'VLQBBbarDeltaPhiVisible':('VLQ_BBbar_DeltaPhiVisible',linspace(0,3.2,65).tolist(),';B#bar{B} Delta #phi Visible'),
+        'VLQBBbarDeltaPhiDecayVisible':('VLQ_BBbar_DeltaPhiDecayVisible',linspace(0,3.2,65).tolist(),';B#bar{B} Delta #phi Decay Visible'),
+        'VLQBBbarDeltaPhiBoostVisible':('VLQ_BBbar_DeltaPhiBoostVisible',linspace(0,3.2,65).tolist(),';B#bar{B} Delta #phi Boost Visible'),
+        'VLQBBbarVisibleShape':('VLQ_BBbar_VisibleShape',linspace(0,1,51).tolist(),';B#bar{B} Visible Shape'),
+        'VLQMassAve':('0.5*(VLQ_B_mass+VLQ_Bbar_mass)',linspace(0,3000,51).tolist(),';Ave(B,#bar{B}) quark mass [GeV]'),
+        'VLQCosDecayAngleAve':('0.5*(VLQ_B_cosDecayAngle+VLQ_Bbar_cosDecayAngle)',linspace(-1,1,51).tolist(),';Avg(B,#bar{B}) cos#theta'),
+        'VLQDeltaPhiDecayAngleAve':('0.5*(VLQ_B_deltaPhiDecayAngle+VLQ_Bbar_deltaPhiDecayAngle)',linspace(0,3.2,65).tolist(),';Avg(B,#bar{B}) Delta #phi'),
 }
 
 print( "PLOTTING: "+iPlot)
@@ -140,9 +162,8 @@ for cat in catList:
 
         if doData:
                 dataHistFile = TFile.Open(f'{outDir}/datahists_{iPlot}.root', "RECREATE")
-                for i in samples_data.keys():
-                    print(f'Samples_data: {samples_data[i].samplename}')
-
+                #for i in samples_data.keys():
+                    #print(f'Samples_data: {samples_data[i].samplename}')
                 for data in samples_data.keys(): # "data" is the class 
                         print('------------ '+data+' -------------')
                         #SingleMuonRun2022EEF  = sample("SingleMuonRun2022EEF", 1.0, "2022EE", "SingleMuonRun2022EEF2022EENanoList.txt", "/Muon/Run2022F-22Sep2023-v2/NANOAOD")
