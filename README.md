@@ -126,3 +126,6 @@ Check status with `condor_q` and similar commands. The output files, including c
 
 Write me!
 
+## One-click plotter:
+Go to `paperPlotMacros/` and run `./runMacros.sh`
+
