@@ -62,6 +62,7 @@ def readTreeNominal(sample,year,step1Dir,treename = 'Events_Nominal'):
         
     tChain = TChain(treename)
     for i in range(0,len(rootfiles)):
+        if 'Nonprompt' in rootfiles[i] and 'Nonprompt' not in sample: continue
         if sample+'_'+year+'_' not in rootfiles[i]: continue # avoid 2016 and 2016APV doubling with extra _
         tChain.Add(rootfiles[i])
     return tChain 
@@ -75,6 +76,7 @@ def readTreeShift(sample,year,shift,step1Dir):
 
     tChain = TChain('Events_'+shift)
     for i in range(0,len(rootfiles)):
+        if 'Nonprompt' in rootfiles[i] and 'Nonprompt' not in sample: continue
         if sample+'_'+year+'_' not in rootfiles[i]: continue # avoid 2016 and 2016APV doubling with extra _
         tChain.Add(rootfiles[i])
     return tChain 

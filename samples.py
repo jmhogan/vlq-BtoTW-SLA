@@ -326,8 +326,8 @@ TTWW2022     = sample("TTWW2022", 0.008203, "2022", "TTWW2022.txt", "/TTWW_TuneC
 TTWW2022EE   = sample("TTWW2022EE", 0.008203, "2022EE", "TTWW2022EE.txt", "/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
 TTWW2023     = sample("TTWW2023", 0.008203, "2023", "TTWW2023.txt", "/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
 TTWW2023BPix = sample("TTWW2023BPix", 0.008203, "2023BPix", "TTWW2023BPix.txt", "/TTWW_TuneCP5_13p6TeV_madgraph-madspin-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
-#TTWZ2022     = sample("TTWZ2022", 0.002715, "2022", "TTWZ2022.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
-#TTWZ2022EE   = sample("TTWZ2022EE", 0.002715, "2022EE", "TTWZ2022EE.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
+TTWZ2022     = sample("TTWZ2022", 0.002715, "2022", "TTWZ2022.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
+TTWZ2022EE   = sample("TTWZ2022EE", 0.002715, "2022EE", "TTWZ2022EE.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
 TTWZ2023     = sample("TTWZ2023", 0.002715, "2023", "TTWZ2023.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
 TTWZ2023BPix = sample("TTWZ2023BPix", 0.002715, "2023BPix", "TTWZ2023BPix.txt", "/TTWZ_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
 TTZH2022     = sample("TTZH2022", 0.001288, "2022", "TTZH2022.txt", "/TTZH_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
@@ -403,6 +403,66 @@ ZZ4L2022EE = sample("ZZ4L2022EE", 0.02157, "2022EE", "ZZ4L2022EENanoList.txt", "
 ZZ4L2023 = sample("ZZ4L2023", 0.02157, "2023", "ZZ4L2023NanoList.txt", "/ZZto4L-2Jets_EW-QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
 ZZ4L2023BPix = sample("ZZ4L2023BPix", 0.02157, "2023BPix", "ZZ4L2023BPixNanoList.txt", "/ZZto4L-2Jets_EW-QCD_TuneCP5_13p6TeV_madgraph-pythia8/Run3Summer23BPixNanoAODv12-130X_mcRun3_2023_realistic_postBPix_v6-v2/NANOAODSIM")
 
+NonpromptSingleElecRun2022C = sample("NonpromptSingleElecRun2022C", 1.0, "2022", "SingleElecRun2022C2022NanoList.txt", "/EGamma/Run2022C-22Sep2023-v1/NANOAOD")
+NonpromptSingleElecRun2022D = sample("NonpromptSingleElecRun2022D", 1.0, "2022", "SingleElecRun2022D2022NanoList.txt", "/EGamma/Run2022D-22Sep2023-v1/NANOAOD")
+NonpromptSingleElecRun2022EEE  = sample("NonpromptSingleElecRun2022EEE", 1.0, "2022EE", "SingleElecRun2022EEE2022EENanoList.txt", "/EGamma/Run2022E-22Sep2023-v1/NANOAOD")
+NonpromptSingleElecRun2022EEF  = sample("NonpromptSingleElecRun2022EEF", 1.0, "2022EE", "SingleElecRun2022EEF2022EENanoList.txt", "/EGamma/Run2022F-22Sep2023-v1/NANOAOD")
+NonpromptSingleElecRun2022EEG  = sample("NonpromptSingleElecRun2022EEG", 1.0, "2022EE", "SingleElecRun2022EEG2022EENanoList.txt", "/EGamma/Run2022G-22Sep2023-v2/NANOAOD")
+NonpromptSingleElecRun2023C01  = sample("NonpromptSingleElecRun2023C01", 1.0, "2023", "SingleElecRun2023C012023NanoList.txt", "/EGamma0/Run2023C-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleElecRun2023C02  = sample("NonpromptSingleElecRun2023C02", 1.0, "2023", "SingleElecRun2023C022023NanoList.txt", "/EGamma0/Run2023C-22Sep2023_v2-v1/NANOAOD")
+NonpromptSingleElecRun2023C03  = sample("NonpromptSingleElecRun2023C03", 1.0, "2023", "SingleElecRun2023C032023NanoList.txt", "/EGamma0/Run2023C-22Sep2023_v3-v1/NANOAOD")
+NonpromptSingleElecRun2023C04  = sample("NonpromptSingleElecRun2023C04", 1.0, "2023", "SingleElecRun2023C042023NanoList.txt", "/EGamma0/Run2023C-22Sep2023_v4-v1/NANOAOD")
+NonpromptSingleElecRun2023C11  = sample("NonpromptSingleElecRun2023C11", 1.0, "2023", "SingleElecRun2023C112023NanoList.txt", "/EGamma1/Run2023C-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleElecRun2023C12  = sample("NonpromptSingleElecRun2023C12", 1.0, "2023", "SingleElecRun2023C122023NanoList.txt", "/EGamma1/Run2023C-22Sep2023_v2-v1/NANOAOD")
+NonpromptSingleElecRun2023C13  = sample("NonpromptSingleElecRun2023C13", 1.0, "2023", "SingleElecRun2023C132023NanoList.txt", "/EGamma1/Run2023C-22Sep2023_v3-v1/NANOAOD")
+NonpromptSingleElecRun2023C14  = sample("NonpromptSingleElecRun2023C14", 1.0, "2023", "SingleElecRun2023C142023NanoList.txt", "/EGamma1/Run2023C-22Sep2023_v4-v1/NANOAOD")
+NonpromptSingleElecRun2023BPixD01  = sample("NonpromptSingleElecRun2023BPixD01", 1.0, "2023BPix", "SingleElecRun2023BPixD012023BPixNanoList.txt", "/EGamma0/Run2023D-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleElecRun2023BPixD02  = sample("NonpromptSingleElecRun2023BPixD02", 1.0, "2023BPix", "SingleElecRun2023BPixD022023BPixNanoList.txt", "/EGamma0/Run2023D-22Sep2023_v2-v1/NANOAOD")
+NonpromptSingleElecRun2023BPixD11  = sample("NonpromptSingleElecRun2023BPixD11", 1.0, "2023BPix", "SingleElecRun2023BPixD112023BPixNanoList.txt", "/EGamma1/Run2023D-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleElecRun2023BPixD12  = sample("NonpromptSingleElecRun2023BPixD12", 1.0, "2023BPix", "SingleElecRun2023BPixD122023BPixNanoList.txt", "/EGamma1/Run2023D-22Sep2023_v2-v1/NANOAOD")
+
+NonpromptSingleMuonRun2022C = sample("NonpromptSingleMuonRun2022C", 1.0, "2022", "SingleMuonRun2022C2022NanoList.txt", "/Muon/Run2022C-22Sep2023-v1/NANOAOD")
+NonpromptSingleMuonRun2022D = sample("NonpromptSingleMuonRun2022D", 1.0, "2022", "SingleMuonRun2022D2022NanoList.txt", "/Muon/Run2022D-22Sep2023-v1/NANOAOD")
+NonpromptSingleMuonRun2022EEE  = sample("NonpromptSingleMuonRun2022EEE", 1.0, "2022EE", "SingleMuonRun2022EEE2022EENanoList.txt", "/Muon/Run2022E-22Sep2023-v1/NANOAOD")
+NonpromptSingleMuonRun2022EEF  = sample("NonpromptSingleMuonRun2022EEF", 1.0, "2022EE", "SingleMuonRun2022EEF2022EENanoList.txt", "/Muon/Run2022F-22Sep2023-v2/NANOAOD")
+NonpromptSingleMuonRun2022EEG  = sample("NonpromptSingleMuonRun2022EEG", 1.0, "2022EE", "SingleMuonRun2022EEG2022EENanoList.txt", "/Muon/Run2022G-22Sep2023-v1/NANOAOD")
+NonpromptSingleMuonRun2023C01  = sample("NonpromptSingleMuonRun2023C01", 1.0, "2023", "SingleMuonRun2023C012023NanoList.txt", "/Muon0/Run2023C-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleMuonRun2023C02  = sample("NonpromptSingleMuonRun2023C02", 1.0, "2023", "SingleMuonRun2023C022023NanoList.txt", "/Muon0/Run2023C-22Sep2023_v2-v1/NANOAOD")
+NonpromptSingleMuonRun2023C03  = sample("NonpromptSingleMuonRun2023C03", 1.0, "2023", "SingleMuonRun2023C032023NanoList.txt", "/Muon0/Run2023C-22Sep2023_v3-v1/NANOAOD")
+NonpromptSingleMuonRun2023C04  = sample("NonpromptSingleMuonRun2023C04", 1.0, "2023", "SingleMuonRun2023C042023NanoList.txt", "/Muon0/Run2023C-22Sep2023_v4-v1/NANOAOD")
+NonpromptSingleMuonRun2023C11  = sample("NonpromptSingleMuonRun2023C11", 1.0, "2023", "SingleMuonRun2023C112023NanoList.txt", "/Muon1/Run2023C-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleMuonRun2023C12  = sample("NonpromptSingleMuonRun2023C12", 1.0, "2023", "SingleMuonRun2023C122023NanoList.txt", "/Muon1/Run2023C-22Sep2023_v2-v1/NANOAOD")
+NonpromptSingleMuonRun2023C13  = sample("NonpromptSingleMuonRun2023C13", 1.0, "2023", "SingleMuonRun2023C132023NanoList.txt", "/Muon1/Run2023C-22Sep2023_v3-v1/NANOAOD")
+NonpromptSingleMuonRun2023C14  = sample("NonpromptSingleMuonRun2023C14", 1.0, "2023", "SingleMuonRun2023C142023NanoList.txt", "/Muon1/Run2023C-22Sep2023_v4-v2/NANOAOD")
+NonpromptSingleMuonRun2023BPixD01  = sample("NonpromptSingleMuonRun2023BPixD01", 1.0, "2023BPix", "SingleMuonRun2023BPixD012023BPixNanoList.txt", "/Muon0/Run2023D-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleMuonRun2023BPixD02  = sample("NonpromptSingleMuonRun2023BPixD02", 1.0, "2023BPix", "SingleMuonRun2023BPixD022023BPixNanoList.txt", "/Muon0/Run2023D-22Sep2023_v2-v1/NANOAOD")
+NonpromptSingleMuonRun2023BPixD11  = sample("NonpromptSingleMuonRun2023BPixD11", 1.0, "2023BPix", "SingleMuonRun2023BPixD112023BPixNanoList.txt", "/Muon1/Run2023D-22Sep2023_v1-v1/NANOAOD")
+NonpromptSingleMuonRun2023BPixD12  = sample("NonpromptSingleMuonRun2023BPixD12", 1.0, "2023BPix", "SingleMuonRun2023BPixD122023BPixNanoList.txt", "/Muon1/Run2023D-22Sep2023_v2-v1/NANOAOD")
+
+NonpromptMuonEGRun2022C = sample("NonpromptMuonEGRun2022C", 1.0, "2022", "MuonEGRun2022C2022NanoList.txt", "/MuonEG/Run2022C-22Sep2023-v1/NANOAOD")
+NonpromptMuonEGRun2022D = sample("NonpromptMuonEGRun2022D", 1.0, "2022", "MuonEGRun2022D2022NanoList.txt", "/MuonEG/Run2022D-22Sep2023-v1/NANOAOD")
+NonpromptMuonEGRun2022EEE  = sample("NonpromptMuonEGRun2022EEE", 1.0, "2022EE", "MuonEGRun2022EEE2022EENanoList.txt", "/MuonEG/Run2022E-22Sep2023-v1/NANOAOD")
+NonpromptMuonEGRun2022EEF  = sample("NonpromptMuonEGRun2022EEF", 1.0, "2022EE", "MuonEGRun2022EEF2022EENanoList.txt", "/MuonEG/Run2022F-22Sep2023-v1/NANOAOD")
+NonpromptMuonEGRun2022EEG  = sample("NonpromptMuonEGRun2022EEG", 1.0, "2022EE", "MuonEGRun2022EEG2022EENanoList.txt", "/MuonEG/Run2022G-22Sep2023-v1/NANOAOD")
+NonpromptMuonEGRun2023C01  = sample("NonpromptMuonEGRun2023C01", 1.0, "2023", "MuonEGRun2023C012023NanoList.txt", "/MuonEG/Run2023C-22Sep2023_v1-v1/NANOAOD")
+NonpromptMuonEGRun2023C02  = sample("NonpromptMuonEGRun2023C02", 1.0, "2023", "MuonEGRun2023C022023NanoList.txt", "/MuonEG/Run2023C-22Sep2023_v2-v1/NANOAOD")
+NonpromptMuonEGRun2023C03  = sample("NonpromptMuonEGRun2023C03", 1.0, "2023", "MuonEGRun2023C032023NanoList.txt", "/MuonEG/Run2023C-22Sep2023_v3-v1/NANOAOD")
+NonpromptMuonEGRun2023C04  = sample("NonpromptMuonEGRun2023C04", 1.0, "2023", "MuonEGRun2023C042023NanoList.txt", "/MuonEG/Run2023C-22Sep2023_v4-v1/NANOAOD")
+NonpromptMuonEGRun2023BPixD01  = sample("NonpromptMuonEGRun2023BPixD01", 1.0, "2023BPix", "MuonEGRun2023BPixD012023BPixNanoList.txt", "/MuonEG/Run2023D-22Sep2023_v1-v1/NANOAOD")
+NonpromptMuonEGRun2023BPixD02  = sample("NonpromptMuonEGRun2023BPixD02", 1.0, "2023BPix", "MuonEGRun2023BPixD022023BPixNanoList.txt", "/MuonEG/Run2023D-22Sep2023_v2-v1/NANOAOD")
+
+NonpromptTauRun2022C = sample("NonpromptTauRun2022C", 1.0, "2022", "TauRun2022C2022NanoList.txt", "/Tau/Run2022C-22Sep2023-v1/NANOAOD")
+NonpromptTauRun2022D = sample("NonpromptTauRun2022D", 1.0, "2022", "TauRun2022D2022NanoList.txt", "/Tau/Run2022D-22Sep2023-v1/NANOAOD")
+NonpromptTauRun2022EEE  = sample("NonpromptTauRun2022EEE", 1.0, "2022EE", "TauRun2022EEE2022EENanoList.txt", "/Tau/Run2022E-22Sep2023-v1/NANOAOD")
+NonpromptTauRun2022EEF  = sample("NonpromptTauRun2022EEF", 1.0, "2022EE", "TauRun2022EEF2022EENanoList.txt", "/Tau/Run2022F-22Sep2023-v1/NANOAOD")
+NonpromptTauRun2022EEG  = sample("NonpromptTauRun2022EEG", 1.0, "2022EE", "TauRun2022EEG2022EENanoList.txt", "/Tau/Run2022G-22Sep2023-v1/NANOAOD")
+NonpromptTauRun2023C01  = sample("NonpromptTauRun2023C01", 1.0, "2023", "TauRun2023C012023NanoList.txt", "/Tau/Run2023C-22Sep2023_v1-v2/NANOAOD")
+NonpromptTauRun2023C02  = sample("NonpromptTauRun2023C02", 1.0, "2023", "TauRun2023C022023NanoList.txt", "/Tau/Run2023C-22Sep2023_v2-v1/NANOAOD")
+NonpromptTauRun2023C03  = sample("NonpromptTauRun2023C03", 1.0, "2023", "TauRun2023C032023NanoList.txt", "/Tau/Run2023C-22Sep2023_v3-v1/NANOAOD")
+NonpromptTauRun2023C04  = sample("NonpromptTauRun2023C04", 1.0, "2023", "TauRun2023C042023NanoList.txt", "/Tau/Run2023C-22Sep2023_v4-v1/NANOAOD")
+NonpromptTauRun2023BPixD01  = sample("NonpromptTauRun2023BPixD01", 1.0, "2023BPix", "TauRun2023BPixD012023BPixNanoList.txt", "/Tau/Run2023D-22Sep2023_v1-v1/NANOAOD")
+NonpromptTauRun2023BPixD02  = sample("NonpromptTauRun2023BPixD02", 1.0, "2023BPix", "TauRun2023BPixD022023BPixNanoList.txt", "/Tau/Run2023D-22Sep2023_v2-v1/NANOAOD")
+
 samples_test = {
     "SingleElecRun2022C":      SingleElecRun2022C,
 }
@@ -453,17 +513,76 @@ samples_data = {
     "MuonEGRun2023C04":    MuonEGRun2023C04,
     "MuonEGRun2023BPixD01":MuonEGRun2023BPixD01,
     "MuonEGRun2023BPixD02":MuonEGRun2023BPixD02,
-    "TauRun2022C":      TauRun2022C,
-    "TauRun2022D":      TauRun2022D,
+    #"TauRun2022C":      TauRun2022C,
+    #"TauRun2022D":      TauRun2022D,
     "TauRun2022EEE":    TauRun2022EEE,
     "TauRun2022EEF":    TauRun2022EEF,
     "TauRun2022EEG":    TauRun2022EEG,
     "TauRun2023C01":    TauRun2023C01,
-    "TauRun2023C02":    TauRun2023C02,
+    #"TauRun2023C02":    TauRun2023C02,
     "TauRun2023C03":    TauRun2023C03,
     "TauRun2023C04":    TauRun2023C04,
-    "TauRun2023BPixD01":TauRun2023BPixD01,
-    "TauRun2023BPixD02":TauRun2023BPixD02,
+    #"TauRun2023BPixD01":TauRun2023BPixD01,
+    #"TauRun2023BPixD02":TauRun2023BPixD02,
+}
+
+samples_nonprompt = {
+    "NonpromptSingleElecRun2022C":      NonpromptSingleElecRun2022C,      
+    "NonpromptSingleElecRun2022D":      NonpromptSingleElecRun2022D,      
+    "NonpromptSingleElecRun2022EEE":    NonpromptSingleElecRun2022EEE,    
+    "NonpromptSingleElecRun2022EEF":    NonpromptSingleElecRun2022EEF,    
+    "NonpromptSingleElecRun2022EEG":    NonpromptSingleElecRun2022EEG,    
+    "NonpromptSingleElecRun2023C01":    NonpromptSingleElecRun2023C01,    
+    "NonpromptSingleElecRun2023C02":    NonpromptSingleElecRun2023C02,    
+    "NonpromptSingleElecRun2023C03":    NonpromptSingleElecRun2023C03,    
+    "NonpromptSingleElecRun2023C04":    NonpromptSingleElecRun2023C04,    
+    "NonpromptSingleElecRun2023C11":    NonpromptSingleElecRun2023C11,    
+    "NonpromptSingleElecRun2023C12":    NonpromptSingleElecRun2023C12,    
+    "NonpromptSingleElecRun2023C13":    NonpromptSingleElecRun2023C13,    
+    "NonpromptSingleElecRun2023C14":    NonpromptSingleElecRun2023C14,    
+    "NonpromptSingleElecRun2023BPixD01":NonpromptSingleElecRun2023BPixD01,
+    "NonpromptSingleElecRun2023BPixD02":NonpromptSingleElecRun2023BPixD02,
+    "NonpromptSingleElecRun2023BPixD11":NonpromptSingleElecRun2023BPixD11,
+    "NonpromptSingleElecRun2023BPixD12":NonpromptSingleElecRun2023BPixD12,
+    "NonpromptSingleMuonRun2022C":      NonpromptSingleMuonRun2022C,      
+    "NonpromptSingleMuonRun2022D":      NonpromptSingleMuonRun2022D,      
+    "NonpromptSingleMuonRun2022EEE":    NonpromptSingleMuonRun2022EEE,    
+    "NonpromptSingleMuonRun2022EEF":    NonpromptSingleMuonRun2022EEF,    
+    "NonpromptSingleMuonRun2022EEG":    NonpromptSingleMuonRun2022EEG,    
+    "NonpromptSingleMuonRun2023C01":    NonpromptSingleMuonRun2023C01,    
+    "NonpromptSingleMuonRun2023C02":    NonpromptSingleMuonRun2023C02,    
+    "NonpromptSingleMuonRun2023C03":    NonpromptSingleMuonRun2023C03,    
+    "NonpromptSingleMuonRun2023C04":    NonpromptSingleMuonRun2023C04,    
+    "NonpromptSingleMuonRun2023C11":    NonpromptSingleMuonRun2023C11,    
+    "NonpromptSingleMuonRun2023C12":    NonpromptSingleMuonRun2023C12,    
+    "NonpromptSingleMuonRun2023C13":    NonpromptSingleMuonRun2023C13,    
+    "NonpromptSingleMuonRun2023C14":    NonpromptSingleMuonRun2023C14,    
+    "NonpromptSingleMuonRun2023BPixD01":NonpromptSingleMuonRun2023BPixD01,
+    "NonpromptSingleMuonRun2023BPixD02":NonpromptSingleMuonRun2023BPixD02,
+    "NonpromptSingleMuonRun2023BPixD11":NonpromptSingleMuonRun2023BPixD11,
+    "NonpromptSingleMuonRun2023BPixD12":NonpromptSingleMuonRun2023BPixD12,
+    "NonpromptMuonEGRun2022C":      NonpromptMuonEGRun2022C,
+    "NonpromptMuonEGRun2022D":      NonpromptMuonEGRun2022D,
+    "NonpromptMuonEGRun2022EEE":    NonpromptMuonEGRun2022EEE,
+    "NonpromptMuonEGRun2022EEF":    NonpromptMuonEGRun2022EEF,
+    "NonpromptMuonEGRun2022EEG":    NonpromptMuonEGRun2022EEG,
+    "NonpromptMuonEGRun2023C01":    NonpromptMuonEGRun2023C01,
+    "NonpromptMuonEGRun2023C02":    NonpromptMuonEGRun2023C02,
+    "NonpromptMuonEGRun2023C03":    NonpromptMuonEGRun2023C03,
+    "NonpromptMuonEGRun2023C04":    NonpromptMuonEGRun2023C04,
+    "NonpromptMuonEGRun2023BPixD01":NonpromptMuonEGRun2023BPixD01,
+    "NonpromptMuonEGRun2023BPixD02":NonpromptMuonEGRun2023BPixD02,
+    "NonpromptTauRun2022C":      NonpromptTauRun2022C,
+    "NonpromptTauRun2022D":      NonpromptTauRun2022D,
+    "NonpromptTauRun2022EEE":    NonpromptTauRun2022EEE,
+    "NonpromptTauRun2022EEF":    NonpromptTauRun2022EEF,
+    "NonpromptTauRun2022EEG":    NonpromptTauRun2022EEG,
+    "NonpromptTauRun2023C01":    NonpromptTauRun2023C01,
+    "NonpromptTauRun2023C02":    NonpromptTauRun2023C02,
+    "NonpromptTauRun2023C03":    NonpromptTauRun2023C03,
+    "NonpromptTauRun2023C04":    NonpromptTauRun2023C04,
+    "NonpromptTauRun2023BPixD01":NonpromptTauRun2023BPixD01,
+    "NonpromptTauRun2023BPixD02":NonpromptTauRun2023BPixD02,
 }
 
 samples_signal={
@@ -526,6 +645,48 @@ samples_electroweak = {
     "DYPT6002022EE":  DYPT6002022EE,  
     "DYPT6002023":    DYPT6002023,    
     "DYPT6002023BPix":DYPT6002023BPix,
+    "WWW2022"     :     WWW2022     ,
+    "WWW2022EE"   :     WWW2022EE   ,
+    "WWW2023"     :     WWW2023     ,
+    "WWW2023BPix" :     WWW2023BPix ,
+    "WWZ2022"     :     WWZ2022     ,
+    "WWZ2022EE"   :     WWZ2022EE   ,
+    "WWZ2023"     :     WWZ2023     ,
+    "WWZ2023BPix" :     WWZ2023BPix ,
+    "WZZ2022"     :     WZZ2022     ,
+    "WZZ2022EE"   :     WZZ2022EE   ,
+    "WZZ2023"     :     WZZ2023     ,
+    "WZZ2023BPix" :     WZZ2023BPix ,
+    "ZZZ2022"     :     ZZZ2022     ,
+    "ZZZ2022EE"   :     ZZZ2022EE   ,
+    "ZZZ2023"     :     ZZZ2023     ,
+    "ZZZ2023BPix" :     ZZZ2023BPix ,
+}
+
+samples_electroweak4 = {
+    "ZZ4L2022":       ZZ4L2022,
+    "ZZ4L2022EE":     ZZ4L2022EE,
+    "ZZ4L2023":       ZZ4L2023,
+    "ZZ4L2023BPix":   ZZ4L2023BPix,
+    "WWZ2022"     :     WWZ2022     ,
+    "WWZ2022EE"   :     WWZ2022EE   ,
+    "WWZ2023"     :     WWZ2023     ,
+    "WWZ2023BPix" :     WWZ2023BPix ,
+    "WZZ2022"     :     WZZ2022     ,
+    "WZZ2022EE"   :     WZZ2022EE   ,
+    "WZZ2023"     :     WZZ2023     ,
+    "WZZ2023BPix" :     WZZ2023BPix ,
+    "ZZZ2022"     :     ZZZ2022     ,
+    "ZZZ2022EE"   :     ZZZ2022EE   ,
+    "ZZZ2023"     :     ZZZ2023     ,
+    "ZZZ2023BPix" :     ZZZ2023BPix ,
+}
+
+samples_electroweak3 = {
+    "ZZ4L2022":       ZZ4L2022,
+    "ZZ4L2022EE":     ZZ4L2022EE,
+    "ZZ4L2023":       ZZ4L2023,
+    "ZZ4L2023BPix":   ZZ4L2023BPix,
     "WWW2022"     :     WWW2022     ,
     "WWW2022EE"   :     WWW2022EE   ,
     "WWW2023"     :     WWW2023     ,
@@ -641,6 +802,88 @@ samples_ttbarx = {
     "TTWW2023BPix" : TTWW2023BPix,
     #"TTWZ2022"     : TTWZ2022    ,
     #"TTWZ2022EE"   : TTWZ2022EE  ,
+    "TTWZ2023"     : TTWZ2023    ,
+    "TTWZ2023BPix" : TTWZ2023BPix,
+    "TTZH2022"     : TTZH2022    ,
+    "TTZH2022EE"   : TTZH2022EE  ,
+    "TTZH2023"     : TTZH2023    ,
+    "TTZH2023BPix" : TTZH2023BPix,
+    "TTZZ2022"     : TTZZ2022    ,
+    "TTZZ2022EE"   : TTZZ2022EE  ,
+    "TTZZ2023"     : TTZZ2023    ,
+    "TTZZ2023BPix" : TTZZ2023BPix,
+    "TTTT2022"     : TTTT2022    ,
+    "TTTT2022EE"   : TTTT2022EE  ,
+    "TTTT2023"     : TTTT2023    ,
+    "TTTT2023BPix" : TTTT2023BPix,
+}
+
+samples_ttbarx4 = {
+    "TTHnonB2022":    TTHnonB2022,    
+    "TTHnonB2022EE":  TTHnonB2022EE,  
+    "TTHnonB2023":    TTHnonB2023,    
+    "TTHnonB2023BPix":TTHnonB2023BPix,
+    "TTZM42022":       TTZM42022,       
+    "TTZM42022EE":     TTZM42022EE,     
+    "TTZM42023":       TTZM42023,       
+    "TTZM42023BPix":   TTZM42023BPix,   
+    "TTZM502022":    TTZM502022,    
+    "TTZM502022EE":  TTZM502022EE,  
+    "TTZM502023":    TTZM502023,    
+    "TTZM502023BPix":TTZM502023BPix,
+    "TTWH2022"     : TTWH2022     ,
+    "TTWH2022EE"   : TTWH2022EE  ,
+    "TTWH2023"     : TTWH2023    ,
+    "TTWH2023BPix" : TTWH2023BPix,
+    "TTWW2022"     : TTWW2022    ,
+    "TTWW2022EE"   : TTWW2022EE  ,
+    "TTWW2023"     : TTWW2023    ,
+    "TTWW2023BPix" : TTWW2023BPix,
+    "TTWZ2022"     : TTWZ2022    ,
+    "TTWZ2022EE"   : TTWZ2022EE  ,
+    "TTWZ2023"     : TTWZ2023    ,
+    "TTWZ2023BPix" : TTWZ2023BPix,
+    "TTZH2022"     : TTZH2022    ,
+    "TTZH2022EE"   : TTZH2022EE  ,
+    "TTZH2023"     : TTZH2023    ,
+    "TTZH2023BPix" : TTZH2023BPix,
+    "TTZZ2022"     : TTZZ2022    ,
+    "TTZZ2022EE"   : TTZZ2022EE  ,
+    "TTZZ2023"     : TTZZ2023    ,
+    "TTZZ2023BPix" : TTZZ2023BPix,
+    "TTTT2022"     : TTTT2022    ,
+    "TTTT2022EE"   : TTTT2022EE  ,
+    "TTTT2023"     : TTTT2023    ,
+    "TTTT2023BPix" : TTTT2023BPix,
+}
+
+samples_ttbarx3 = {
+    "TTHnonB2022":    TTHnonB2022,    
+    "TTHnonB2022EE":  TTHnonB2022EE,  
+    "TTHnonB2023":    TTHnonB2023,    
+    "TTHnonB2023BPix":TTHnonB2023BPix,
+    "TTWl2022":         TTWl2022,         
+    "TTWl2022EE":       TTWl2022EE,       
+    "TTWl2023":         TTWl2023,         
+    "TTWl2023BPix":     TTWl2023BPix,     
+    "TTZM42022":       TTZM42022,       
+    "TTZM42022EE":     TTZM42022EE,     
+    "TTZM42023":       TTZM42023,       
+    "TTZM42023BPix":   TTZM42023BPix,   
+    "TTZM502022":    TTZM502022,    
+    "TTZM502022EE":  TTZM502022EE,  
+    "TTZM502023":    TTZM502023,    
+    "TTZM502023BPix":TTZM502023BPix,
+    "TTWH2022"     : TTWH2022     ,
+    "TTWH2022EE"   : TTWH2022EE  ,
+    "TTWH2023"     : TTWH2023    ,
+    "TTWH2023BPix" : TTWH2023BPix,
+    "TTWW2022"     : TTWW2022    ,
+    "TTWW2022EE"   : TTWW2022EE  ,
+    "TTWW2023"     : TTWW2023    ,
+    "TTWW2023BPix" : TTWW2023BPix,
+    "TTWZ2022"     : TTWZ2022    ,
+    "TTWZ2022EE"   : TTWZ2022EE  ,
     "TTWZ2023"     : TTWZ2023    ,
     "TTWZ2023BPix" : TTWZ2023BPix,
     "TTZH2022"     : TTZH2022    ,
@@ -872,8 +1115,8 @@ samples_mc={
     "TTWW2022EE":   TTWW2022EE,
     "TTWW2023":     TTWW2023,
     "TTWW2023BPix": TTWW2023BPix,
-    #"TTWZ2022":     TTWZ2022,
-    #"TTWZ2022EE":   TTWZ2022EE,
+    "TTWZ2022":     TTWZ2022,
+    "TTWZ2022EE":   TTWZ2022EE,
     "TTWZ2023":     TTWZ2023,
     "TTWZ2023BPix": TTWZ2023BPix,
     "TTZH2022":     TTZH2022,
@@ -897,51 +1140,216 @@ samples_mc={
     "WWZZ4L2023":     WWZZ4L2023,
     "WWZZ4L2023BPix": WWZZ4L2023BPix,
 }
+
+# Use if refreshing nRun on all the MC
+# mclist_2022 = [
+#     Bprime_M1000_2022,    
+#     Bprime_M1300_2022,    
+#     Bprime_M1600_2022,    
+#     Bprime_M700_2022,
+#     Bprime_M400_2022,
+#     DYPT402022,     
+#     DYPT1002022,    
+#     DYPT2002022,    
+#     DYPT4002022,    
+#     DYPT6002022,    
+#     QCDHT10002022 ,   
+#     QCDHT12002022,    
+#     QCDHT15002022,    
+#     QCDHT20002022,    
+#     QCDHT2002022,     
+#     QCDHT4002022,     
+#     QCDHT6002022,     
+#     QCDHT8002022,     
+#     TTHB2022,       
+#     TTHnonB2022,    
+#     TTTo2L2Nu2022,            
+#     TTToHadronic2022,         
+#     TTToSemiLeptonic2022,     
+#     TTWl2022,         
+#     TTZM42022,
+#     TTZM502022,    
+#     WW2L2022,     
+#     WZ2L2022,     
+#     WZ3L2022,
+#     ZZ2L2022,
+#     ZZ4L2022,
+#     WWW2022,
+#     WWZ2022,
+#     WZZ2022,
+#     ZZZ2022,
+#     TTWH2022,
+#     TTWW2022,
+#     TTWZ2022,
+#    TTZH2022,
+#    TTZZ2022,
+#    TTTT2022,
+#    WWZZ3L2022,
+#    WWZZ4L2022,
+# ]
     
+# mclist_2022EE = [
+#     Bprime_M1000_2022EE,    
+#     Bprime_M1300_2022EE,    
+#     Bprime_M1600_2022EE,    
+#     Bprime_M700_2022EE,
+#     Bprime_M400_2022EE,
+#     DYPT402022EE,     
+#     DYPT1002022EE,    
+#     DYPT2002022EE,    
+#     DYPT4002022EE,    
+#     DYPT6002022EE,    
+#     QCDHT10002022EE ,   
+#     QCDHT12002022EE,    
+#     QCDHT15002022EE,    
+#     QCDHT20002022EE,    
+#     QCDHT2002022EE,     
+#     QCDHT4002022EE,     
+#     QCDHT6002022EE,     
+#     QCDHT8002022EE,     
+#     TTHB2022EE,       
+#     TTHnonB2022EE,    
+#     TTTo2L2Nu2022EE,            
+#     TTToHadronic2022EE,         
+#     TTToSemiLeptonic2022EE,     
+#     TTWl2022EE,         
+#     TTZM42022EE,
+#     TTZM502022EE,    
+#     WW2L2022EE,     
+#     WZ3L2022EE,
+#     WZ2L2022EE,     
+#     ZZ2L2022EE,
+#     ZZ4L2022EE,
+#     WWW2022EE,
+#     WWZ2022EE,
+#     WZZ2022EE,
+#     ZZZ2022EE,
+#     TTWH2022EE,
+#     TTWW2022EE,
+#     TTWZ2022EE,
+#     TTZH2022EE,
+#     TTZZ2022EE,
+#     TTTT2022EE,
+#     WWZZ3L2022EE,
+#     WWZZ4L2022EE,
+# ]
+
+# mclist_2023 = [
+#    Bprime_M1000_2023,    
+#    Bprime_M1300_2023,    
+#    Bprime_M1600_2023,    
+#    Bprime_M400_2023,
+#    Bprime_M700_2023,
+#    DYPT402023,     
+#    DYPT1002023,    
+#    DYPT2002023,    
+#    DYPT4002023,    
+#    DYPT6002023,    
+#    QCDHT10002023 ,   
+#    QCDHT12002023,    
+#    QCDHT15002023,    
+#    QCDHT20002023,    
+#    QCDHT2002023,     
+#    QCDHT4002023,     
+#    QCDHT6002023,     
+#    QCDHT8002023,     
+#    TTHB2023,       
+#    TTHnonB2023,    
+#    TTTo2L2Nu2023,            
+#    TTToHadronic2023,         
+#    TTToSemiLeptonic2023,     
+#    TTWl2023,         
+#    TTZM42023,
+#    TTZM502023,    
+#    WW2L2023,     
+#    WZ3L2023,
+#    WZ2L2023,     
+#    ZZ2L2023,
+#    ZZ4L2023,
+#    WWW2023,
+#    WWZ2023,
+#    WZZ2023,
+#    ZZZ2023,
+#    TTWH2023,
+#    TTWW2023,
+#    TTWZ2023,
+#    TTZH2023,
+#    TTZZ2023,
+#    TTTT2023,
+#    WWZZ3L2023,
+#    WWZZ4L2023,
+# ]
+
+# mclist_2023BPix = [
+#    Bprime_M1000_2023BPix,    
+#    Bprime_M1300_2023BPix,    
+#    Bprime_M1600_2023BPix,    
+#    Bprime_M400_2023BPix,
+#    Bprime_M700_2023BPix,
+#    DYPT402023BPix,     
+#    DYPT1002023BPix,    
+#    DYPT2002023BPix,    
+#    DYPT4002023BPix,    
+#    DYPT6002023BPix,    
+#    QCDHT10002023BPix ,   
+#    QCDHT12002023BPix,    
+#    QCDHT15002023BPix,    
+#    QCDHT20002023BPix,    
+#    QCDHT2002023BPix,     
+#    QCDHT4002023BPix,     
+#    QCDHT6002023BPix,     
+#    QCDHT8002023BPix,     
+#    TTHB2023BPix,       
+#    TTHnonB2023BPix,    
+#    TTTo2L2Nu2023BPix,            
+#    TTToHadronic2023BPix,         
+#    TTToSemiLeptonic2023BPix,     
+#    TTWl2023BPix,         
+#    TTZM42023BPix,
+#    TTZM502023BPix,    
+#    WW2L2023BPix,     
+#    WZ3L2023BPix,
+#    WZ2L2023BPix,     
+#    ZZ2L2023BPix,
+#    ZZ4L2023BPix,
+#    WWW2023BPix,
+#    WWZ2023BPix,
+#    WZZ2023BPix,
+#    ZZZ2023BPix,
+#    TTWH2023BPix,
+#    TTWW2023BPix,
+#    TTWZ2023BPix,
+#    TTZH2023BPix,
+#    TTZZ2023BPix,
+#    TTTT2023BPix,
+#    WWZZ3L2023BPix,
+#    WWZZ4L2023BPix,
+# ]
+
 mclist_2022 = [
-   Bprime_M1000_2022,    
-   Bprime_M1300_2022,    
-   Bprime_M1600_2022,    
-   Bprime_M700_2022,
-   Bprime_M400_2022,
-   DYPT402022,     
-   DYPT1002022,    
-   DYPT2002022,    
-   DYPT4002022,    
-   DYPT6002022,    
-   QCDHT10002022 ,   
-   QCDHT12002022,    
-   QCDHT15002022,    
-   QCDHT20002022,    
-   QCDHT2002022,     
-   QCDHT4002022,     
-   QCDHT6002022,     
-   QCDHT8002022,     
-   TTHB2022,       
-   TTHnonB2022,    
-   TTTo2L2Nu2022,            
-   TTToHadronic2022,         
-   TTToSemiLeptonic2022,     
-   TTWl2022,         
-   TTZM42022,
-   TTZM502022,    
-   WW2L2022,     
-   WZ2L2022,     
-   WZ3L2022,
-   ZZ2L2022,
-   ZZ4L2022,
-   WWW2022,
-   WWZ2022,
-   WZZ2022,
-   ZZZ2022,
-   TTWH2022,
-   TTWW2022,
-   #TTWZ2022,
-   TTZH2022,
-   TTZZ2022,
-   TTTT2022,
-   WWZZ3L2022,
-   WWZZ4L2022,
+    Bprime_M1000_2022,    
+    Bprime_M1300_2022,    
+    Bprime_M1600_2022,    
+    Bprime_M700_2022,
+    Bprime_M400_2022,
+    TTHnonB2022,    
+    TTWl2022,         
+    TTZM42022,
+    TTZM502022,    
+    WZ3L2022,
+    ZZ4L2022,
+    WWW2022,
+    WWZ2022,
+    WZZ2022,
+    ZZZ2022,
+    TTWH2022,
+    TTWW2022,
+    TTWZ2022,
+    TTZH2022,
+    TTZZ2022,
+    TTTT2022,
+    WWZZ3L2022,
+    WWZZ4L2022,
 ]
     
 mclist_2022EE = [
@@ -950,32 +1358,11 @@ mclist_2022EE = [
     Bprime_M1600_2022EE,    
     Bprime_M700_2022EE,
     Bprime_M400_2022EE,
-    DYPT402022EE,     
-    DYPT1002022EE,    
-    DYPT2002022EE,    
-    DYPT4002022EE,    
-    DYPT6002022EE,    
-    QCDHT10002022EE ,   
-    QCDHT12002022EE,    
-    QCDHT15002022EE,    
-    QCDHT20002022EE,    
-    QCDHT2002022EE,     
-    QCDHT4002022EE,     
-    QCDHT6002022EE,     
-    QCDHT8002022EE,     
-    TTHB2022EE,       
     TTHnonB2022EE,    
-    TTTo2L2Nu2022EE,            
-    TTToHadronic2022EE,         
-    TTToSemiLeptonic2022EE,     
     TTWl2022EE,         
-    #TTWq2022EE,
     TTZM42022EE,
     TTZM502022EE,    
-    WW2L2022EE,     
     WZ3L2022EE,
-    WZ2L2022EE,     
-    ZZ2L2022EE,
     ZZ4L2022EE,
     WWW2022EE,
     WWZ2022EE,
@@ -983,7 +1370,7 @@ mclist_2022EE = [
     ZZZ2022EE,
     TTWH2022EE,
     TTWW2022EE,
-    #TTWZ2022EE,
+    TTWZ2022EE,
     TTZH2022EE,
     TTZZ2022EE,
     TTTT2022EE,
@@ -997,32 +1384,11 @@ mclist_2023 = [
    Bprime_M1600_2023,    
    Bprime_M400_2023,
    Bprime_M700_2023,
-   DYPT402023,     
-   DYPT1002023,    
-   DYPT2002023,    
-   DYPT4002023,    
-   DYPT6002023,    
-   QCDHT10002023 ,   
-   QCDHT12002023,    
-   QCDHT15002023,    
-   QCDHT20002023,    
-   QCDHT2002023,     
-   QCDHT4002023,     
-   QCDHT6002023,     
-   QCDHT8002023,     
-   TTHB2023,       
    TTHnonB2023,    
-   TTTo2L2Nu2023,            
-   TTToHadronic2023,         
-   TTToSemiLeptonic2023,     
    TTWl2023,         
-   #TTWq2023,         
    TTZM42023,
    TTZM502023,    
-   WW2L2023,     
    WZ3L2023,
-   WZ2L2023,     
-   ZZ2L2023,
    ZZ4L2023,
    WWW2023,
    WWZ2023,
@@ -1044,31 +1410,11 @@ mclist_2023BPix = [
    Bprime_M1600_2023BPix,    
    Bprime_M400_2023BPix,
    Bprime_M700_2023BPix,
-   DYPT402023BPix,     
-   DYPT1002023BPix,    
-   DYPT2002023BPix,    
-   DYPT4002023BPix,    
-   DYPT6002023BPix,    
-   QCDHT10002023BPix ,   
-   QCDHT12002023BPix,    
-   QCDHT15002023BPix,    
-   QCDHT20002023BPix,    
-   QCDHT2002023BPix,     
-   QCDHT4002023BPix,     
-   QCDHT6002023BPix,     
-   QCDHT8002023BPix,     
-   TTHB2023BPix,       
    TTHnonB2023BPix,    
-   TTTo2L2Nu2023BPix,            
-   TTToHadronic2023BPix,         
-   TTToSemiLeptonic2023BPix,     
    TTWl2023BPix,         
    TTZM42023BPix,
    TTZM502023BPix,    
-   WW2L2023BPix,     
    WZ3L2023BPix,
-   WZ2L2023BPix,     
-   ZZ2L2023BPix,
    ZZ4L2023BPix,
    WWW2023BPix,
    WWZ2023BPix,
@@ -1083,6 +1429,7 @@ mclist_2023BPix = [
    WWZZ3L2023BPix,
    WWZZ4L2023BPix,
 ]
+
 Bprime_M1000_2022.nrun = 115000.0 # from integral 115000, file Bprime_M1000_2022
 Bprime_M1300_2022.nrun = 112272.0 # from integral 112272, file Bprime_M1300_2022
 Bprime_M1600_2022.nrun = 110198.0 # from integral 110198, file Bprime_M1600_2022
@@ -1242,6 +1589,100 @@ WW2L2023BPix.nrun = 125000.0 # from integral 125000, file WW2L2023BPix
 WZ3L2023BPix.nrun = 125000.0 # from integral 125000, file WZ3L2023BPix
 WZ2L2023BPix.nrun = 4262560.000000002 # from integral 4267000, file WZ2L2023BPix
 ZZ2L2023BPix.nrun = 121000.0 # from integral 121000, file ZZ2L2023BPix
+ZZ4L2023BPix.nrun = 125000.0 # from integral 125000, file ZZ4L2023BPix
+WWW2023BPix.nrun = 423054.00000000023 # from integral 466500, file WWW2023BPix
+WWZ2023BPix.nrun = 1588206.0 # from integral 1746000, file WWZ2023BPix
+WZZ2023BPix.nrun = 1625116.0000000014 # from integral 1788000, file WZZ2023BPix
+ZZZ2023BPix.nrun = 1589388.0000000002 # from integral 1788000, file ZZZ2023BPix
+TTWH2023BPix.nrun = 969000.0 # from integral 969000, file TTWH2023BPix
+TTWW2023BPix.nrun = 7288000.0 # from integral 7288000, file TTWW2023BPix
+TTWZ2023BPix.nrun = 497000.0 # from integral 497000, file TTWZ2023BPix
+TTZH2023BPix.nrun = 994000.0 # from integral 994000, file TTZH2023BPix
+TTZZ2023BPix.nrun = 992000.0 # from integral 992000, file TTZZ2023BPix
+TTTT2023BPix.nrun = 1114459.0000000007 # from integral 2477775, file TTTT2023BPix
+WWZZ3L2023BPix.nrun = 329333.0 # from integral 329333, file WWZZ3L2023BPix
+WWZZ4L2023BPix.nrun = 325333.0 # from integral 325333, file WWZZ4L2023BPix
+
+# update Feb2026
+Bprime_M1000_2022.nrun = 115000.0 # from integral 115000, file Bprime_M1000_2022
+Bprime_M1300_2022.nrun = 112272.0 # from integral 112272, file Bprime_M1300_2022
+Bprime_M1600_2022.nrun = 110198.0 # from integral 110198, file Bprime_M1600_2022
+Bprime_M700_2022.nrun = 115000.0 # from integral 115000, file Bprime_M700_2022
+Bprime_M400_2022.nrun = 114284.0 # from integral 114284, file Bprime_M400_2022
+TTHnonB2022.nrun = 3762216.999999989 # from integral 3846525, file TTHnonB2022
+TTWl2022.nrun = 1070287.0000000002 # from integral 2056905, file TTWl2022
+TTZM42022.nrun = 166448.0 # from integral 300000, file TTZM42022
+TTZM502022.nrun = 207839.99999999994 # from integral 399000, file TTZM502022
+WZ3L2022.nrun = 98532.0 # from integral 98532, file WZ3L2022
+ZZ4L2022.nrun = 99312.0 # from integral 99312, file ZZ4L2022
+WWW2022.nrun = 408136.0 # from integral 450000, file WWW2022
+WWZ2022.nrun = 1774030.0 # from integral 1950044, file WWZ2022
+WZZ2022.nrun = 1806417.9999999998 # from integral 1987058, file WZZ2022
+ZZZ2022.nrun = 1751582.0 # from integral 1970234, file ZZZ2022
+TTWH2022.nrun = 790196.0 # from integral 790196, file TTWH2022
+TTWW2022.nrun = 448443.0 # from integral 448443, file TTWW2022
+TTWZ2022.nrun = 400000.0 # from integral 400000, file TTWZ2022
+TTZH2022.nrun = 798996.0 # from integral 798996, file TTZH2022
+TTZZ2022.nrun = 443238.0 # from integral 443238, file TTZZ2022
+TTTT2022.nrun = 1076871.0 # from integral 2396925, file TTTT2022
+WWZZ3L2022.nrun = 222222.0 # from integral 222222, file WWZZ3L2022
+WWZZ4L2022.nrun = 222222.0 # from integral 222222, file WWZZ4L2022
+Bprime_M1000_2022EE.nrun = 383618.0 # from integral 383618, file Bprime_M1000_2022EE
+Bprime_M1300_2022EE.nrun = 381505.0 # from integral 381505, file Bprime_M1300_2022EE
+Bprime_M1600_2022EE.nrun = 383638.0 # from integral 383638, file Bprime_M1600_2022EE
+Bprime_M700_2022EE.nrun = 381495.0 # from integral 381495, file Bprime_M700_2022EE
+Bprime_M400_2022EE.nrun = 378574.0 # from integral 378574, file Bprime_M400_2022EE
+TTHnonB2022EE.nrun = 13649278.0 # from integral 13955780, file TTHnonB2022EE
+TTWl2022EE.nrun = 3751873.9999999995 # from integral 7212758, file TTWl2022EE
+TTZM42022EE.nrun = 582589.0 # from integral 1049999, file TTZM42022EE
+TTZM502022EE.nrun = 727998.0 # from integral 1400000, file TTZM502022EE
+WZ3L2022EE.nrun = 350000.0 # from integral 350000, file WZ3L2022EE
+ZZ4L2022EE.nrun = 338117.0 # from integral 338117, file ZZ4L2022EE
+WWW2022EE.nrun = 1345746.0 # from integral 1482480, file WWW2022EE
+WWZ2022EE.nrun = 5094734.0 # from integral 5601076, file WWZ2022EE
+WZZ2022EE.nrun = 4809662.0 # from integral 5290014, file WZZ2022EE
+ZZZ2022EE.nrun = 5159256.0 # from integral 5803440, file ZZZ2022EE
+TTWH2022EE.nrun = 2800000.0 # from integral 2800000, file TTWH2022EE
+TTWW2022EE.nrun = 1536000.0 # from integral 1536000, file TTWW2022EE
+TTWZ2022EE.nrun = 1085872.0 # from integral 1085872, file TTWZ2022EE
+TTZH2022EE.nrun = 2785771.0 # from integral 2785771, file TTZH2022EE
+TTZZ2022EE.nrun = 1054000.0 # from integral 1054000, file TTZZ2022EE
+TTTT2022EE.nrun = 3857788.0 # from integral 8571152, file TTTT2022EE
+WWZZ3L2022EE.nrun = 777778.0 # from integral 777778, file WWZZ3L2022EE
+WWZZ4L2022EE.nrun = 777778.0 # from integral 777778, file WWZZ4L2022EE
+Bprime_M1000_2023.nrun = 320000.0 # from integral 320000, file Bprime_M1000_2023
+Bprime_M1300_2023.nrun = 314000.0 # from integral 314000, file Bprime_M1300_2023
+Bprime_M1600_2023.nrun = 320000.0 # from integral 320000, file Bprime_M1600_2023
+Bprime_M400_2023.nrun = 317000.0 # from integral 317000, file Bprime_M400_2023
+Bprime_M700_2023.nrun = 320000.0 # from integral 320000, file Bprime_M700_2023
+TTHnonB2023.nrun = 11639625.999999998 # from integral 11901980, file TTHnonB2023
+TTWl2023.nrun = 2046979.0 # from integral 3935565, file TTWl2023
+TTZM42023.nrun = 326292.0000000001 # from integral 591000, file TTZM42023
+TTZM502023.nrun = 415913.9999999998 # from integral 800000, file TTZM502023
+WZ3L2023.nrun = 250000.0 # from integral 250000, file WZ3L2023
+ZZ4L2023.nrun = 250000.0 # from integral 250000, file ZZ4L2023
+WWW2023.nrun = 849916.0000000002 # from integral 936000, file WWW2023
+WWZ2023.nrun = 3275962.0000000005 # from integral 3600000, file WWZ2023
+WZZ2023.nrun = 3265158.0000000023 # from integral 3591000, file WZZ2023
+ZZZ2023.nrun = 3201469.9999999995 # from integral 3600000, file ZZZ2023
+TTWH2023.nrun = 1960000.0 # from integral 1960000, file TTWH2023
+TTWW2023.nrun = 14912000.0 # from integral 14912000, file TTWW2023
+TTWZ2023.nrun = 1000000.0 # from integral 1000000, file TTWZ2023
+TTZH2023.nrun = 1993000.0 # from integral 1993000, file TTZH2023
+TTZZ2023.nrun = 1994000.0 # from integral 1994000, file TTZZ2023
+TTTT2023.nrun = 2247088.0000000014 # from integral 4994204, file TTTT2023
+WWZZ3L2023.nrun = 662667.0 # from integral 662667, file WWZZ3L2023
+WWZZ4L2023.nrun = 662667.0 # from integral 662667, file WWZZ4L2023
+Bprime_M1000_2023BPix.nrun = 180000.0 # from integral 180000, file Bprime_M1000_2023BPix
+Bprime_M1300_2023BPix.nrun = 180000.0 # from integral 180000, file Bprime_M1300_2023BPix
+Bprime_M1600_2023BPix.nrun = 177000.0 # from integral 177000, file Bprime_M1600_2023BPix
+Bprime_M400_2023BPix.nrun = 180000.0 # from integral 180000, file Bprime_M400_2023BPix
+Bprime_M700_2023BPix.nrun = 180000.0 # from integral 180000, file Bprime_M700_2023BPix
+TTHnonB2023BPix.nrun = 5759494.999999999 # from integral 5887987, file TTHnonB2023BPix
+TTWl2023BPix.nrun = 1028267.0 # from integral 1981391, file TTWl2023BPix
+TTZM42023BPix.nrun = 162042.00000000003 # from integral 294000, file TTZM42023BPix
+TTZM502023BPix.nrun = 207706.0 # from integral 400000, file TTZM502023BPix
+WZ3L2023BPix.nrun = 125000.0 # from integral 125000, file WZ3L2023BPix
 ZZ4L2023BPix.nrun = 125000.0 # from integral 125000, file ZZ4L2023BPix
 WWW2023BPix.nrun = 423054.00000000023 # from integral 466500, file WWW2023BPix
 WWZ2023BPix.nrun = 1588206.0 # from integral 1746000, file WWZ2023BPix

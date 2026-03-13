@@ -11,7 +11,7 @@ for sample in mclist_2022:
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
     tree = readTreeNominal(samplename,"2022",step1dir,"Runs")
 
     integral = 0
@@ -31,7 +31,7 @@ for sample in mclist_2022EE:
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
     tree = readTreeNominal(samplename,"2022EE",step1dir,"Runs")
 
     integral = 0
@@ -51,7 +51,7 @@ for sample in mclist_2023:
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
     tree = readTreeNominal(samplename,"2023",step1dir,"Runs")
 
     integral = 0
@@ -71,7 +71,7 @@ for sample in mclist_2023BPix:
     
     samplename = sample.samplename.split('/')[1]
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Jul2025_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
     tree = readTreeNominal(samplename,"2023BPix",step1dir,"Runs")
 
     integral = 0

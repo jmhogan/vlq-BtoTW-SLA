@@ -5,7 +5,7 @@ import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F,TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak, samples_wjets, samples_singletop, samples_ttbarx, samples_qcd, uncorrList_sf, yearList
+from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, uncorrList_sf, yearList, samples_nonprompt
 from utils import *
 
 gROOT.SetBatch(1)
@@ -18,7 +18,7 @@ else:
 if len(sys.argv)>2:
         region = str(sys.argv[2])
 else:
-        region='all' # BAX, DCY, individuals, or all
+        region='3lep' # BAX, DCY, individuals, or all
 if len(sys.argv)>3:
         isCategorized = bool(eval(sys.argv[3]))
 else:
@@ -54,6 +54,10 @@ doABCDnn = False
 from samples import samples_ttbar
 
 bkgProcs = {'ewk':samples_electroweak,'ttbar':samples_ttbar,'ttx':samples_ttbarx}
+if region == '3lep':
+        bkgProcs = {'ewk':samples_electroweak3,'np':samples_nonprompt,'ttx':samples_ttbarx3}
+elif region == '4lep':
+        bkgProcs = {'ewk':samples_electroweak4,'np':samples_nonprompt,'ttx':samples_ttbarx4}
 massList = [400,700,1000,1300,1600]
 sigList = ['BpM'+str(mass) for mass in massList]
 

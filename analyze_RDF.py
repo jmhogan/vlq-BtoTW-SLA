@@ -52,10 +52,13 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         doMuRF = True
         #if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
         #        doMuRF = False
-        
+
+        if 'Nonprompt' in sample.prefix:
+                weightStr = 'nonpromptWeight'
+                
         if ('Single' not in sample.prefix and 'MuonEG' not in sample.prefix and 'Tau' not in sample.prefix): 
-			# '+jetSFstr+' * '+topCorr+' * leptonIDSF[0] * leptonIsoSF[0] * leptonHLTSF[0] * puJetSF[0] * 
-            weightStr += ' * PileupWeights[0] * elrecoSF[0] * elidSF[0] * muonidSF[0] * muonisoSF[0] * tauidVSeSF[0] * tauidVSmuSF[0] * tauidVSjetSF[0] * btagWeights[0] *'+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
+			# btagWeights[0] *
+            weightStr += ' * PileupWeights[0] * elrecoSF[0] * elidSF[0] * muonidSF[0] * muonisoSF[0] * tauidVSeSF[0] * tauidVSmuSF[0] * tauidVSjetSF[0] * '+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
                         
             #if isCategorized:
             #        if tag=="tagTjet" or tag=="allWlep":
@@ -213,24 +216,6 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                 cut += ' && NJets_PNetL > 1'
         elif '0b' in region: 
                 cut += ' && NJets_PNetL == 0'
-        if region == 'BAX': 
-                cut += ' && NJets_forward == 0'                
-        elif region == 'DCY': 
-                cut += ' && NJets_forward > 0'
-        elif region == 'B': 
-                cut += ' && NJets_forward == 0 && NJets_PNetL < 3'
-        elif region == 'A': 
-                cut += ' && NJets_forward == 0 && NJets_PNetL == 3'
-        elif region == 'X': 
-                cut += ' && NJets_forward == 0 && NJets_PNetL > 3'
-        elif region == 'D': 
-                cut += ' && NJets_forward > 0 && NJets_PNetL < 3'
-        elif region == 'C': 
-                cut += ' && NJets_forward > 0 && NJets_PNetL == 3'
-        elif region == 'Y': 
-                cut += ' && NJets_forward > 0 && NJets_PNetL > 3'
-        elif region == 'V':
-                cut  += ' && NJets_forward > 0 && NJets_PNetL < 3 && gcJet_ST < 850'
 
         # Separate ttbar into mass bins for proper normalization 
         if 'TTTo' in sample.prefix:
@@ -243,47 +228,10 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
               
         # Design the tagging cuts for categories
         tagCut = ''
-        if isCategorized:
-                if tag == 'tagTjet': 
-                        tagCut += ' && Bdecay_obs == 1'
-                elif tag == 'tagWjet': 
-                        tagCut += ' && Bdecay_obs == 2'
-                elif tag == 'untagTlep': 
-                        tagCut += ' && Bdecay_obs == 3'
-                elif tag == 'untagWlep': 
-                        tagCut += ' && Bdecay_obs == 4'
-                elif tag == 'allWlep': 
-                        tagCut += ' && (Bdecay_obs == 4 || Bdecay_obs == 1)'
-                elif tag == 'allTlep': 
-                        tagCut += ' && (Bdecay_obs == 2 || Bdecay_obs == 3)'
-
-              # signal categories for basic tag counts
-                if '2pW' in tag: 
-                        tagCut += ' && gcFatJet_nW >= 2'
-                elif '2W' in tag: 
-                        tagCut += ' && gcFatJet_nW == 2'
-                elif '1pW' in tag: 
-                        tagCut += ' && gcFatJet_nW >= 1'
-                elif '1W' in tag: 
-                        tagCut += ' && gcFatJet_nW == 1'
-                elif '01W' in tag: 
-                        tagCut += ' && gcFatJet_nW <= 1'
-                elif '0W' in tag: 
-                        tagCut += ' && gcFatJet_nW == 0'  
-                if '0T' in tag: 
-                        tagCut += ' && gcFatJet_nT == 0'
-                elif '01T' in tag: 
-                        tagCut += ' && gcFatJet_nT <= 1'
-                elif '1T' in tag: 
-                        tagCut += ' && gcFatJet_nT == 1'
-                elif '1pT' in tag: 
-                        tagCut += ' && gcFatJet_nT >= 1'
-                elif '2T' in tag: 
-                        tagCut += ' && gcFatJet_nT == 2'
-                elif '2pT' in tag: 
-                        tagCut += ' && gcFatJet_nT >= 2'
 
         fullcut = isEMCut+cut+tagCut
+        if 'Nonprompt' in sample.prefix:
+                fullcut = fullcut.replace('Ngood','Nloose')
 
         print('plotTreeName: '+plotTreeName)
         print('Flavour: '+isEM+', tag: '+tag)
