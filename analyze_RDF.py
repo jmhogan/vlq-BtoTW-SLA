@@ -211,7 +211,7 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
         if region == '3lep':
                 cut += ' && NgoodLeptons == 3'
         if region == '4lep': 
-                cut += ' && NgoodLeptons == 4'
+                cut += ' && NgoodLeptons == 4 && ROOT::VecOps::Sum(Good4Lepton_charge) == 0'
         if '2pb' in region: 
                 cut += ' && NJets_PNetL > 1'
         elif '0b' in region: 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-# python3 -u plotHists.py [iPlot='BpMassAve'] [region='all'] [isCategorized=False] 
+# python3 -u plotHists.py [iPlot='BpMassAve'] [region='all'] [isCategorized=False] [blind] [yLog=false]
+# python3 -u plotHists.py VLQBMass
 
 import os,sys,time,math
 parent = os.path.dirname(os.getcwd())
@@ -28,8 +29,8 @@ else:
 if len(sys.argv)>4:
         pfix+=str(sys.argv[4])
 else:
-        #pfix+=''    # TEMP
-        pfix+='_Oct2025_NoSys'
+        pfix='kinematicsall_Dec2025_RJR'    # TEMP
+        #pfix+='_Dec2025'
         #pfix+='_Apr2024SysAll_validation' # TEMP. validation only
 templateDir = f'{os.getcwd()}/{pfix}/'
 
@@ -55,7 +56,7 @@ sig2leg='B#bar{B} (1.3 TeV, 1 pb)'
 
 scaleSignals = True
 #if not isCategorized: scaleSignals = True
-sigScaleFact = 0.1
+sigScaleFact = 1
 print('Scaling signals?',scaleSignals)
 print('Scale factor = ',sigScaleFact)
 tempsig='templates_'+iPlot+'_'+lumiInTemplates+''+isRebinned+'.root'#+'_Data18.root'
@@ -203,6 +204,7 @@ def formatLowerHist(histogram):
         histogram.GetXaxis().SetTitleSize(0.18)
         histogram.GetXaxis().SetTitleOffset(0.95)
         histogram.GetXaxis().SetNdivisions(506)
+        #histogram.GetXaxis().SetTitle('Avg(B,#bar{B}) Delta #phi')     # TEST: SET X-AXIS LABEL
         if 'YLD' in iPlot: histogram.GetXaxis().LabelsOption("u")
 
         if 'JetTag' in histogram.GetName():
@@ -318,6 +320,76 @@ for tag in taglist:
                 gaeData = TGraphAsymmErrors(hData.Clone(hData.GetName().replace(datalabel,'gaeDATA')))
                 hsig1 = RFile1.Get(histPrefix+'__'+sig1).Clone(histPrefix+'__sig1')
                 hsig2 = RFile1.Get(histPrefix+'__'+sig2).Clone(histPrefix+'__sig2')
+               
+                '''
+                #********* TEST DOMAIN START *********#
+                if iPlot == 'BpMassAve':
+                    zStart1 = 5
+                    zEnd1 = 8
+                    zStart2 = 9
+                    zEnd2 = 15
+                    zStart3 = 3
+                    zEnd3 = 14
+                    zStart4 = 4
+                    zEnd4 = 22
+                elif iPlot == 'VLQMassAve':
+                    zStart1 = 9
+                    zEnd1 = 18
+                    zStart2 = 16
+                    zEnd2 = 32
+                    zStart3 = 7
+                    zEnd3 = 33
+                    zStart4 = 12
+                    zEnd4 = 50
+                
+                from array import array
+
+                quantile_position_1 = array('d', [0.5])
+                median_value_1 = array('d', [0.0])
+                quantile_position_2 = array('d', [0.5])
+                median_value_2 = array('d', [0.0])
+
+                hsig1.GetQuantiles(1, median_value_1, quantile_position_1)
+                hsig2.GetQuantiles(1, median_value_2, quantile_position_2)
+
+                print(f'Signal Histogram 1 Mean: {hsig1.GetMean()}')
+                print(f'Signal Histogram 2 Mean: {hsig2.GetMean()}')
+                print(f'Signal Histogram 1 Standard Deviation: {hsig1.GetStdDev()}')
+                print(f'Signal Histogram 2 Standard Deviation: {hsig2.GetStdDev()}')
+                print(f'Signal Histogram 1 Median: {median_value_1[0]}')
+                print(f'Signal Histogram 2 Median: {median_value_2[0]}')
+
+                print(f'Signal Histogram 1 Full Integral: {hsig1.Integral()}')
+                print(f'Signal Histogram 2 Full Integral: {hsig2.Integral()}')
+
+                print(f'Signal Histogram 1 Bins {zStart1}-{zEnd1} Integral: {hsig1.Integral(zStart1,zEnd1)}')
+                print(f'Signal Histogram 2 Bins {zStart2}-{zEnd2} Integral: {hsig2.Integral(zStart2,zEnd2)}')
+                
+                bkgZone1 = 0
+                bkgZone2 = 0
+                bkgZone3 = 0
+                bkgZone4 = 0
+                for proc in bkgProcList:
+                    bkgZone1 += bkghists[proc+catStr].Integral(zStart1,zEnd1)
+                    bkgZone2 += bkghists[proc+catStr].Integral(zStart2,zEnd2)
+                    bkgZone3 += bkghists[proc+catStr].Integral(zStart3,zEnd3)
+                    bkgZone4 += bkghists[proc+catStr].Integral(zStart4,zEnd4)
+                
+                print('\nBACKGROUND\n')
+                print(f'Background Histogram Bins {zStart1}-{zEnd1} Integral: {bkgZone1}')
+                print(f'Background Histogram Bins {zStart2}-{zEnd2} Integral: {bkgZone2}')
+                print(f'Background Histogram Bins {zStart3}-{zEnd3} Integral: {bkgZone3}')
+                print(f'Background Histogram Bins {zStart4}-{zEnd4} Integral: {bkgZone4}')
+                
+                print('\n1 SIGMA OF MEAN\n')
+                print(f'Sig 1 / Bkg Bins {zStart1}-{zEnd1}: {hsig1.Integral(zStart1,zEnd1)/bkgZone1}')
+                print(f'Sig 2 / Bkg Bins {zStart2}-{zEnd2}: {hsig2.Integral(zStart2,zEnd2)/bkgZone2}')
+                
+                print('\nWHOLE RANGE OF SIGNAL\n')
+                print(f'Sig 1 / Bkg Bins {zStart3}-{zEnd3}: {hsig1.Integral(zStart3,zEnd3)/bkgZone3}')
+                print(f'Sig 2 / Bkg Bins {zStart4}-{zEnd4}: {hsig2.Integral(zStart4,zEnd4)/bkgZone4}')
+                #********* TEST DOMAIN END *********#
+                ''' 
                 if plotNorm:
                         hsig1.Scale(1/hsig1.Integral())
                         hsig2.Scale(1/hsig2.Integral())
@@ -573,6 +645,7 @@ for tag in taglist:
                 hData.SetTitle("")
                 # this is super important now!! gaeData has badly defined (negative) maximum
                 gaeData.SetMaximum(1.1*max(hData.GetMaximum(),bkgHT.GetMaximum()))
+                #gaeData.SetMaximum(65)     # Manual Set Upper Bound of y-axis on plot
                 if 'Charge' in iPlot or iPlot == 'Nleps' or iPlot == 'lepID':
                         gaeData.SetMaximum(1.5*max(hData.GetMaximum(),bkgHT.GetMaximum()))
                 gaeData.SetMinimum(0.015)
@@ -623,7 +696,7 @@ for tag in taglist:
                 tagString = ''
                 if isEM=='E': flvString+='e+jets'
                 if isEM=='M': flvString+='#mu+jets'
-                if isEM=='L': flvString+='4 e/#mu/#tau + 2 b-jets'
+                if isEM=='L': flvString+='#geq 3 e/#mu/#tau + 2 b-jets'
                 tagString = ''
                 regionString = ''
                 if isCategorized:
