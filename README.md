@@ -1,3 +1,21 @@
+# Exotic VLQ version
+
+**Ignore everything below if it seems even a little wrong or if the files don't exist! The info is probably majority correct where the file name (or a very similar one) does exist.**
+
+Basic path:
+
+(samples, utils, dumpcounts): utility scripts that assign metadata or provide functions. These are checked independently once per large processing of the data.
+
+`analyze_RDF.py`: primary script that assigns weights, determines cuts based on the categories/regions/leptons provided in the arguments, and creates histograms for the desired plot.
+
+`makeTemplates` folder: this is where things happen:
+   * `doHists_rdf.py`: this script can be run interactively with `python` to test operations. It has hard-coded on/off flags for processing data, backgrounds, signals, and provides the list of backgrounds to run. It defines all the plot properties and performs the actual operations of calling the `analyze` function.
+   * `doCondorHists.py`: a wrapper to facilitate submitting doHists jobs to the batch system
+   * `groupHists.py`: the output of doHists can be processed with `groupHists`, which adds together histograms across data collection time periods and processes within the same group. At this point the output file can be studied on the command line: `root -l kinematics3lep_data/templates_BpMassAve.root`, and then functions like `histoName->Draw()` can be used to draw the histogram for a visual check of whether background and data line up approximately.
+   * `plotHists.py`: makes nice-looking plots saved as PNG and PDF. **Not updated yet for nonprompt lepton backgrounds, though might be trivial to do it (assign a color, correct the background list ala groupHists and doHists, compare import statements to groupHists/doHists, etc...)**
+      * command-line arguments are many, but you can use `runPlotting_rdf.sh` as a guide to sending the necessary parameters. 
+
+
 # singleLepAnalyzer
 
 Analyzer for making stack plots and/or limit-setting templates. This version can read files created by [vlq-BtoTW-RDF](http://github.com/jmhogan/vlq-BtoTW-RDF/)
