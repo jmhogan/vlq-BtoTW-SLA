@@ -6,7 +6,7 @@ import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F,TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, uncorrList_sf, yearList, samples_nonprompt
+from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, uncorrList_sf, yearList, samples_nonprompt, samples_conversion
 from utils import *
 
 gROOT.SetBatch(1)
@@ -15,7 +15,7 @@ start_time = time.time()
 if len(sys.argv)>1:
 	iPlot = str(sys.argv[1])
 else:   
-        iPlot = 'BpMassAve'
+        iPlot = 'Nleps'
 if len(sys.argv)>2:
         region = str(sys.argv[2])
 else:
@@ -31,7 +31,7 @@ else:
         #pfix='kinematicsTEST'+region    #'TEST' is TEMP
         pfix = 'kinematics'+region
 if len(sys.argv)>4:
-        pfix=str(sys.argv[4])
+        pfix+=str(sys.argv[4])
 else:
         #pfix+='_Oct2025_NoSys'
         pfix+=''                        # TEMP
@@ -49,16 +49,14 @@ scaleSignalXsecTo1pb = False # Set to True if analyze.py ever uses a non-1 cross
 doAllSys = False
 doPDF = False
 if isCategorized: doPDF=False # FIXME later
-skipQCD300 = False # we have enough number of events per bin in control plots for BpM, so it's okay to include it. actually provides better data/MC agreement
 
-doABCDnn = False
 from samples import samples_ttbar
 
 bkgProcs = {'ewk':samples_electroweak,'ttbar':samples_ttbar,'ttx':samples_ttbarx}
 if region == '3lep':
-        bkgProcs = {'ewk':samples_electroweak3,'np':samples_nonprompt,'ttx':samples_ttbarx3}
+        bkgProcs = {'ewk':samples_electroweak3,'np':samples_nonprompt,'ttx':samples_ttbarx3,'conv':samples_conversion}
 elif region == '4lep':
-        bkgProcs = {'ewk':samples_electroweak4,'np':samples_nonprompt,'ttx':samples_ttbarx4}
+        bkgProcs = {'ewk':samples_electroweak4,'np':samples_nonprompt,'ttx':samples_ttbarx4,'conv':samples_conversion}
 massList = [400,700,1000,1300,1600]
 sigList = ['BpM'+str(mass) for mass in massList]
 
@@ -130,30 +128,13 @@ if groupHists:
                         systHistsWrite = {}
                         isFirstHistDir = {"2022":True, "2022EE":True, "2023":True, "2023BPix":True}
 
-                        if doABCDnn and (proc=="ttbar" or proc=="qcd" or proc=="wjets" or proc=="singletop"):
-                                systematicList = systListABCDnn
-                                corrList = systListABCDnn
-                                uncorrList = []
-                        else:
-                                systematicList = mySystList
-                                corrList = corrList_sf
-                                uncorrList = uncorrList_sf
+                        systematicList = mySystList
+                        corrList = corrList_sf
+                        uncorrList = uncorrList_sf
                 
                         for bkg in bkgGrp:
                                 if bkgGrp[bkg].year not in yearList:
                                         continue
-                                if doABCDnn:
-                                        if 'QCDHT200' in bkg:
-                                                print("Plotting without QCDHT200.") # abcdnn trained without having qcd200 as input (only has two unweighted evets)
-                                                continue
-                                else:
-                                        if 'QCDHT300' in bkg and skipQCD300:
-                                                print("Plotting without QCDHT300.") # some QCD300 has anomalously large genweights. visible when not having enough events per bin
-                                                continue
-                                        # uncomment this if QCD200 not in rdf outputs
-                                        if 'QCDHT200' in bkg: #TEMP
-                                                print("Plotting without QCDHT200.")
-                                                continue
                                 
                                 year = bkgGrp[bkg].year
                                 bkgPrefix = bkgGrp[bkg].prefix
@@ -354,23 +335,14 @@ for cat in catList:
 
         yieldTable[histoPrefix]['dataOverBkg'] = yieldTable[histoPrefix]['data']/yieldTable[histoPrefix]['totBkg']
         yieldStatErrTable[histoPrefix]['dataOverBkg'] = yieldStatErrTable[histoPrefix]['data']/yieldStatErrTable[histoPrefix]['totBkg']
-        if doABCDnn:
-                yieldTable[histoPrefix]['ABCDnn'] = yieldTable[histoPrefix]['ttbar'] + yieldTable[histoPrefix]['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[histoPrefix]['singletop']
-                yieldStatErrTable[histoPrefix]['ABCDnn'] = math.sqrt(yieldStatErrTable[histoPrefix]['ttbar']**2 + yieldStatErrTable[histoPrefix]['wjets']**2 + yieldStatErrTable[histoPrefix]['qcd']**2 + yieldStatErrTable[histoPrefix]['singletop']**2)
-        else:
-                yieldTable[histoPrefix]['ABCDnn'] = 0
-                yieldStatErrTable[histoPrefix]['ABCDnn'] = 0
 
         if doAllSys:
-                for syst in systListFullUCOC+systListABCDnn:
+                for syst in systListFullUCOC:
                         if 'pdf' in syst or syst == 'muR' or syst == 'muF': continue
                         for ud in ['Up', 'Down']:
                                 yieldTable[f'{histoPrefix}{syst}{ud}']={}
                 for proc in list(bkgProcs.keys())+sigList:
-                        if doABCDnn and (proc=='ttbar' or proc=='qcd' or proc=='wjets' or proc=='singletop'):
-                                systematicList = systListABCDnn
-                        else:
-                                systematicList = systListFullUCOC
+                        systematicList = systListFullUCOC
                                 
                         for syst in systematicList:
                                 if 'pdf' in syst or syst == 'muR' or syst == 'muF': continue
@@ -383,15 +355,11 @@ for cat in catList:
                                                 else:
                                                         print('could not store integral of '+syst+' for '+proc)
 
-                if doABCDnn:
-                        for syst in systListABCDnn:
-                                yieldTable[f'{histoPrefix}{syst}Up']['ABCDnn'] = yieldTable[f'{histoPrefix}{syst}Up']['ttbar'] + yieldTable[f'{histoPrefix}{syst}Up']['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[f'{histoPrefix}{syst}Up']['singletop']
-                                yieldTable[f'{histoPrefix}{syst}Down']['ABCDnn'] = yieldTable[f'{histoPrefix}{syst}Down']['ttbar'] + yieldTable[f'{histoPrefix}{syst}Down']['wjets'] + yieldTable[histoPrefix]['qcd'] + yieldTable[f'{histoPrefix}{syst}Down']['singletop']
 
 table = []
 table.append(['break'])
 table.append(['break'])
-table.append(['YIELDS']+[proc for proc in list(bkgProcs.keys())+['ABCDnn', 'data']])
+table.append(['YIELDS']+[proc for proc in list(bkgProcs.keys())+['data']])
 
 # yields for bkg and data
 for cat in catList:
@@ -400,7 +368,7 @@ for cat in catList:
                 histoPrefix = f'{iPlot}_{lumiStr}_{cat}'
         else:
                 histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
-        for proc in list(bkgProcs.keys())+['ABCDnn', 'data']:
+        for proc in list(bkgProcs.keys())+['data']:
                 row.append(str(round(yieldTable[histoPrefix][proc],3))+' $\pm$ '+str(round(yieldStatErrTable[histoPrefix][proc],3)))
         table.append(row)
 table.append(['break'])
@@ -426,7 +394,7 @@ for isEM in isEMlist:
         table.append(['break'])
         #table.append(['YIELDS']+[cat for cat in catList if 'is'+isEM in cat]+['\\\\'])
         table.append(['YIELDS']+catList+['\\\\'])
-        for proc in list(bkgProcs.keys())+['ABCDnn', 'totBkg','data','dataOverBkg']+sigList:
+        for proc in list(bkgProcs.keys())+['totBkg','data','dataOverBkg']+sigList:
                 row = [proc]
                 for cat in catList:
                         if not ('is'+isEM in cat): continue
@@ -450,9 +418,9 @@ if doAllSys:
         table.append(['break'])
         table.append(['','Systematics'])
         table.append(['break'])
-        for proc in list(bkgProcs.keys())+sigList+['ABCDnn']:
+        for proc in list(bkgProcs.keys())+sigList:
                 table.append([proc]+[cat for cat in catList]+['\\\\'])
-                for syst in systListFullUCOC+systListABCDnn:
+                for syst in systListFullUCOC:
                         if 'pdf' in syst or syst == 'muR' or syst == 'muF': continue
                         for ud in ['Up', 'Down']:
                                 row = [syst+ud]

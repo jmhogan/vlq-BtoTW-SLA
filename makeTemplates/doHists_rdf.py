@@ -20,14 +20,14 @@ sys.path.append(parent)
 from numpy import linspace
 
 from analyze_RDF import *
-from samples import samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, samples_data, samples_signal, samples_ttbar, samples_nonprompt
+from samples import samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, samples_data, samples_signal, samples_ttbar, samples_nonprompt, samples_conversion
 from utils import *
 
 gROOT.SetBatch(1)
 start_time = time.time()
 
 # ------------- File location and total lumi ---------------
-step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
+step1Dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_May2026_Run3/'
 
 # ------------- Arguments and default values ------------
 iPlot = 'BpMassAve' #choose a discriminant from plotList below!
@@ -39,7 +39,6 @@ if len(sys.argv)>3: region=sys.argv[3]
 isCategorized = False
 if len(sys.argv)>4: isCategorized=int(sys.argv[4])
 
-doABCDnn = False
 doJetRwt= 0
 doAllSys= False
 cTime=datetime.datetime.now()
@@ -61,20 +60,21 @@ bkgList = {"ewk"      : samples_electroweak,
            "wjets"    : samples_wjets,
            "ttbar"    : samples_ttbar,
            "singletop": samples_singletop,
+           "np"       : samples_nonprompt,
+           "conv"     : samples_conversion
 }
 if region == '3lep':
         bkgList = {"ewk"      : samples_electroweak3,           
                    "ttx"      : samples_ttbarx3,
                    "np"       : samples_nonprompt,
+                   "conv"     : samples_conversion
                    }
 elif region == '4lep':
         bkgList = {"ewk"      : samples_electroweak4,           
                    "ttx"      : samples_ttbarx4,
                    "np"       : samples_nonprompt,
+                   "conv"     : samples_conversion
                    }
-
-### TO-DO: in samples.py, make up an entry for each year for ABCDnn with dummy information where needed.
-### When iPlot == a transform variable, bkgList = [samples_electroweak,samples_ttbarx,samples_abcdnn] (singletop?)
 
 # use "samples_data" and "samples_signal" below for the dictionaries of data and signals
 
@@ -87,12 +87,9 @@ if len(sys.argv)>6: taglist=[str(sys.argv[6])]
 else: 
 	taglist = ['all']
 	if isCategorized: 
-                #taglist=['tagTjet','tagWjet','untagTlep','untagWlep']
-                #taglist=['tagTjet','tagWjet','untagTlep','untagWlep','allWlep','allTlep']
                 taglist=['all'] # TEMP
 
 # ------------- Definition of plots to make ------------------
-### TO-DO: add ABCDnn branches
 plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
         'NPV'   :('PV_npvs',linspace(0,80,81).tolist(),';N PVs'),
         'Nleps' :('NgoodLeptons',linspace(0,5,5).tolist(),';N good leptons'),
@@ -227,16 +224,16 @@ for cat in catList:
                                         print('------------ '+bkg+' -------------')
                                         fileprefix = (bkgGrp[bkg].samplename).split('/')[1]
                                         tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir)
-                                        if doAllSys and not doABCDnn:
+                                        if doAllSys:
                                                 for syst in shapesFiles:
                                                         for ud in ['up','dn']: # TODO: can be optimized
                                                                 print(f'        {syst}{ud}')
                                                                 tTreeBkg[bkg+syst+ud]=readTreeShift(fileprefix,bkgGrp[bkg].year,f'{syst}{ud}',step1Dir) ## located in utils.py
-                                        analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, bkgHistFile, doABCDnn)
+                                        analyze(tTreeBkg,bkgGrp[bkg],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, bkgHistFile)
                                         if catInd==nCats:
                                                 print('deleting '+bkg)
                                                 del tTreeBkg[bkg]
-                                                if doAllSys and not doABCDnn:
+                                                if doAllSys:
                                                         for syst in shapesFiles:
                                                                 for ud in ['up','dn']: del tTreeBkg[bkg+syst+ud]
                         bkgHistFile.Close()
