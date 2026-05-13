@@ -65,15 +65,16 @@ if year != 'all': tempsig='templates_'+iPlot+'_'+lumiInTemplates+'_'+year+''+isR
 plotLowSide = True
 
 bkgProcList = [#'qcd',
-        'ewk',
-        'ttx',
         'np',
+        'ttx',
         'conv',
+        'ewk',
+        'higgs',
         #'wjets',                       
         #'singletop',
         #'ttbar'
 ]
-bkgHistColors = {'np':TColor.GetColor("#5790fc"),'ttx':TColor.GetColor("#f89c20"),'conv':TColor.GetColor("#e42536"),'ewk':TColor.GetColor("#964a8b")}
+bkgHistColors = {'np':TColor.GetColor("#5790fc"),'ttx':TColor.GetColor("#f89c20"),'conv':TColor.GetColor("#e42536"),'ewk':TColor.GetColor("#964a8b"),'higgs':TColor.GetColor("9c9ca1")}
 #'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'singletop':kGreen-6,
 
 doAllSys = False
@@ -394,21 +395,16 @@ for tag in taglist:
 
 
                 stackbkgHT = THStack("stackbkgHT","")
-                bkgProcListNew = bkgProcList[:]
-                for proc in bkgProcListNew:
-                        try: 
-                                stackbkgHT.Add(bkghists[proc+catStr])
-                        except: pass
+                for proc in bkgProcList:
+                        stackbkgHT.Add(bkghists[proc+catStr])
 
                 sig1Color= kBlack
                 sig2Color= kBlack
 
                 for proc in bkgProcList:
-                        try: 
-                                bkghists[proc+catStr].SetLineColor(bkgHistColors[proc])
-                                bkghists[proc+catStr].SetFillColor(bkgHistColors[proc])
-                                bkghists[proc+catStr].SetLineWidth(2)
-                        except: pass                        
+                        bkghists[proc+catStr].SetLineColor(bkgHistColors[proc])
+                        bkghists[proc+catStr].SetFillColor(bkgHistColors[proc])
+                        bkghists[proc+catStr].SetLineWidth(2)
                 hsig1.SetLineColor(sig1Color)
                 hsig1.SetFillStyle(0)
                 hsig1.SetLineWidth(3)

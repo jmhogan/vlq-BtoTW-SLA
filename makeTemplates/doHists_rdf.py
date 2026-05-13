@@ -20,7 +20,7 @@ sys.path.append(parent)
 from numpy import linspace
 
 from analyze_RDF import *
-from samples import samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, samples_data, samples_signal, samples_ttbar, samples_nonprompt, samples_conversion
+from samples import samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, samples_data, samples_signal, samples_ttbar, samples_nonprompt, samples_conversion, samples_higgs
 from utils import *
 
 gROOT.SetBatch(1)
@@ -61,19 +61,22 @@ bkgList = {"ewk"      : samples_electroweak,
            "ttbar"    : samples_ttbar,
            "singletop": samples_singletop,
            "np"       : samples_nonprompt,
-           "conv"     : samples_conversion
+           "conv"     : samples_conversion,
+           "higgs"    : samples_higgs,
 }
 if region == '3lep':
         bkgList = {"ewk"      : samples_electroweak3,           
                    "ttx"      : samples_ttbarx3,
                    "np"       : samples_nonprompt,
-                   "conv"     : samples_conversion
+                   "conv"     : samples_conversion,
+                   "higgs"    : samples_higgs
                    }
 elif region == '4lep':
         bkgList = {"ewk"      : samples_electroweak4,           
                    "ttx"      : samples_ttbarx4,
                    "np"       : samples_nonprompt,
-                   "conv"     : samples_conversion
+                   "conv"     : samples_conversion,
+                   "higgs"    : samples_higgs
                    }
 
 # use "samples_data" and "samples_signal" below for the dictionaries of data and signals

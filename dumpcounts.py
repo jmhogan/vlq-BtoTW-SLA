@@ -10,8 +10,12 @@ for sample in mclist_2022:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
+    process = sample.samplename.split('/')[2]
+    if (("_ext1" in process)): samplename += "ext1"
+    elif (("_ext2" in process)): samplename += "ext2"
+    elif (("_ext3" in process)): samplename = "ext3"
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_May2026_Run3/'
     tree = readTreeNominal(samplename,"2022",step1dir,"Runs")
 
     integral = 0
@@ -30,8 +34,12 @@ for sample in mclist_2022EE:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
+    process = sample.samplename.split('/')[2]
+    if (("_ext1" in process)): samplename += "ext1"
+    elif (("_ext2" in process)): samplename += "ext2"
+    elif (("_ext3" in process)): samplename = "ext3"
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_May2026_Run3/'
     tree = readTreeNominal(samplename,"2022EE",step1dir,"Runs")
 
     integral = 0
@@ -50,8 +58,12 @@ for sample in mclist_2023:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
+    process = sample.samplename.split('/')[2]
+    if (("_ext1" in process)): samplename += "ext1"
+    elif (("_ext2" in process)): samplename += "ext2"
+    elif (("_ext3" in process)): samplename = "ext3"
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_May2026_Run3/'
     tree = readTreeNominal(samplename,"2023",step1dir,"Runs")
 
     integral = 0
@@ -70,8 +82,12 @@ for sample in mclist_2023BPix:
     #print('-------------------------------------------------------')
     
     samplename = sample.samplename.split('/')[1]
+    process = sample.samplename.split('/')[2]
+    if (("_ext1" in process)): samplename += "ext1"
+    elif (("_ext2" in process)): samplename += "ext2"
+    elif (("_ext3" in process)): samplename = "ext3"
 
-    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_Feb2026_Run3/'
+    step1dir = 'root://cmseos.fnal.gov//store/user/lpchtop/BBto2b4tau_May2026_Run3/'
     tree = readTreeNominal(samplename,"2023BPix",step1dir,"Runs")
 
     integral = 0
