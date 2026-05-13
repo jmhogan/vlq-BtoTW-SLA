@@ -51,7 +51,7 @@ print('Set pfix to '+pfix)
 
 # -------------- Groups of background samples to use --------------
 
-doData = False
+doData = True
 doSigs = True
 doBkgs = True
 
@@ -102,8 +102,8 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
         'lepID':('Good4Lepton_ID',linspace(10,16,7).tolist(),';lepton flavor'),
         'lepCharge':('Good4Lepton_charge',linspace(-2,2,5).tolist(),';lepton charge'),
         'lepChargeSum':('Sum(Good4Lepton_charge)',linspace(-5,5,11).tolist(),';lepton charge sum'),
-        'MET'   :('MET_ptcorr',linspace(0, 1000, 51).tolist(),';#slash{E}_{T} [GeV]'),
-        'METphi':('MET_phicorr',linspace(-3.2,3.2, 65).tolist(),';#slash{E}_{T} phi'),
+        'MET'   :('corrMET_pt',linspace(0, 1000, 51).tolist(),';PUPPI #slash{E}_{T} [GeV]'),
+        'METphi':('corrMET_phi',linspace(-3.2,3.2, 65).tolist(),';PUPPI #slash{E}_{T} phi'),
         'HT':('gcJet_ht',linspace(0, 2500, 51).tolist(),';H_{T} (GeV)'),
         'ST':('gcJet_ST',linspace(0, 5000, 51).tolist(),';S_{T} (GeV)'),
         'JetEta':('gcJet_eta',linspace(-3, 3, 41).tolist(),';central AK4 jet #eta'),
@@ -112,7 +112,7 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
         'JetBtag':('gcJet_PNet',linspace(0,1,51).tolist(),';central AK4 jet DeepJet disc'),
         'NJets' :('NgoodcleanJets',linspace(0, 10, 11).tolist(),';central AK4 jet multiplicity'),
         'NBJets':('NJets_PNetL',linspace(0, 10, 11).tolist(),';ParticleNet b-tag loose multiplicity'),
-        'BpMassAve':('0.5*(B1finalM+B2finalM)',linspace(0,3000,51).tolist(),';Average B quark mass [GeV]'),
+        'BpMassAve':('0.5*(B1finalM+B2finalM)',linspace(0,1000,51).tolist(),';Average B quark mass (manual) [GeV]'),
         'BpMassDiff':('abs(B1finalM-B2finalM)',linspace(0,1800,31).tolist(),';Difference in B quark masses [GeV]'),
         'BpMass1':('B1finalM',linspace(0,1800,31).tolist(),';B quark 1 mass [GeV]'),
         'BpMass2':('B2finalM',linspace(0,1800,31).tolist(),';B quark 2 mass [GeV]'),
@@ -133,7 +133,7 @@ plotList = {#discriminantName:(discriminantLJMETName, binning, xAxisLabel)
         'VLQBBbarDeltaPhiDecayVisible':('VLQ_BBbar_DeltaPhiDecayVisible',linspace(0,3.2,65).tolist(),';B#bar{B} Delta #phi Decay Visible'),
         'VLQBBbarDeltaPhiBoostVisible':('VLQ_BBbar_DeltaPhiBoostVisible',linspace(0,3.2,65).tolist(),';B#bar{B} Delta #phi Boost Visible'),
         'VLQBBbarVisibleShape':('VLQ_BBbar_VisibleShape',linspace(0,1,51).tolist(),';B#bar{B} Visible Shape'),
-        'VLQMassAve':('0.5*(VLQ_B_mass+VLQ_Bbar_mass)',linspace(0,3000,51).tolist(),';Ave(B,#bar{B}) quark mass [GeV]'),
+        'VLQMassAve':('0.5*(VLQ_B_mass+VLQ_Bbar_mass)',linspace(0,2000,51).tolist(),';Ave(B,#bar{B}) quark mass (RJR) [GeV]'),
         'VLQCosDecayAngleAve':('0.5*(VLQ_B_cosDecayAngle+VLQ_Bbar_cosDecayAngle)',linspace(-1,1,51).tolist(),';Avg(B,#bar{B}) cos#theta'),
         'VLQDeltaPhiDecayAngleAve':('0.5*(VLQ_B_deltaPhiDecayAngle+VLQ_Bbar_deltaPhiDecayAngle)',linspace(0,3.2,65).tolist(),';Avg(B,#bar{B}) Delta #phi'),
 }
