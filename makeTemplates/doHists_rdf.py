@@ -20,7 +20,7 @@ sys.path.append(parent)
 from numpy import linspace
 
 from analyze_RDF import *
-from samples import samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, samples_data, samples_signal, samples_ttbar, samples_nonprompt, samples_conversion, samples_higgs
+from samples import samples_electroweak3, samples_electroweak4, samples_ttbarx3, samples_ttbarx4, samples_data, samples_signal, samples_nonprompt, samples_conversion, samples_higgs
 from utils import *
 
 gROOT.SetBatch(1)
@@ -55,28 +55,20 @@ doSigs = True
 doBkgs = True
 
 # this is a list of group dictionaries. "wjets" has entries like "WJetsHT2002018":WJetsHT2002018, where the 2nd is the class
-bkgList = {"ewk"      : samples_electroweak,           
-           "ttx"      : samples_ttbarx,
-           "wjets"    : samples_wjets,
-           "ttbar"    : samples_ttbar,
-           "singletop": samples_singletop,
-           "np"       : samples_nonprompt,
-           "conv"     : samples_conversion,
-           "higgs"    : samples_higgs,
-}
+bkgList = {}
 if region == '3lep':
         bkgList = {"ewk"      : samples_electroweak3,           
                    "ttx"      : samples_ttbarx3,
                    "np"       : samples_nonprompt,
                    "conv"     : samples_conversion,
-                   "higgs"    : samples_higgs
+                   #"higgs"    : samples_higgs
                    }
 elif region == '4lep':
         bkgList = {"ewk"      : samples_electroweak4,           
                    "ttx"      : samples_ttbarx4,
                    "np"       : samples_nonprompt,
                    "conv"     : samples_conversion,
-                   "higgs"    : samples_higgs
+                   #"higgs"    : samples_higgs
                    }
 
 # use "samples_data" and "samples_signal" below for the dictionaries of data and signals
@@ -196,7 +188,7 @@ for cat in catList:
                         #print("DONE TD")
                         ### For analyze_RDF make the switch here (and similar regions below)
                         #dataHistFile.cd()
-                        analyze(tTreeData,samples_data[data],False,iPlot,plotList[iPlot],category,region,isCategorized,dataHistFile, False)
+                        analyze(tTreeData,samples_data[data],False,iPlot,plotList[iPlot],category,region,isCategorized,dataHistFile)
                         if catInd==nCats: 
                                 print('deleting '+data)
                                 del tTreeData[data]
@@ -217,7 +209,7 @@ for cat in catList:
                                         else:
                                                 fileprefix += '22'
                                         tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir) ## located in utils.py
-                                        analyze(tTreeBkg,bkgGrp[bkg],False,iPlot,plotList[iPlot],category,region,isCategorized,bkgHistFile, False)
+                                        analyze(tTreeBkg,bkgGrp[bkg],False,iPlot,plotList[iPlot],category,region,isCategorized,bkgHistFile)
                                         if catInd==nCats: 
                                                 print('deleting '+bkg)
                                                 del tTreeBkg[bkg]
@@ -226,6 +218,11 @@ for cat in catList:
                                 for bkg in bkgGrp:
                                         print('------------ '+bkg+' -------------')
                                         fileprefix = (bkgGrp[bkg].samplename).split('/')[1]
+                                        process = (bkgGrp[bkg].samplename).split('/')[2]
+                                        if (("_ext1" in process)): fileprefix += "ext1"
+                                        elif (("_ext2" in process)): fileprefix += "ext2"
+                                        elif (("_ext3" in process)): fileprefix += "ext3"
+
                                         tTreeBkg[bkg]=readTreeNominal(fileprefix,bkgGrp[bkg].year,step1Dir)
                                         if doAllSys:
                                                 for syst in shapesFiles:
@@ -253,7 +250,7 @@ for cat in catList:
                                                 print(f'        {syst}{ud}')
                                                 tTreeSig[sig+syst+ud]=readTreeShift(fileprefix,samples_signal[sig].year,f'{syst}{ud}',step1Dir)
                         #sigHistFile.cd()
-                        analyze(tTreeSig,samples_signal[sig],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, sigHistFile, False)
+                        analyze(tTreeSig,samples_signal[sig],doAllSys,iPlot,plotList[iPlot],category,region,isCategorized, sigHistFile)
                         if catInd==nCats: 
                                 print('deleting '+sig)
                                 del tTreeSig[sig]
