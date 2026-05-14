@@ -15,7 +15,7 @@ EnableImplicitMT()
 negative MC weights, ets) applied below should be checked!
 """
 
-def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized, outHistFile, doABCDnn):
+def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorized, outHistFile):
         start_time = time.time()
         plotTreeName=plotDetails[0]
         plotTreeNameTemp = plotDetails[0] #TEMP
@@ -50,25 +50,20 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
 
         weightStr = '1'
         doMuRF = True
-        #if (sample.prefix).find('WW') == 0 or (sample.prefix).find('WZ') == 0 or (sample.prefix).find('ZZ') == 0:
-        #        doMuRF = False
 
         if 'Nonprompt' in sample.prefix:
-                weightStr = 'nonpromptWeight'
+                if region == '3lep':
+                        weightStr = 'nonpromptWeightMCMC[1]'
+                elif region == '4lep':
+                        weightStr = 'nonpromptWeightMCMC[0]'
+                else:
+                        print('CODE UP A NONPROMPT WEIGHT FOR REGION:',region)
+                        exit(1)
                 
         if ('Single' not in sample.prefix and 'MuonEG' not in sample.prefix and 'Tau' not in sample.prefix): 
 			# btagWeights[0] *
             weightStr += ' * PileupWeights[0] * elrecoSF[0] * elidSF[0] * muonidSF[0] * muonisoSF[0] * tauidVSeSF[0] * tauidVSmuSF[0] * tauidVSjetSF[0] * '+str(targetlumi[sample.year]*sample.xsec/sample.nrun)+' * (genWeight/abs(genWeight))'
                         
-            #if isCategorized:
-            #        if tag=="tagTjet" or tag=="allWlep":
-            #                weightStr += f' * gcFatJet_pnetweights[6]'
-            #                weightpNetTtagUpStr = weightStr.replace('gcFatJet_pnetweights[6]', 'gcFatJet_pnetweights[7]')
-            #                weightpNetTtagDnStr = weightStr.replace('gcFatJet_pnetweights[6]', 'gcFatJet_pnetweights[8]')
-            #        elif tag=="tagWjet" or tag=="allTlep":                        
-            #                weightStr += f' * gcFatJet_pnetweights[9]'
-            #                weightpNetWtagUpStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[10]')
-            #                weightpNetWtagDnStr = weightStr.replace('gcFatJet_pnetweights[9]', 'gcFatJet_pnetweights[11]')
 
             #weightPrefireUpStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Up')
             #weightPrefireDnStr = weightStr.replace('PreFiringWeight_Nom','PreFiringWeight_Dn')                        
@@ -350,17 +345,6 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                     hist_muFUp       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFUp_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFUp'      )
                     hist_muFDn       = sel.Histo1D((f'{iPlot}_{lumiStr}_{catStr}_muFDn_{process}'      ,xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightmuFDn'      )
 
-                    #if tag=='allWlep' or tag=="tagTjet":
-                    #        hist_pNetTtagUp = sel.Define('weightpNetTtagUp', weightpNetTtagUpStr)\
-                    #                             .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetTtagUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetTtagUp' )
-                    #        hist_pNetTtagDn = sel.Define('weightpNetTtagDn', weightpNetTtagDnStr)\
-                    #                             .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetTtagDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetTtagDn' )
-                    #elif tag=='allTlep' or tag=="tagWjet":
-                    #        hist_pNetWtagUp = sel.Define('weightpNetWtagUp', weightpNetWtagUpStr)\
-                    #                             .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetWtagUp_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetWtagUp' )
-                    #        hist_pNetWtagDn = sel.Define('weightpNetWtagDn', weightpNetWtagDnStr)\
-        #                             .Histo1D((f'{iPlot}_{lumiStr}_{catStr}_pNetWtagDn_{process}',xAxisLabel,len(xbins)-1,xbins),plotTreeName,'weightpNetWtagDn' )
-
                     if doMuRF: # doMuRF happens to be False only for WW, WZ, ZZ, which do not have pdf branches
                             if 'Bprime' in sample.prefix or 'STs' in sample.prefix:
                                     pdfVariations = 101
@@ -465,21 +449,6 @@ def analyze(tTree,sample,doAllSys,iPlot,plotDetails,category,region,isCategorize
                             for ipdf in hist_pdf:
                                 ipdf.Write()
 
-        # del df
-        # if 'Single' not in process and doAllSys and not doABCDnn:
-        #         del sel
-        # if process+'JERup' in tTree:
-        #         del dfjerUp
-        #         del dfjerDn
-        #         if '[0]' in plotDetails[0]:
-        #                 del seljerUp
-        #                 del seljerDn
-        # if process+'JECup' in tTree:
-        #         del dfjecUp
-        #         del dfjecDn
-        #         if '[0]' in plotDetails[0]:
-        #                 del seljecUp
-        #                 del seljecDn
 
         print("--- Analyze: %s minutes ---" % (round((time.time() - start_time)/60,2)))
         #DisableImplicitMT()

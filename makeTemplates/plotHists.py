@@ -69,12 +69,12 @@ bkgProcList = [#'qcd',
         'ttx',
         'conv',
         'ewk',
-        'higgs',
+        #'higgs',
         #'wjets',                       
         #'singletop',
         #'ttbar'
 ]
-bkgHistColors = {'np':TColor.GetColor("#5790fc"),'ttx':TColor.GetColor("#f89c20"),'conv':TColor.GetColor("#e42536"),'ewk':TColor.GetColor("#964a8b"),'higgs':TColor.GetColor("9c9ca1")}
+bkgHistColors = {'np':TColor.GetColor("#5790FC"),'ttx':TColor.GetColor("#F89C20"),'conv':TColor.GetColor("#E42536"),'ewk':TColor.GetColor("#964A8B"),'higgs':TColor.GetColor("9C9CA1")}
 #'ttbar':kAzure+8,'wjets':kMagenta-2,'qcd':kOrange-3,'singletop':kGreen-6,
 
 doAllSys = False
@@ -291,9 +291,6 @@ for tag in taglist:
                         except: pass
                 gaeBkgHT = TGraphAsymmErrors(bkgHT.Clone("gaeBkgHT"))
 
-                if doNormByBinWidth: poissonNormByBinWidth(gaeBkgHT,bkgHT,perNGeV)
-                else: poissonErrors(gaeBkgHT)
-
                 #yvals = gaeBkgHT.GetY()
                 #print('bkgHT = ',bkgHT.GetBinContent(25),'+/-',bkgHT.GetBinError(25))
                 #print('gaeBkgHT = ',yvals[24],'+',gaeBkgHT.GetErrorYhigh(24),'-',gaeBkgHT.GetErrorYlow(24))
@@ -393,7 +390,6 @@ for tag in taglist:
                 ############## Making Plots of e+jets, mu+jets and e/mu+jets 
                 ############################################################
 
-
                 stackbkgHT = THStack("stackbkgHT","")
                 for proc in bkgProcList:
                         stackbkgHT.Add(bkghists[proc+catStr])
@@ -461,7 +457,7 @@ for tag in taglist:
                 gaeData.SetMinimum(0.015)
                 gaeData.SetTitle("")
                 if doNormByBinWidth:
-                        if perNGeV <= 1):
+                        if perNGeV <= 1:
                                 gaeData.GetYaxis().SetTitle("< Events / "+str(perNGeV)+" >")
                         else: 
                                 gaeData.GetYaxis().SetTitle("< Events / "+str(perNGeV)+" GeV >")

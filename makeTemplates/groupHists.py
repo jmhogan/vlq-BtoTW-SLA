@@ -6,7 +6,7 @@ import os,sys,time,math,datetime,itertools,ctypes
 from ROOT import gROOT,TFile,TH1F,TH2D
 parent = os.path.dirname(os.getcwd())
 sys.path.append(parent)
-from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak, samples_electroweak3, samples_electroweak4, samples_wjets, samples_singletop, samples_ttbarx, samples_ttbarx3, samples_ttbarx4, samples_qcd, uncorrList_sf, yearList, samples_nonprompt, samples_conversion, samples_higgs
+from samples import targetlumi, lumiStr, systListShort, systListFull, samples_data, samples_signal, samples_electroweak3, samples_electroweak4, samples_ttbarx3, samples_ttbarx4, uncorrList_sf, yearList, samples_nonprompt, samples_conversion, samples_higgs
 from utils import *
 
 gROOT.SetBatch(1)
@@ -50,13 +50,11 @@ doAllSys = False
 doPDF = False
 if isCategorized: doPDF=False # FIXME later
 
-from samples import samples_ttbar
-
-bkgProcs = {'ewk':samples_electroweak,'ttbar':samples_ttbar,'ttx':samples_ttbarx}
+bkgProcs = {}
 if region == '3lep':
-        bkgProcs = {'ewk':samples_electroweak3,'np':samples_nonprompt,'ttx':samples_ttbarx3,'conv':samples_conversion,'higgs':samples_higgs}
+        bkgProcs = {'ewk':samples_electroweak3,'np':samples_nonprompt,'ttx':samples_ttbarx3,'conv':samples_conversion} #,'higgs':samples_higgs}
 elif region == '4lep':
-        bkgProcs = {'ewk':samples_electroweak4,'np':samples_nonprompt,'ttx':samples_ttbarx4,'conv':samples_conversion,'higgs':samples_higgs}
+        bkgProcs = {'ewk':samples_electroweak4,'np':samples_nonprompt,'ttx':samples_ttbarx4,'conv':samples_conversion} #,'higgs':samples_higgs}
 massList = [400,700,1000,1300,1600]
 sigList = ['BpM'+str(mass) for mass in massList]
 
@@ -104,7 +102,7 @@ if groupHists:
                         histoPrefix = f'{iPlot}_{lumiStr}_{cat}_{region}'
 
                 dataHistFile = TFile.Open(f'{outDir}{cat[2:]}/datahists_{iPlot}.root', "READ")
-                print(f'this is the file! HERE ----> {dataHistFile}')
+                #print(f'this is the file! HERE ----> {dataHistFile}')
                 isFirstHist = True
                 for dat in samples_data:
                         if samples_data[dat].year not in yearList:
@@ -139,11 +137,10 @@ if groupHists:
                                 year = bkgGrp[bkg].year
                                 bkgPrefix = bkgGrp[bkg].prefix
                                 doMuRF = True
-                                if (bkgPrefix).find('WW') == 0 or (bkgPrefix).find('WZ') == 0 or (bkgPrefix).find('ZZ') == 0:
-                                        doMuRF = False
-                                
+                                #print('Working on bkg:',bkg)                                
                                 # Group nominal and correlated systs for each year
                                 if isFirstHistDir[year]:
+                                        #print(f'Found firsthist: {histoPrefix}_{bkgPrefix}')
                                         nomHists[f'{histoPrefix}__{proc}{year}'] = bkgHistFile.Get(f'{histoPrefix}_{bkgPrefix}').Clone(f'{histoPrefix}__{proc}{year}')
                                         isFirstHistDir[year] = False
                                         if doAllSys:
@@ -253,7 +250,7 @@ if groupHists:
 
                         for year in yearList:
                                 if year == yearList[0]: continue
-                                print('Trying to add',f'{histoPrefix}_Bprime_M{mass}_{year}')
+                                #print('Trying to add',f'{histoPrefix}_Bprime_M{mass}_{year}')
                                 nomHistsAllYears.Add(sigHistFile.Get(f'{histoPrefix}_Bprime_M{mass}_{year}'))
                                 if doAllSys:
                                         for syst in corrList_sf:
